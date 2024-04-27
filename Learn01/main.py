@@ -95,3 +95,5 @@ img_cv2 = cv2.imread(cat_files[20])
 # ax.imshow(img_resize)
 # ax.axis('off')
 # plt.show()
+
+'''CV2 Kernels'''
