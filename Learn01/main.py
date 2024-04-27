@@ -97,3 +97,29 @@ img_cv2 = cv2.imread(cat_files[20])
 # plt.show()
 
 '''CV2 Kernels'''
+# # Sharpen Image
+# img = plt.imread(dog_files[4])
+# kernel_sharpening = np.array([[-1,-1,-1], 
+#                               [-1,9,-1], 
+#                               [-1,-1,-1]])
+
+# sharpened = cv2.filter2D(img, -1, kernel_sharpening)
+
+# fig, ax = plt.subplots(figsize=(5, 5))
+# ax.imshow(sharpened)
+# ax.axis('off')
+# ax.set_title('Sharpened Image')
+# plt.show()
+
+# Blurring the image
+img = plt.imread(dog_files[4])
+kernel_3x3 = np.ones((3, 3), np.float32) / 9
+blurred = cv2.filter2D(img, -1, kernel_3x3)
+fig, ax = plt.subplots(figsize=(5, 5))
+ax.imshow(blurred)
+ax.axis('off')
+ax.set_title('Blurred Image')
+plt.show()
+
+plt.imsave('Learn01/mpl_dog.png', blurred)
+cv2.imwrite('Learn01/cv2_dog.png', blurred)
