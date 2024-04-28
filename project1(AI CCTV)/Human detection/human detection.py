@@ -1,6 +1,7 @@
 import cv2
 
-cap = cv2.VideoCapture('C:/NWR27/001-AI CCTV/Folding Area_proses sortir.mp4')
+cap = cv2.VideoCapture('project1(AI CCTV)/Human detection/in.avi')
+# cap = cv2.VideoCapture('C:/NWR27/001-AI CCTV/Folding Area_proses sortir.mp4')
 # cap = cv2.VideoCapture(0)
 
 
