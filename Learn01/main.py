@@ -121,5 +121,6 @@ ax.axis('off')
 ax.set_title('Blurred Image')
 plt.show()
 
-plt.imsave('Learn01/mpl_dog.png', blurred)
-cv2.imwrite('Learn01/cv2_dog.png', blurred)
+'''SAVING FILE'''
+# plt.imsave('Learn01/mpl_dog.png', blurred)
+# cv2.imwrite('Learn01/cv2_dog.png', blurred)
