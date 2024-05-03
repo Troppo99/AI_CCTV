@@ -1,8 +1,7 @@
 {
     "window.zoomLevel": 0,
     "editor.fontSize": 14,
-    "editor.fontWeight": "normal",
     "workbench.iconTheme": "material-icon-theme",
-    // "workbench.colorTheme": "Noctis Azureus"
-    "workbench.colorTheme": "Dracula",
+    // "workbench.colorTheme": "",
+    "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
 }
