@@ -2,6 +2,7 @@
     "window.zoomLevel": -1,
     "editor.fontSize": 14,
     "editor.fontWeight": "normal",
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.colorTheme": "Noctis Azureus"
+    "workbench.iconTheme": "material-icon-theme",
+    // "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+    "workbench.colorTheme": "GitHub Light Colorblind (Beta)",
 }
