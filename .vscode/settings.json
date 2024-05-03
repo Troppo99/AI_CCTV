@@ -1,8 +1,8 @@
 {
-    "window.zoomLevel": -1,
+    "window.zoomLevel": 0,
     "editor.fontSize": 14,
     "editor.fontWeight": "normal",
-    "workbench.iconTheme": "vscode-icons",
+    "workbench.iconTheme": "material-icon-theme",
     // "workbench.colorTheme": "Noctis Azureus"
-    "workbench.colorTheme": "Noctis Obscuro",
+    "workbench.colorTheme": "Dracula",
 }
