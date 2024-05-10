@@ -2,5 +2,6 @@
     "window.zoomLevel": 0,
     "editor.fontSize": 14,
     "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+    // "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+    "workbench.colorTheme": "GitHub Light Colorblind (Beta)",
 }
