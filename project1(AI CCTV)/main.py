@@ -1,6 +1,6 @@
 import cv2
-# cap = cv2.VideoCapture(0) #for default camera
-cap = cv2.VideoCapture(0) #for web camera
+cap = cv2.VideoCapture(0) #for default camera
+# cap = cv2.VideoCapture(1) #for web camera
 
 while True:
     bo,frame = cap.read()
