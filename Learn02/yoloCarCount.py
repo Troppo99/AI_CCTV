@@ -4,9 +4,7 @@ import cvzone
 import math
 
 cap = cv2.VideoCapture('Learn02/Videos/Murtaza/cars.mp4')
-
 model = YOLO('Learn02/Yolo-Weights/yolov8n.pt') # Use yolov8l.pt untuk lebih bagus tapi lag parah jika tanpa GPU 
-
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
               "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
