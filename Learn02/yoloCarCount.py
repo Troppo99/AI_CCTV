@@ -5,7 +5,6 @@ import math
 
 cap = cv2.VideoCapture('Learn02/Videos/Murtaza/cars.mp4')
 
-
 model = YOLO('Learn02/Yolo-Weights/yolov8n.pt') # Use yolov8l.pt untuk lebih bagus tapi lag parah jika tanpa GPU 
 
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
@@ -20,6 +19,7 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "teddy bear", "hair drier", "toothbrush"
               ]
 mask = cv2.imread('Learn02/Images/mask.png')
+
 while True:
     succes, img = cap.read()
     imgRegion = cv2.bitwise_and(img,mask)
