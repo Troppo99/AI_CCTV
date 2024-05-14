@@ -134,8 +134,12 @@ while True:
                 )
                 cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3)
                 currentArray = np.array([x1, y1, x2, y2, conf])
+                detections = np.vstack((detections, currentArray))
 
-    tracker.update(detections)
+    resultTracker = tracker.update(detections)
+    for result in resultTracker:
+        x1, y1, x2, y2, Id = result
+        print(result)
     cv2.imshow("Image", img)
-    cv2.imshow("Image Region", imgRegion)
+    # cv2.imshow("Image Region", imgRegion)
     cv2.waitKey(0)
