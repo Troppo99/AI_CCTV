@@ -5,13 +5,17 @@ import math
 import sort
 import numpy as np
 
-# 1280, 720 default dimensions
-scaleof = 0.75  # 0 to 1
+# dimensions of imshow
+scaleof = 1.5  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
+
+# input video
 cap = cv2.VideoCapture("Learn02/Videos/Murtaza/cars.mp4")
 
-# Use yolov8l.pt for more stable but lag if don't use a GPU
+# Making model (use yolov8l.pt for more stable but lag if don't use a GPU)
 model = YOLO("Learn02/Yolo-Weights/yolov8L.pt")
+
+# Class
 classNames = [
     "person",
     "bicycle",
