@@ -102,7 +102,7 @@ mask = cv2.imread("Learn02/Images/mask2.png")
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 
 # limits = [423, 297, 673, 297]
-limits = [399, 297, 640, 297]
+limits = [350, 297, 800, 297]
 totalCount = []
 
 # looping
@@ -168,10 +168,13 @@ while True:
         if limits[0] < cx < limits[2] and limits[1] - 20 < cy < limits[3] + 20:
             if totalCount.count(id) == 0:
                 totalCount.append(id)
+                cv2.line(
+                    img, (limits[0], limits[1]), (limits[2], limits[3]), (0, 255, 0), 5
+                )
 
-    cvzone.putTextRect(img, f"Count: {totalCount}", (50, 50))
+    cvzone.putTextRect(img, f"Count: {len(totalCount)}", (50, 50))
 
     img = cv2.resize(img, newDim)
     cv2.imshow("Image", img)
     # cv2.imshow("Image Region", imgRegion)
-    cv2.waitKey(0)
+    cv2.waitKey(1)
