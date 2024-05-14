@@ -5,6 +5,9 @@ import math
 import sort
 import numpy as np
 
+# 1280, 720 default dimensions
+scaleof = 0.75  # 0 to 1
+newDim = (int(1280 * scaleof), int(720 * scaleof))
 cap = cv2.VideoCapture("Learn02/Videos/Murtaza/cars.mp4")
 
 # Use yolov8l.pt for more stable but lag if don't use a GPU
@@ -140,6 +143,7 @@ while True:
     for result in resultTracker:
         x1, y1, x2, y2, Id = result
         print(result)
+    img = cv2.resize(img, newDim)
     cv2.imshow("Image", img)
     # cv2.imshow("Image Region", imgRegion)
     cv2.waitKey(0)
