@@ -4,4 +4,8 @@
     "workbench.iconTheme": "material-icon-theme",
     "workbench.colorTheme": "Atom One Dark",
     // "workbench.colorTheme": "GitHub Light Colorblind (Beta)",
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
