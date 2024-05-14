@@ -6,9 +6,9 @@ import sort
 import numpy as np
 
 cap = cv2.VideoCapture("Learn02/Videos/Murtaza/cars.mp4")
-model = YOLO(
-    "Learn02/Yolo-Weights/yolov8L.pt"
-)  # Use yolov8l.pt for more stable but lag if don't use a GPU
+
+# Use yolov8l.pt for more stable but lag if don't use a GPU
+model = YOLO("Learn02/Yolo-Weights/yolov8L.pt")
 classNames = [
     "person",
     "bicycle",
