@@ -16,7 +16,8 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
               "teddy bear", "hair drier", "toothbrush"
               ]
-mask = cv2.imread('Learn02/Images/mask.png')
+# mask = cv2.imread('Learn02/Images/mask.png')
+mask = cv2.imread("Learn02/Images/mask2.png")
 
 while True:
     succes, img = cap.read()
