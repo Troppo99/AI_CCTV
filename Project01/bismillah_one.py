@@ -1,20 +1,33 @@
+# Module
 from ultralytics import YOLO
 import cv2
 import cvzone
 import math
+import sort
 
-# Source videos (1 6 7 9 10)
-# cap = cv2.VideoCapture("Project01/Dataset/Videos/1_ch04_20240418061050.mp4")
-cap = cv2.VideoCapture("Project01/Dataset/Videos/6_ch04_20240423113600.mp4")
-# cap = cv2.VideoCapture("Project01/Dataset/7_ch04_20240423200452.mp4")
-# cap = cv2.VideoCapture("Project01/Dataset/9_ch04_20240424202251.mp4")
-# cap = cv2.VideoCapture("Project01/Dataset/10_ch04_20240425073845.mp4")
+# Source videos (1,6,7,9,10)
+video_paths = {
+    1: "Project01/Datasets/Videos/1_ch04_20240418061050.mp4",  # Awesome
+    6: "Project01/Datasets/Videos/6_ch04_20240423113600.mp4",  # not bad
+    7: "Project01/Datasets/Videos/7_ch04_20240423200452.mp4",  # Good - Top
+    9: "Project01/Datasets/Videos/9_ch04_20240424202251.mp4",  # nice - Top
+    10: "Project01/Datasets/Videos/10_ch04_20240425073845.mp4",  # excellent
+}
+key = 7
+video_path = video_paths[key]
+cap = cv2.VideoCapture(video_path)
 
+# Pre-tained model (yolov8l or yolov8n)
 model = YOLO("Learn02/Yolo-Weights/yolov8l.pt")
 
+# Dimensions
 scaleof = 0.75  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
+# Tracking
+tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
+
+# Label
 classNames = [
     "person",
     "bicycle",
@@ -120,7 +133,7 @@ while True:
                 else:
                     cRect = (200, 200, 200)
                     cText = (0, 0, 0)
-                    cFrame = (10, 200, 200)
+                    cFrame = (200, 10, 200)
 
                 # cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3, rt=5, colorR=cFrame)
                 cv2.rectangle(img, (x1, y1), (x2, y2), cFrame, 3)
