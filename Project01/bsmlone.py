@@ -4,11 +4,11 @@ import cvzone
 import math
 
 # 1 6 7 9 10
-# cap = cv2.VideoCapture("Learn02/Videos/1_ch04_20240418061050.mp4")
-cap = cv2.VideoCapture("Project1/Dataset/Videos/6_ch04_20240423113600.mp4")
-# cap = cv2.VideoCapture("Learn02/Videos/7_ch04_20240423200452.mp4")
-# cap = cv2.VideoCapture("Learn02/Videos/9_ch04_20240424202251.mp4")
-# cap = cv2.VideoCapture("Learn02/Videos/10_ch04_20240425073845.mp4")
+# cap = cv2.VideoCapture("Project01/Dataset/Videos/1_ch04_20240418061050.mp4")
+cap = cv2.VideoCapture("Project01/Dataset/Videos/6_ch04_20240423113600.mp4")
+# cap = cv2.VideoCapture("Project01/Dataset/7_ch04_20240423200452.mp4")
+# cap = cv2.VideoCapture("Project01/Dataset/9_ch04_20240424202251.mp4")
+# cap = cv2.VideoCapture("Project01/Dataset/10_ch04_20240425073845.mp4")
 
 model = YOLO("Learn02/Yolo-Weights/yolov8l.pt")
 
