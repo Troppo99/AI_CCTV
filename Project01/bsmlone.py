@@ -3,7 +3,7 @@ import cv2
 import cvzone
 import math
 
-# 1 6 7 9 10
+# Source videos (1 6 7 9 10)
 # cap = cv2.VideoCapture("Project01/Dataset/Videos/1_ch04_20240418061050.mp4")
 cap = cv2.VideoCapture("Project01/Dataset/Videos/6_ch04_20240423113600.mp4")
 # cap = cv2.VideoCapture("Project01/Dataset/7_ch04_20240423200452.mp4")
