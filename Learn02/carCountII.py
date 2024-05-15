@@ -10,7 +10,7 @@ scaleof = 1.5  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
 # input video
-cap = cv2.VideoCapture("Learn02/Videos/Murtaza/cars.mp4")
+cap = cv2.VideoCapture("Learn02/Videos/cars.mp4")
 
 # Making model (use yolov8l.pt for more stable but lag if don't use a GPU)
 model = YOLO("Learn02/Yolo-Weights/yolov8L.pt")
@@ -100,7 +100,7 @@ classNames = [
 ]
 
 # masking
-mask = cv2.imread("Learn02/Images/mask2.png")
+mask = cv2.imread("Learn02/Images/mask.png")
 
 # Tracking
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
