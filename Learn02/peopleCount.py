@@ -13,7 +13,7 @@ newDim = (int(1280 * scaleof), int(720 * scaleof))
 cap = cv2.VideoCapture("Learn02/Videos/Murtaza/people.mp4")
 
 # Making model (use yolov8l.pt for more stable but lag if don't use a GPU)
-model = YOLO("Learn02/Yolo-Weights/yolov8n.pt")
+model = YOLO("Learn02/Yolo-Weights/yolov8l.pt")
 
 # Class
 classNames = [
