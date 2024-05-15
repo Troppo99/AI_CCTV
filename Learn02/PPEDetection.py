@@ -25,6 +25,7 @@ myColor = (0, 0, 255)
 while True:
     succes, img = cap.read()
     results = model(img, stream=True)
+
     for r in results:
         boxes = r.boxes
         for box in boxes:
