@@ -6,7 +6,7 @@ import math
 import sort
 import numpy as np
 
-# Source videos (1,6,7,9,10) 7 is best
+# Source videos (1,6,7,9,10) 7 is The Best
 video_paths = {
     1: "Project01/Datasets/Videos/1_ch04_20240418061050.mp4",  # Awesome
     6: "Project01/Datasets/Videos/6_ch04_20240423113600.mp4",  # not bad
@@ -116,14 +116,12 @@ while True:
     succes, img = cap.read()
     results = model(img, stream=True)
     detections = np.empty((0, 5))
-
     for r in results:
         boxes = r.boxes
         for box in boxes:
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2 - y1
-
             conf = math.ceil((box.conf[0] * 100)) / 100
             cls = int(box.cls[0])
             currentClass = classNames[cls]
@@ -133,41 +131,31 @@ while True:
                     cText = (0, 0, 255)
                     cFrame = (100, 220, 20)
                     currentArray = np.array([x1, y1, x2, y2, conf])
-                    detections = np.vstack((detections, currentArray))  
-
+                    detections = np.vstack((detections, currentArray))
                 else:
                     cRect = (200, 200, 200)
                     cText = (0, 0, 0)
                     cFrame = (200, 10, 200)
-
-                # cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3, rt=5, colorR=cFrame)
-                cv2.rectangle(img, (x1, y1), (x2, y2), cFrame, 3)
-                cvzone.putTextRect(
-                    img,
-                    f"{classNames[cls]} {conf}",
-                    (max(0, x1), max(35, y1)),
-                    scale=2,
-                    thickness=2,
-                    colorT=cText,
-                    colorR=cRect,
-                    offset=5,
-                )
     resultTracker = tracker.update(detections)
     for result in resultTracker:
         x1, y1, x2, y2, id = result
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-        print(result)
-
+        # print(result)
         w, h = x2 - x1, y2 - y1
-        cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3, rt=5, colorR=(255, 0, 0))
+
+        cv2.rectangle(img, (x1, y1), (x2, y2), cFrame, 3)
+        # cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3, rt=5, colorR=cFrame)
         cvzone.putTextRect(
             img,
             f"ID: {int(id)}",
             (max(0, x1), max(35, y1)),
-            scale=1.5,
+            scale=2,
             thickness=2,
-            offset=3,
+            colorT=cText,
+            colorR=cRect,
+            offset=5,
         )
+    # Showing video
     img = cv2.resize(img, newDim)
     cv2.imshow("Image", img)
     if cv2.waitKey(1) & 0xFF == ord("q"):
