@@ -1,2 +1,2 @@
 # **😝!😜!🤪!🤓!😎!🥸**
-# **WELLCOME to MYREPO, Buddy!**
+# **WELCOME to MYREPO, Buddy!**
