@@ -5,7 +5,7 @@ import cvzone
 import math
 import sort
 
-# Source videos (1,6,7,9,10)
+# Source videos (1,6,7,9,10) 7 is best
 video_paths = {
     1: "Project01/Datasets/Videos/1_ch04_20240418061050.mp4",  # Awesome
     6: "Project01/Datasets/Videos/6_ch04_20240423113600.mp4",  # not bad
