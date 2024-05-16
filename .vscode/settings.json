@@ -26,7 +26,8 @@
     "search.showLineNumbers": true,
     "workbench.iconTheme": "material-icon-theme",
     "workbench.colorCustomizations": {},
-    // "workbench.colorTheme": "Atom One Dark",
+    // "workbench.colorTheme": "Winter is Coming (Light)",
+    // "workbench.colorTheme": "Winter is Coming (Dark Black)",
     "workbench.colorTheme": "Winter is Coming (Dark Blue)",
     "zenMode.centerLayout": false,
 }
