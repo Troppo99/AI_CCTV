@@ -4,6 +4,7 @@ import cv2
 import cvzone
 import math
 import sort
+import numpy as np
 
 # Source videos (1,6,7,9,10) 7 is best
 video_paths = {
@@ -114,6 +115,7 @@ classNames = [
 while True:
     succes, img = cap.read()
     results = model(img, stream=True)
+    detections = np.empty((0, 5))
 
     for r in results:
         boxes = r.boxes
@@ -130,6 +132,9 @@ while True:
                     cRect = (0, 255, 0)
                     cText = (0, 0, 255)
                     cFrame = (100, 220, 20)
+                    currentArray = np.array([x1, y1, x2, y2, conf])
+                    detections = np.vstack((detections, currentArray))  
+
                 else:
                     cRect = (200, 200, 200)
                     cText = (0, 0, 0)
@@ -147,6 +152,22 @@ while True:
                     colorR=cRect,
                     offset=5,
                 )
+    resultTracker = tracker.update(detections)
+    for result in resultTracker:
+        x1, y1, x2, y2, id = result
+        x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+        print(result)
+
+        w, h = x2 - x1, y2 - y1
+        cvzone.cornerRect(img, (x1, y1, w, h), l=9, t=3, rt=5, colorR=(255, 0, 0))
+        cvzone.putTextRect(
+            img,
+            f"ID: {int(id)}",
+            (max(0, x1), max(35, y1)),
+            scale=1.5,
+            thickness=2,
+            offset=3,
+        )
     img = cv2.resize(img, newDim)
     cv2.imshow("Image", img)
     if cv2.waitKey(1) & 0xFF == ord("q"):

@@ -1,5 +1,13 @@
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 
+detections = np.empty((0, 5))
+currentArray = np.array([x1, y1, x2, y2, conf])
+detections = np.vstack((detections, currentArray))
 
     resultTracker = tracker.update(detections)
+
+
 for result in resultTracker:
+    x1, y1, x2, y2, id = result
+    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+    print(result)
