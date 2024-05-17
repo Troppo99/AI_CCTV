@@ -19,12 +19,12 @@ video_path = video_paths[key]
 # video_path = 0
 cap = cv2.VideoCapture(video_path)
 
-# Pre-trained model (yolov8l or yolov8n)
-model = YOLO("../MY_FILES/Yolo-Models/yolov8l.pt")
-
 # Dimensions
 scaleof = 1  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
+
+# Pre-trained model (yolov8l or yolov8n)
+model = YOLO("../MY_FILES/Yolo-Models/yolov8l.pt")
 
 # Tracking
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
