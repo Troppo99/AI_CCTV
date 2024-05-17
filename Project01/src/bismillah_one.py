@@ -19,7 +19,7 @@ video_path = video_paths[key]
 cap = cv2.VideoCapture(video_path)
 
 # Pre-trained model (yolov8l or yolov8n)
-model = YOLO("Learn02/Yolo-Weights/yolov8l.pt")
+model = YOLO("C:/Users/User/Yolo-Weights/yolov8l.pt")
 
 # Dimensions
 scaleof = 0.75  # 0 to 1.5 (1280, 720 default)
