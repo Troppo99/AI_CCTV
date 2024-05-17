@@ -8,22 +8,22 @@ import numpy as np
 
 # Source videos (1,6,7,9,10) 7 is The Best
 video_paths = {
-    1: "Project01/Datasets/Videos/1_ch04_20240418061050.mp4",  # Awesome
-    6: "Project01/Datasets/Videos/6_ch04_20240423113600.mp4",  # not bad
-    7: "Project01/Datasets/Videos/7_ch04_20240423200452.mp4",  # Good - Top
-    9: "Project01/Datasets/Videos/9_ch04_20240424202251.mp4",  # nice - Top
-    10: "Project01/Datasets/Videos/10_ch04_20240425073845.mp4",  # excellent
+    1: "../MY_FILES/Datasets/CCTV/Train/1_ch04_20240418061050.mp4",  # Awesome
+    6: "../MY_FILES/Datasets/CCTV/Train/6_ch04_20240423113600.mp4",  # not bad
+    7: "../MY_FILES/Datasets/CCTV/Train/7_ch04_20240423200452.mp4",  # Good - Top
+    9: "../MY_FILES/Datasets/CCTV/Train/9_ch04_20240424202251.mp4",  # nice - Top
+    10: "../MY_FILES/Datasets/CCTV/Train/10_ch04_20240425073845.mp4",  # excellent
 }
 key = 7
-# video_path = video_paths[key]
-video_path = 0
+video_path = video_paths[key]
+# video_path = 0
 cap = cv2.VideoCapture(video_path)
 
 # Pre-trained model (yolov8l or yolov8n)
-model = YOLO("Project01/src/model/yolov8l.pt")
+model = YOLO("../MY_FILES/Yolo-Models/yolov8l.pt")
 
 # Dimensions
-scaleof = 0.75 # 0 to 1.5 (1280, 720 default)
+scaleof = 1  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
 # Tracking
