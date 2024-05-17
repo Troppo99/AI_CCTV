@@ -15,15 +15,15 @@ video_paths = {
     10: "Project01/Datasets/Videos/10_ch04_20240425073845.mp4",  # excellent
 }
 key = 7
-video_path = video_paths[key]
-# video_path = 0
+# video_path = video_paths[key]
+video_path = 0
 cap = cv2.VideoCapture(video_path)
 
 # Pre-trained model (yolov8l or yolov8n)
-model = YOLO("C:NWR27/MY_FILES/Yolo-Weights/yolov8l.pt")
+model = YOLO("Project01/src/model/yolov8l.pt")
 
 # Dimensions
-scaleof = 0.75  # 0 to 1.5 (1280, 720 default)
+scaleof = 0.75 # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
 # Tracking
