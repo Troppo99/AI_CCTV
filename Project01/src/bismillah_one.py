@@ -15,8 +15,8 @@ video_paths = {
     10: "../MY_FILES/Datasets/CCTV/Train/10_ch04_20240425073845.mp4",  # excellent
 }
 key = 7
-video_path = video_paths[key]
-# video_path = 0
+video_path = 0
+# video_path = video_paths[key]
 cap = cv2.VideoCapture(video_path)
 
 # Pre-trained model (yolov8l or yolov8n)
