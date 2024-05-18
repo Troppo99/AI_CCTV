@@ -1,11 +1,11 @@
 import cv2
 
-cap = cv2.VideoCapture('project1(AI CCTV)/Human detection/in.avi')
+cap = cv2.VideoCapture("Learn01/Human detection xml/in.avi")
 # cap = cv2.VideoCapture('C:/NWR27/001-AI CCTV/Folding Area_proses sortir.mp4')
 # cap = cv2.VideoCapture(0)
 
 
-human_cascade = cv2.CascadeClassifier('project1(AI CCTV)/Human detection/haarcascade_fullbody.xml')
+human_cascade = cv2.CascadeClassifier('Learn01/Human detection xml/haarcascade_fullbody.xml')
 
 
 while(True):
