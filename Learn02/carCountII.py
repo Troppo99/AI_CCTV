@@ -10,10 +10,10 @@ scaleof = 1.5  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
 # input video
-cap = cv2.VideoCapture("Learn02/Videos/cars.mp4")
+cap = cv2.VideoCapture("../MY_FILES/Datasets/Murtaza/Videos/cars.mp4")
 
 # Making model (use yolov8l.pt for more stable but lag if don't use a GPU)
-model = YOLO("Learn02/Yolo-Weights/yolov8L.pt")
+model = YOLO("../MY_FILES/Yolo-Models/yolov8l.pt")
 
 # Class
 classNames = [
@@ -100,7 +100,7 @@ classNames = [
 ]
 
 # masking
-mask = cv2.imread("Learn02/Images/mask.png")
+mask = cv2.imread("../MY_FILES/Datasets/Murtaza/Images/mask.png")
 
 # Tracking
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
@@ -114,7 +114,9 @@ while True:
     succes, img = cap.read()
     imgRegion = cv2.bitwise_and(img, mask)
 
-    imgGraphics = cv2.imread("Learn02/Images/graphics.png", cv2.IMREAD_UNCHANGED)
+    imgGraphics = cv2.imread(
+        "../MY_FILES/Datasets/Murtaza/Images/graphics.png", cv2.IMREAD_UNCHANGED
+    )
     img = cvzone.overlayPNG(img, imgGraphics, (0, 0))
 
     results = model(imgRegion, stream=True)
