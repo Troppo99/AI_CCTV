@@ -3,9 +3,9 @@ import cv2
 import cvzone
 import math
 
-cap = cv2.VideoCapture("Learn02/Videos/cars.mp4")
+cap = cv2.VideoCapture("../MY_FILES/Datasets/Murtaza/Videos/cars.mp4")
 model = YOLO(
-    "Learn02/Yolo-Weights/yolov8L.pt"
+    "../MY_FILES/Yolo-Models/yolov8l.pt"
 )  # Use yolov8l.pt untuk lebih bagus tapi lag parah jika tanpa GPU
 classNames = [
     "person",
@@ -89,8 +89,7 @@ classNames = [
     "hair drier",
     "toothbrush",
 ]
-# mask = cv2.imread('Learn02/Images/mask.png')
-mask = cv2.imread("Learn02/Images/mask.png")
+mask = cv2.imread("../MY_FILES/Datasets/Murtaza/Images/mask.png")
 
 while True:
     succes, img = cap.read()
