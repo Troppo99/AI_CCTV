@@ -3,7 +3,8 @@ import cv2
 import cvzone
 import math
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('../MY_FILES/Datasets/Murtaza/Videos/ppe-3-1.mp4')
 
 model = YOLO("../MY_FILES/Yolo-Models/ppe.pt")
 
