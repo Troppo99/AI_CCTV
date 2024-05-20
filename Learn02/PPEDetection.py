@@ -5,7 +5,7 @@ import math
 
 cap = cv2.VideoCapture(0)
 
-model = YOLO("Learn02/Yolo-Weights/ppe.pt")
+model = YOLO("../MY_FILES/Yolo-Models/ppe.pt")
 
 classNames = [
     "Hardhat",
