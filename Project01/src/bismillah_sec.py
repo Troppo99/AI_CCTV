@@ -51,26 +51,64 @@ while True:
 
             """LET'S PLAY WITH YOUR BRAIN"""
             colors = {
-                "NO-Mask": bereum,  # Assuming 'bereum' is previously defined as some BGR color
-                "Mask": hejo,  # Assuming 'hejo' is another BGR color
+                "NO-Mask": bereum,  # Redefine 'bereum' as needed
+                "Mask": hejo,  # Redefine 'hejo' as needed
             }
 
             if conf > 0.5 and currentClass in ["NO-Mask", "Mask"]:
                 myColor = colors[currentClass]
+
+                if currentClass == "Mask":
+                    if not mask_wearing:
+                        mask_wearing = True
+                        mask_start_time = (
+                            time.time()
+                        )  # Start timing when mask is first detected
+                else:
+                    if mask_wearing:
+                        mask_total_duration += (
+                            time.time() - mask_start_time
+                        )  # Accumulate wearing time
+                        mask_wearing = False  # Reset mask wearing status
+
+                # Calculate the current or total duration for display
+                if mask_wearing:
+                    current_duration = time.time() - mask_start_time
+                    total_duration_display = mask_total_duration + current_duration
+                else:
+                    total_duration_display = mask_total_duration
+
+                # Format the duration for display
+                formatted_duration = str(timedelta(seconds=int(total_duration_display)))
+
+                # Drawing the rectangle
                 cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 2)
+
+                # Constructing the text to display
                 cvzone.putTextRect(
                     img,
                     f"{classNames[cls]} {conf}",
                     (max(0, x1), max(0, y2 + 15)),
                     scale=1,
                     thickness=1,
-                    colorT=koneng,  # Assuming 'koneng' is defined as a color
-                    colorR=hideung,  # Assuming 'hideung' is defined as another color
+                    colorT=koneng,
+                    colorR=hideung,
                     colorB=myColor,
                     offset=1,
                 )
             """LET'S PLAY WITH YOUR BRAIN"""
 
+    cvzone.putTextRect(
+        img,
+        f"Mask Time : {formatted_duration}",
+        (10, 40),
+        scale=2,
+        thickness=2,
+        colorT=bodas,
+        colorR=bulao,
+        colorB=hejo,
+        offset=3,
+    )
     cv2.imshow("Image", img)
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
