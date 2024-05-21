@@ -17,7 +17,13 @@ classNames = [
     "machinery",
     "vehicle",
 ]
-myColor = (0, 0, 255)
+myColor = (128,128,128)
+bulao = (255, 0, 0)
+hejo = (0, 255, 0)
+bereum = (0, 0, 255)
+koneng = (0,255,255)
+hideung = (0,0,0)
+bodas = (255,255,255)
 
 while True:
     succes, img = cap.read()
@@ -28,38 +34,34 @@ while True:
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2 - y1
-
             conf = math.ceil((box.conf[0] * 100)) / 100
             # Class Name
             cls = int(box.cls[0])
             currentClass = classNames[cls]
+
+            """LET'S PLAY WITH YOUR BRAIN"""
+            read = 0
             if conf > 0.5:
-                if (
-                    currentClass == "NO-Hardhat"
-                    or currentClass == "NO-Safety Vest"
-                    or currentClass == "NO-Mask"
-                ):
-                    myColor = (0, 0, 255)
-                elif (
-                    currentClass == "Hardhat"
-                    or currentClass == "Safety Vest"
-                    or currentClass == "Mask"
-                ):
-                    myColor = (0, 255, 0)
-                else:
-                    myColor = (255, 0, 0)
-                cvzone.putTextRect(
-                    img,
-                    f"{classNames[cls]} {conf}",
-                    (max(0, x1), max(35, y1)),
-                    scale=0.5,
-                    thickness=1,
-                    colorT=(255, 255, 255),
-                    colorR=myColor,
-                    colorB=myColor,
-                    offset=5,
-                )
-                cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 3)
+                if currentClass == "NO-Mask":
+                    myColor = bereum
+                    read = 1
+                elif currentClass == "Mask":
+                    myColor = hejo
+                    read = 1
+                if read == 1:
+                    cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 2)
+                    cvzone.putTextRect(
+                        img,
+                        f"{classNames[cls]} {conf}",
+                        (max(0, x1), max(0, y2+15)),
+                        scale=1,
+                        thickness=1,
+                        colorT=koneng,
+                        colorR=hideung,
+                        colorB=myColor,
+                        offset=1,
+                    )
+            """LET'S PLAY WITH YOUR BRAIN"""
 
     cv2.imshow("Image", img)
     if cv2.waitKey(1) & 0xFF == ord("q"):
