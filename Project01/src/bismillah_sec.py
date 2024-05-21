@@ -1,3 +1,18 @@
+"""
+Program Title: AI CCTV
+Author: Nana Wartana (alias Troppo Lungo)
+Field: Robotic and Automation
+Company: Gistex Garmen Indonesia
+Copyright (c) May 2024 Nana Wartana. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the above copyright notice, this list of conditions, 
+and the following disclaimer are retained.
+
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY; without even the implied 
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+"""
+
 # Include library
 from ultralytics import YOLO
 import cv2
@@ -34,6 +49,8 @@ bodas = (255, 255, 255)
 mask_wearing = False
 mask_start_time = 0
 mask_total_duration = 0
+formatted_duration = "00:00:00"
+notes = ""
 
 while True:
     succes, img = cap.read()
@@ -51,40 +68,32 @@ while True:
 
             """LET'S PLAY WITH YOUR BRAIN"""
             colors = {
-                "NO-Mask": bereum,  # Redefine 'bereum' as needed
-                "Mask": hejo,  # Redefine 'hejo' as needed
+                "NO-Mask": bereum,
+                "Mask": hejo,
             }
-
             if conf > 0.5 and currentClass in ["NO-Mask", "Mask"]:
                 myColor = colors[currentClass]
+                notes = ""
 
                 if currentClass == "Mask":
+                    notes = ""
                     if not mask_wearing:
                         mask_wearing = True
-                        mask_start_time = (
-                            time.time()
-                        )  # Start timing when mask is first detected
+                        mask_start_time = time.time()
                 else:
+                    notes = "(time paused)"
                     if mask_wearing:
-                        mask_total_duration += (
-                            time.time() - mask_start_time
-                        )  # Accumulate wearing time
-                        mask_wearing = False  # Reset mask wearing status
-
-                # Calculate the current or total duration for display
+                        mask_total_duration += time.time() - mask_start_time
+                        mask_wearing = False
                 if mask_wearing:
                     current_duration = time.time() - mask_start_time
                     total_duration_display = mask_total_duration + current_duration
                 else:
                     total_duration_display = mask_total_duration
 
-                # Format the duration for display
                 formatted_duration = str(timedelta(seconds=int(total_duration_display)))
 
-                # Drawing the rectangle
                 cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 2)
-
-                # Constructing the text to display
                 cvzone.putTextRect(
                     img,
                     f"{classNames[cls]} {conf}",
@@ -100,7 +109,7 @@ while True:
 
     cvzone.putTextRect(
         img,
-        f"Mask Time : {formatted_duration}",
+        f"Mask Time : {formatted_duration} {notes}",
         (10, 40),
         scale=2,
         thickness=2,

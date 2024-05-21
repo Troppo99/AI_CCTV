@@ -10,6 +10,7 @@ def main():
         imgsz=640,
         project="runs/detect",
         name="train_exp14_continued",
+        resume=True,
     )
 
 
