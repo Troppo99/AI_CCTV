@@ -22,7 +22,7 @@ import time
 from datetime import timedelta
 
 cap = cv2.VideoCapture(0)
-model = YOLO("../MY_FILES/Yolo-Models/ppe.pt")
+model = YOLO("runs/weights/ppe.pt")
 classNames = [
     "Hardhat",
     "Mask",

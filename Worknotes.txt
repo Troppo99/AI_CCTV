@@ -1,13 +1,28 @@
 # Briefing (22 Mei 2024)
-- Bikin simple aplikasi input and output(reporting) dengan hasil yang ada
-  > Durasi efektif kerja
-  > Jumlah orang
+- Membuat aplikasi input and output (submit and report)
+  > Jumlah max orang yang terdeteksi
+  > Durasi aktivitas per orang dalam 1 video
+    * Sorting, Wrapping, Packaging, Iddle
+  > Urutan orang paling rajin dan malas berdasarkan presentasi efektivitas
+    * efektivitas kerja         = t_eff
+    * Durasi lama bekerja       = t_work
+    * Durasi lama tidak bekerja = t_idle
+    * ............ t_work ..............
+    * t_eff = ------------------ .......
+    * ........ t_work + t_iddle ........
+-
+-
+-
+-
+-
+-
+-
 
 - Sempurnakan lagi datasetnya (dari 0)
   > Sorting   : (memegang kain)
   > Wrapping  : (memegang plastik)
   > Packaging : (memegang kardus)
-  > Iddle     : Selainnya
+  > Idle     : Selainnya
 
   dataset
   --- train

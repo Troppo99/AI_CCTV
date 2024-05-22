@@ -7,10 +7,13 @@ import time
 # Initialize video capture
 cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4")
 
-# Initialize YOLO model
-model = YOLO("runs/detect/train_subhanallah/weights/best.pt")
+# Initialize YOLO models
+model_person = YOLO("runs/weights/yolov8l.pt")  # Model for detecting people
+model_custom = YOLO(
+    "runs/detect/train_subhanallah/weights/best.pt"
+)  # Custom model for detecting specific classes
 
-# Class names
+# Class names for the custom model
 classNames = ["Wrapping", "unloading", "packing", "sorting"]
 
 # Dimensions for imshow
@@ -37,25 +40,48 @@ while True:
     if not success:
         break
 
-    results = model(img, stream=True)
+    # Detect people using the first model
+    results_person = model_person(img, stream=True)
 
-    for r in results:
+    for r in results_person:
         boxes = r.boxes
         for box in boxes:
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-
             w, h = x2 - x1, y2 - y1
-            # Confidence
             conf = math.ceil((box.conf[0] * 100)) / 100
-            # Class Name
+            cls = int(box.cls[0])
+            if conf > 0.25 and cls == 0:  # Class 0 is usually 'person' in COCO dataset
+                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 3)
+                cvzone.putTextRect(
+                    img,
+                    f"Person {conf}",
+                    (max(0, x1), max(35, y1)),
+                    scale=2,
+                    thickness=2,
+                    colorT=(0, 0, 255),
+                    colorR=(0, 255, 255),
+                    colorB=(0, 252, 0),
+                    offset=5,
+                )
+
+    # Detect custom classes using the second model
+    results_custom = model_custom(img, stream=True)
+
+    for r in results_custom:
+        boxes = r.boxes
+        for box in boxes:
+            x1, y1, x2, y2 = box.xyxy[0]
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+            w, h = x2 - x1, y2 - y1
+            conf = math.ceil((box.conf[0] * 100)) / 100
             cls = int(box.cls[0])
             currentClass = classNames[cls]
             if conf > 0.25:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
-                    f"{classNames[cls]} {conf}",
+                    f"{currentClass} {conf}",
                     (max(0, x1), max(35, y1)),
                     scale=2,
                     thickness=2,
