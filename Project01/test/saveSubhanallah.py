@@ -5,9 +5,7 @@ import math
 import time
 
 # Initialize video capture
-# cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/9_ch04_20240424202251.mp4")
 cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4")
-# cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Test/Folding Area_proses sortir.mp4")
 
 # Initialize YOLO model
 model = YOLO("runs/detect/train_subhanallah/weights/best.pt")
