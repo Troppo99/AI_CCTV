@@ -47,3 +47,13 @@
 # FAQ
 - API cctv gm bisa diakses (hubungi pak Nurdin)
 - 
+
+# Need to know
+- Precision
+- Confusion matrix
+- F1
+- P Curve
+- PR Curve
+- RT Curve
+- Train batch
+- .pt
