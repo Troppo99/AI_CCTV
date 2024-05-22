@@ -25,7 +25,7 @@ frame_delay = int(1000 / original_fps)  # Delay in milliseconds
 
 # Initialize VideoWriter object with the original frame rate
 out = cv2.VideoWriter(
-    "output_video3.avi",
+    "output_video.avi",
     cv2.VideoWriter_fourcc(*"XVID"),
     original_fps,
     (frame_width, frame_height),
