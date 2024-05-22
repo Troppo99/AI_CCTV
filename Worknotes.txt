@@ -1,0 +1,34 @@
+# Briefing (22 Mei 2024)
+- Bikin simple aplikasi input and output(reporting) dengan hasil yang ada
+  > Durasi efektif kerja
+  > Jumlah orang
+
+- Sempurnakan lagi datasetnya (dari 0)
+  > Sorting   : (memegang kain)
+  > Wrapping  : (memegang plastik)
+  > Packaging : (memegang kardus)
+  > Iddle     : Selainnya
+
+  dataset
+  --- train
+      |--- images 
+      |--- labels 
+  --- test
+  ...
+  --- val
+  ...
+  --- data.yaml
+  ---
+
+# Improving for Future Project
+- Atur layout pekerja "" tapi jangan seolah olah sistem mengatur""
+- Atur efektifitas pekerja
+- Pengenalan orang sebelum kerja gabungkan dengan absensi
+- Masih perlu R&D teknis:
+	> object detection (frame by frame)           : done
+	> action recognition (frame to frame) 		    : not yet
+	> union (object, action, and classification)	: not yet
+
+# FAQ
+- API cctv gm bisa diakses (hubungi pak Nurdin)
+- 
