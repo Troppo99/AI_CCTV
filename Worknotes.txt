@@ -10,19 +10,11 @@
     * ............ t_work ..............
     * t_eff = ------------------ .......
     * ........ t_work + t_iddle ........
--
--
--
--
--
--
--
-
 - Sempurnakan lagi datasetnya (dari 0)
   > Sorting   : (memegang kain)
   > Wrapping  : (memegang plastik)
   > Packaging : (memegang kardus)
-  > Idle     : Selainnya
+  > Idle      : Selainnya
 
   dataset
   --- train
@@ -35,6 +27,18 @@
   --- data.yaml
   ---
 
+# Checkpoints program
+- Model reorientation
+  > Membuat model employee
+  > Membuat model object (plastik, kain, kardus)
+  > Membuat model activity
+- Tracking movement
+  > Tracking person
+  > 
+- Data report
+  > ID
+  > PRODUCTIVITY TIME
+
 # Improving for Future Project
 - Atur layout pekerja "" tapi jangan seolah olah sistem mengatur""
 - Atur efektifitas pekerja
@@ -46,7 +50,6 @@
 
 # FAQ
 - API cctv gm bisa diakses (hubungi pak Nurdin)
-- 
 
 # Need to know
 - Precision
