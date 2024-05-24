@@ -98,7 +98,8 @@ def main(
                     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                     cvzone.putTextRect(
                         img,
-                        f"{person_class} {person_conf}, {activity_class} {activity_conf}",
+                        # f"{person_class} {person_conf}, {activity_class} {activity_conf}",
+                        f"{person_class} = {activity_class} ",
                         (max(0, x1), max(35, y1)),
                         scale=2,
                         thickness=2,
