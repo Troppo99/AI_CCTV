@@ -54,6 +54,14 @@ out = cv2.VideoWriter(
 # Initialize the SORT tracker
 tracker = sort.Sort(max_age=30, min_hits=3, iou_threshold=0.3)
 
+# Color settings
+bulao = (255, 0, 0)
+bereum = (0, 0, 255)
+koneng = (0, 255, 255)
+hejo = (0, 255, 0)
+bodas = (255, 255, 255)
+hideung = (0, 0, 0)
+
 while True:
     start_time = time.time()
     success, img = cap.read()
@@ -74,18 +82,18 @@ while True:
             if conf > 0.25 and cls == 0:  # Class 0 is usually 'person' in COCO dataset
                 currentArray = np.array([x1, y1, x2, y2, conf])
                 detections = np.vstack((detections, currentArray))
-                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 3)
-                cvzone.putTextRect(
-                    img,
-                    f"Person {conf}",
-                    (max(0, x1), max(35, y1)),
-                    scale=2,
-                    thickness=2,
-                    colorT=(0, 0, 255),
-                    colorR=(0, 255, 255),
-                    colorB=(0, 252, 0),
-                    offset=5,
-                )
+                # cv2.rectangle(img, (x1, y1), (x2, y2), bulao, 3)
+                # cvzone.putTextRect(
+                #     img,
+                #     f"Person {conf}",
+                #     (max(0, x1), max(35, y1)),
+                #     scale=2,
+                #     thickness=2,
+                #     colorT=koneng,
+                #     colorR=bulao,
+                #     colorB=bodas,
+                #     offset=5,
+                # )
 
     # Update tracker with detections
     resultTracker = tracker.update(detections)
@@ -93,15 +101,15 @@ while True:
     for result in resultTracker:
         x1, y1, x2, y2, id = result
         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-        cv2.rectangle(img, (x1, y1), (x2, y2), (100, 220, 20), 3)
+        cv2.rectangle(img, (x1, y1), (x2, y2), hejo, 3)
         cvzone.putTextRect(
             img,
             f"ID: {int(id)}",
-            (max(0, x1), max(35, y1)),
+            (max(0, x1), max(35, y2)),
             scale=2,
             thickness=2,
-            colorT=(0, 0, 255),
-            colorR=(0, 255, 0),
+            colorT=bereum,
+            colorR=hejo,
             offset=5,
         )
 
@@ -117,7 +125,7 @@ while True:
             cls = int(box.cls[0])
             currentClass = classNames[cls]
             # if conf > 0.25:
-            #     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+            #     cv2.rectangle(img, (x1, y1), (x2, y2), bodas, 3)
             #     cvzone.putTextRect(
             #         img,
             #         f"{currentClass} {conf}",
