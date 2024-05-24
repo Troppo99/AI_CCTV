@@ -27,7 +27,7 @@
   --- data.yaml
   ---
 
-# Checkpoints program
+# Road program
 - Model reorientation
   > Membuat model employee
   > Membuat model object (plastik, kain, kardus)
@@ -39,8 +39,9 @@
   > ID
   > PRODUCTIVITY TIME
 
-# Priority
-- Buat report
+# Priority Checkpoints
+- Buat display person with their activity
+- Buat display durasi person with their activity
 - Buat aplikasi
 
 # Improving for Future Project
