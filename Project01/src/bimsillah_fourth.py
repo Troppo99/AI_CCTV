@@ -35,7 +35,7 @@ def process_detections(results, img, class_names, confidence_threshold):
 
 
 def main(
-    video_path, output_path, model_people_path, model_activities_path, scale_factor=0.75
+    video_path, output_path, model_people_path, model_activities_path, scale_factor
 ):
     cap = initialize_video_capture(video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -113,12 +113,13 @@ def main(
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
-                    f"{person_class} {person_conf}",
+                    # f"{person_class} {person_conf}",
+                    f"{person_class}",
                     (max(0, x1), max(35, y1)),
                     scale=2,
                     thickness=2,
-                    colorT=(0, 0, 255),
-                    colorR=(0, 255, 255),
+                    colorT=(0, 0, 0),
+                    colorR=(255, 255, 255),
                     colorB=(0, 252, 0),
                     offset=5,
                 )
@@ -144,4 +145,8 @@ if __name__ == "__main__":
     output_path = "runs/videos/output_video.avi"
     model_people_path = "runs/detect/train_employees/weights/best.pt"
     model_activities_path = "runs/detect/train_subhanallah/weights/best.pt"
-    main(video_path, output_path, model_people_path, model_activities_path)
+    scale_factor = 0.5
+
+    main(
+        video_path, output_path, model_people_path, model_activities_path, scale_factor
+    )
