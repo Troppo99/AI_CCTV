@@ -39,6 +39,10 @@
   > ID
   > PRODUCTIVITY TIME
 
+# Priority
+- Buat report
+- Buat aplikasi
+
 # Improving for Future Project
 - Atur layout pekerja "" tapi jangan seolah olah sistem mengatur""
 - Atur efektifitas pekerja

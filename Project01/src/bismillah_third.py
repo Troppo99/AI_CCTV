@@ -124,19 +124,19 @@ while True:
             conf = math.ceil((box.conf[0] * 100)) / 100
             cls = int(box.cls[0])
             currentClass = classNames[cls]
-            # if conf > 0.25:
-            #     cv2.rectangle(img, (x1, y1), (x2, y2), bodas, 3)
-            #     cvzone.putTextRect(
-            #         img,
-            #         f"{currentClass} {conf}",
-            #         (max(0, x1), max(35, y1)),
-            #         scale=2,
-            #         thickness=2,
-            #         colorT=(0, 0, 255),
-            #         colorR=(0, 255, 255),
-            #         colorB=(0, 252, 0),
-            #         offset=5,
-            #     )
+            if conf > 0.25:
+                cv2.rectangle(img, (x1, y1), (x2, y2), bodas, 3)
+                cvzone.putTextRect(
+                    img,
+                    f"{currentClass} {conf}",
+                    (max(0, x1), max(35, y1)),
+                    scale=2,
+                    thickness=2,
+                    colorT=(0, 0, 255),
+                    colorR=(0, 255, 255),
+                    colorB=(0, 252, 0),
+                    offset=5,
+                )
 
     # Write the frame to the video file
     out.write(img)
