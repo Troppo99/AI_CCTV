@@ -34,6 +34,12 @@ def process_detections(results, img, class_names, confidence_threshold):
     return detections
 
 
+def format_time(seconds):
+    mins, secs = divmod(seconds, 60)
+    hours, mins = divmod(mins, 60)
+    return f"{hours:02}:{mins:02}:{secs:02}"
+
+
 def main(
     video_path, output_path, model_people_path, model_activities_path, scale_factor
 ):
@@ -62,6 +68,12 @@ def main(
         "Imam",
     ]
     class_names_activities = ["Wrapping", "unloading", "packing", "sorting"]
+
+    # Initialize time accumulation dictionary
+    time_accumulation = {
+        person: {activity: 0 for activity in class_names_activities}
+        for person in class_names_people
+    }
 
     while True:
         start_time = time.time()
@@ -98,8 +110,7 @@ def main(
                     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                     cvzone.putTextRect(
                         img,
-                        # f"{person_class} {person_conf}, {activity_class} {activity_conf}",
-                        f"{person_class} = {activity_class} ",
+                        f"{person_class} = {activity_class}",
                         (max(0, x1), max(35, y1)),
                         scale=2,
                         thickness=2,
@@ -108,12 +119,13 @@ def main(
                         colorB=(0, 252, 0),
                         offset=5,
                     )
+                    # Accumulate time for person and activity
+                    time_accumulation[person_class][activity_class] += 1 / original_fps
                     break
             if not activity_detected:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
-                    # f"{person_class} {person_conf}",
                     f"{person_class}",
                     (max(0, x1), max(35, y1)),
                     scale=2,
@@ -123,6 +135,24 @@ def main(
                     colorB=(0, 252, 0),
                     offset=5,
                 )
+
+        # Display time accumulation at the right edge
+        y_position = 50
+        for person in time_accumulation:
+            for activity in time_accumulation[person]:
+                time_text = f"{person} {activity}: {format_time(int(time_accumulation[person][activity]))}"
+                cvzone.putTextRect(
+                    img,
+                    time_text,
+                    (img.shape[1] - 300, y_position),
+                    scale=1,
+                    thickness=1,
+                    colorT=(255, 255, 255),
+                    colorR=(0, 0, 0),
+                    colorB=(0, 0, 0),
+                    offset=5,
+                )
+                y_position += 30
 
         out.write(img)
 
@@ -145,7 +175,7 @@ if __name__ == "__main__":
     output_path = "runs/videos/output_video.avi"
     model_people_path = "runs/detect/train_employees/weights/best.pt"
     model_activities_path = "runs/detect/train_subhanallah/weights/best.pt"
-    scale_factor = 0.5
+    scale_factor = 0.75
 
     main(
         video_path, output_path, model_people_path, model_activities_path, scale_factor
