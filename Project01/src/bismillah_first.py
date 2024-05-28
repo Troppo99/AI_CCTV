@@ -8,13 +8,13 @@ import numpy as np
 
 # Source videos (1,6,7,9,10) 7 is The Best
 video_paths = {
-    1: "../MY_FILES/Datasets/CCTV/Train/1_ch04_20240418061050.mp4",  # Awesome
-    6: "../MY_FILES/Datasets/CCTV/Train/6_ch04_20240423113600.mp4",  # not bad
-    7: "../MY_FILES/Datasets/CCTV/Train/7_ch04_20240423200452.mp4",  # Good - Top
-    9: "../MY_FILES/Datasets/CCTV/Train/9_ch04_20240424202251.mp4",  # nice - Top
-    10: "../MY_FILES/Datasets/CCTV/Train/10_ch04_20240425073845.mp4",  # excellent
+    1: "../MY_FILES/Videos/CCTV/Train/1_ch04_20240418061050.mp4",  # Awesome
+    6: "../MY_FILES/Videos/CCTV/Train/6_ch04_20240423113600.mp4",  # not bad
+    7: "../MY_FILES/Videos/CCTV/Train/7_ch04_20240423200452.mp4",  # Good - Top
+    9: "../MY_FILES/Videos/CCTV/Train/9_ch04_20240424202251.mp4",  # nice - Top
+    10: "../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4",  # excellent
 }
-key = 7
+key = 10
 
 # video_path = 0
 video_path = video_paths[key]
@@ -25,7 +25,7 @@ scaleof = 1  # 0 to 1.5 (1280, 720 default)
 newDim = (int(1280 * scaleof), int(720 * scaleof))
 
 # Pre-trained model (yolov8l or yolov8n)
-model = YOLO("../MY_FILES/Yolo-Models/yolov8l.pt")
+model = YOLO("runs/weights/yolov8l.pt")
 
 # Tracking
 tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)

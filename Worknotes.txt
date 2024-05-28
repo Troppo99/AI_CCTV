@@ -1,0 +1,67 @@
+# Briefing (22 Mei 2024)
+- Membuat aplikasi input and output (submit and report)
+  > Jumlah max orang yang terdeteksi
+  > Durasi aktivitas per orang dalam 1 video
+    * Sorting, Wrapping, Packaging, Iddle
+  > Urutan orang paling rajin dan malas berdasarkan presentasi efektivitas
+    * efektivitas kerja         = t_eff
+    * Durasi lama bekerja       = t_work
+    * Durasi lama tidak bekerja = t_idle
+    * ............ t_work ..............
+    * t_eff = ------------------ .......
+    * ........ t_work + t_iddle ........
+- Sempurnakan lagi datasetnya (dari 0)
+  > Sorting   : (memegang kain)
+  > Wrapping  : (memegang plastik)
+  > Packaging : (memegang kardus)
+  > Idle      : Selainnya
+
+  dataset
+  --- train
+      |--- images 
+      |--- labels 
+  --- test
+  ...
+  --- val
+  ...
+  --- data.yaml
+  ---
+
+# Road program
+- Model reorientation
+  > Membuat model employee
+  > Membuat model object (plastik, kain, kardus)
+  > Membuat model activity
+- Tracking movement
+  > Tracking person
+  > 
+- Data report
+  > ID
+  > PRODUCTIVITY TIME
+
+# Priority Checkpoints
+- Buat display person with their activity
+- Buat display durasi person with their activity
+- Buat aplikasi
+
+# Improving for Future Project
+- Atur layout pekerja "" tapi jangan seolah olah sistem mengatur""
+- Atur efektifitas pekerja
+- Pengenalan orang sebelum kerja gabungkan dengan absensi
+- Masih perlu R&D teknis:
+	> object detection (frame by frame)           : done
+	> action recognition (frame to frame) 		    : not yet
+	> union (object, action, and classification)	: not yet
+
+# FAQ
+- API cctv gm bisa diakses (hubungi pak Nurdin)
+
+# Need to know
+- Precision
+- Confusion matrix
+- F1
+- P Curve
+- PR Curve
+- RT Curve
+- Train batch
+- .pt

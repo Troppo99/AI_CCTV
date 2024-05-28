@@ -1,0 +1,7 @@
+.venv/*
+.vscode/*
+__pycache__/*
+runs/*
+Project01/web/*
+Project01/dev/*
+uploads/*
