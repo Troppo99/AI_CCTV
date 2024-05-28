@@ -137,7 +137,7 @@ def main(
                 )
 
         # Display time accumulation at the right edge
-        y_position = 30
+        y_position = 20
         for person in time_accumulation:
             for activity in time_accumulation[person]:
                 time_text = f"{person} {activity}: {format_time(int(time_accumulation[person][activity]))}"
