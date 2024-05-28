@@ -126,7 +126,7 @@ def main(
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
-                    f"{person_class}",
+                    f"{person_class} is idle",
                     (max(0, x1), max(35, y1)),
                     scale=2,
                     thickness=2,
