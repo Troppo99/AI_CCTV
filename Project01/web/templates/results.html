@@ -7,7 +7,23 @@
 
 <body>
   <h1>Results</h1>
-  <!-- Display results here -->
+  <div>
+    {% if data %}
+    <ul>
+      {% for person, activities in data.items() %}
+      <li>{{ person }}:
+        <ul>
+          {% for activity, time in activities.items() %}
+          <li>{{ activity }}: {{ time }} seconds</li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No data to display.</p>
+    {% endif %}
+  </div>
 </body>
 
 </html>
