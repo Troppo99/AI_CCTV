@@ -57,26 +57,6 @@ def connect_to_db():
         return None
 
 
-def create_tables(cursor):
-    create_detail_activity_table = """
-    CREATE TABLE IF NOT EXISTS detail_activity (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        employee_name VARCHAR(255),
-        wrapping_time FLOAT,
-        wrapping_percentage FLOAT,
-        unloading_time FLOAT,
-        unloading_percentage FLOAT,
-        packing_time FLOAT,
-        packing_percentage FLOAT,
-        sorting_time FLOAT,
-        sorting_percentage FLOAT,
-        absent_person VARCHAR(255)
-    )
-    """
-    cursor.execute(create_detail_activity_table)
-
-
 def id_zero(cursor):
     id_back_to_zero = """
     ALTER TABLE detail_activity AUTO_INCREMENT = 1;
@@ -124,7 +104,6 @@ def main(
         return
 
     cursor = connection.cursor()
-    # create_tables(cursor)
     id_zero(cursor)
 
     cap = initialize_video_capture(video_path)
