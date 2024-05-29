@@ -172,8 +172,8 @@ def main(
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4"
     output_path = "runs/videos/output_video.avi"
-    model_people_path = "runs/detect/train_employees/weights/best.pt"
-    model_activities_path = "runs/detect/train_subhanallah/weights/best.pt"
+    model_people_path = "runs/detect/Employees-1/weights/best.pt"
+    model_activities_path = "runs/detect/GarmentFinishing-1/weights/best.pt"
     scale_factor = 0.75
 
     main(

@@ -5,7 +5,7 @@ import math
 import time
 
 # Initialize video capture
-cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/New/Person in Finishing Area.mp4")
+cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/New/Video Crop V2.mp4")
 
 # Initialize YOLO model
 model = YOLO("runs/detect/Employees-2/weights/best.pt")
@@ -51,7 +51,7 @@ while True:
             # Class Name
             cls = int(box.cls[0])
             currentClass = classNames[cls]
-            if conf > 0.8:
+            if conf > 0:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
