@@ -5,10 +5,10 @@ import math
 import time
 
 # Initialize video capture
-cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/New/Recording Video - 28 Mei.mp4")
+cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4")
 
 # Initialize YOLO model
-model = YOLO("D:/NWR27/AI_CCTV/runs/detect/anyar/weights/last.pt")
+model = YOLO("runs/detect/GarmentFinishing-2/weights/last.pt")
 
 # Class names
 classNames = ["Sorting", "Wrapping", "Packaging", "Idle"]

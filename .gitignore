@@ -1,5 +1,4 @@
 .venv/*
 .vscode/*
-Learn02/__pycache__/*
-Project01/src/__pycache__/*
+**/__pycache__/*
 runs/*

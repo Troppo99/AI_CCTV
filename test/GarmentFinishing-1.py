@@ -8,21 +8,10 @@ import time
 cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4")
 
 # Initialize YOLO model
-model = YOLO("runs/detect/train_employees/weights/best.pt")
+model = YOLO("runs/detect/GarmentFinishing-1/weights/best.pt")
 
 # Class names
-classNames = [
-    "Neneng",
-    "Imas",
-    "Euis",
-    "Siti",
-    "Enok",
-    "Puti",
-    "Sausan",
-    "Eti",
-    "Atik",
-    "Imam",
-]
+classNames = ["Wrapping", "unloading", "packing", "sorting"]
 
 # Dimensions for imshow
 scaleof = 0.75  # 0 to 1.5 (1280 x 720 default video resolution)
@@ -62,7 +51,7 @@ while True:
             # Class Name
             cls = int(box.cls[0])
             currentClass = classNames[cls]
-            if conf > 0.8:
+            if conf > 0.25:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
@@ -77,7 +66,7 @@ while True:
                 )
 
     # Write the frame to the video file
-    out.write(img)
+    out.write(img) 
 
     # Display the frame
     img_resized = cv2.resize(img, newDim)
@@ -86,7 +75,7 @@ while True:
     # Calculate processing time and add delay
     processing_time = time.time() - start_time
     wait_time = max(
-        1, frame_delay - int(processing_time * 4000)
+        1, frame_delay - int(processing_time * 1000)
     )  # Ensure non-negative wait time
     if cv2.waitKey(wait_time) & 0xFF == ord("q"):
         break
