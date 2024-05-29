@@ -143,7 +143,6 @@ def main(
         start_time = time.time()
         success, img = cap.read()
         if not success:
-            print("...computer vision is complete or fail...")
             break
 
         results_people = model_people(img, stream=True)
