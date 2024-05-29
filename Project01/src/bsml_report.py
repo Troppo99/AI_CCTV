@@ -79,7 +79,6 @@ def main(
         start_time = time.time()
         success, img = cap.read()
         if not success:
-            print("...computer vision is complete or fail...")
             break
 
         results_people = model_people(img, stream=True)
@@ -137,13 +136,10 @@ def main(
                 )
 
         # Display time accumulation at the right edge
-        y_position = 20
+        y_position = 15
         for person in time_accumulation:
             for activity in time_accumulation[person]:
-                time_text = f"{person} {activity}: {format_time(int(time_accumulation[person][activity]))}"
-
-                
-
+                time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
                 cvzone.putTextRect(
                     img,
                     time_text,
@@ -155,7 +151,7 @@ def main(
                     colorB=(0, 0, 0),
                     offset=5,
                 )
-                y_position += 30
+                y_position += 17
 
         out.write(img)
 
