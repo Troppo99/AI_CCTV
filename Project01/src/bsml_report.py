@@ -18,7 +18,6 @@ def initialize_video_writer(output_path, frame_width, frame_height, fps):
     )
 
 
-# notuse
 def process_detections(results, img, class_names, confidence_threshold):
     detections = []
     for r in results:
@@ -26,7 +25,6 @@ def process_detections(results, img, class_names, confidence_threshold):
         for box in boxes:
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-            # notuse
             w, h = x2 - x1, y2 - y1
             conf = math.ceil((box.conf[0] * 100)) / 100
             cls = int(box.cls[0])
@@ -95,7 +93,6 @@ def main(
         )
 
         # Combine detections and display them
-        # notuse
         for x1, y1, x2, y2, person_class, person_conf in detections_people:
             activity_detected = False
             for (
@@ -104,7 +101,6 @@ def main(
                 ax2,
                 ay2,
                 activity_class,
-                # notuse
                 activity_conf,
             ) in detections_activities:
                 if (x1 <= ax1 <= x2 and y1 <= ay1 <= y2) or (
