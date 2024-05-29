@@ -141,6 +141,9 @@ def main(
         for person in time_accumulation:
             for activity in time_accumulation[person]:
                 time_text = f"{person} {activity}: {format_time(int(time_accumulation[person][activity]))}"
+
+                
+
                 cvzone.putTextRect(
                     img,
                     time_text,
