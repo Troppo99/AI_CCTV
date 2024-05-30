@@ -6,7 +6,7 @@ import math
 # cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture("../MY_FILES/Datasets/Murtaza/Videos/ppe-1-1.mp4")
 
-model = YOLO("runs/detect/train_exp14/weights/best.pt")
+model = YOLO("../MY_FILES/Yolo-Models/ppe.pt")
 
 classNames = [
     "Hardhat",
