@@ -1,6 +1,9 @@
 .venv/*
 .conda/*
+
 .vscode/*
-**/__pycache__/*
+
 runs/*
 arc/*
+
+**/__pycache__/*
