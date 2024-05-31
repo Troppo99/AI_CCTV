@@ -4,7 +4,6 @@ import cvzone
 import math
 import time
 import mysql.connector
-from mysql.connector import Error
 
 
 def initialize_video_capture(video_path):
@@ -42,75 +41,14 @@ def format_time(seconds):
     return f"{hours:02}:{mins:02}:{secs:02}"
 
 
-def connect_to_db():
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            database="report_ai_cctv",
-            user="root",
-            password="robot123",
-        )
-        if connection.is_connected():
-            return connection
-    except Error as e:
-        print("Error while connecting to MySQL", e)
-        return None
-
-
-def id_zero(cursor):
-    id_back_to_zero = """
-    ALTER TABLE detail_activity AUTO_INCREMENT = 1;
-    """
-    cursor.execute(id_back_to_zero)
-
-
-def insert_activity_data(cursor, timestamp, person_activity_times, absent_person):
-    for employee_name, activity_times in person_activity_times.items():
-        total_time = sum(activity_times.values())
-        percentages = {
-            activity: (time / total_time) * 100 if total_time > 0 else 0
-            for activity, time in activity_times.items()
-        }
-
-        cursor.execute(
-            """
-            INSERT INTO detail_activity (
-                timestamp, employee_name, wrapping_time, wrapping_percentage, 
-                unloading_time, unloading_percentage, packing_time, packing_percentage, 
-                sorting_time, sorting_percentage, absent_person
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """,
-            (
-                timestamp,
-                employee_name,
-                activity_times.get("wrapping", 0),
-                percentages.get("wrapping", 0),
-                activity_times.get("unloading", 0),
-                percentages.get("unloading", 0),
-                activity_times.get("packing", 0),
-                percentages.get("packing", 0),
-                activity_times.get("sorting", 0),
-                percentages.get("sorting", 0),
-                absent_person,
-            ),
-        )
-
-
 def main(
     video_path, output_path, model_people_path, model_activities_path, scale_factor
 ):
-    connection = connect_to_db()
-    if connection is None:
-        return
-
-    cursor = connection.cursor()
-    id_zero(cursor)
-
     cap = initialize_video_capture(video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     original_fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_delay = int(800 / original_fps)
+    frame_delay = int(1000 / original_fps)
     new_dim = (int(frame_width * scale_factor), int(frame_height * scale_factor))
 
     out = initialize_video_writer(output_path, frame_width, frame_height, original_fps)
@@ -132,15 +70,25 @@ def main(
     ]
     class_names_activities = ["Wrapping", "unloading", "packing", "sorting"]
 
+    # Initialize time accumulation dictionary
     time_accumulation = {
-        person: {activity.lower(): 0 for activity in class_names_activities}
+        person: {activity: 0 for activity in class_names_activities}
         for person in class_names_people
     }
 
-    last_timestamp = time.time()
+    # Connect to MySQL
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="robot123",
+        database="report_ai_cctv",
+    )
+    mycursor = mydb.cursor()
+
+    start_time = time.time()
+    frame_counter = 0
 
     while True:
-        start_time = time.time()
         success, img = cap.read()
         if not success:
             break
@@ -155,12 +103,7 @@ def main(
             results_activities, img, class_names_activities, 0.25
         )
 
-        # Reset person_activity_times for the current second
-        person_activity_times = {
-            person: {activity.lower(): 0 for activity in class_names_activities}
-            for person in class_names_people
-        }
-
+        # Combine detections and display them
         for x1, y1, x2, y2, person_class, person_conf in detections_people:
             activity_detected = False
             for (
@@ -187,15 +130,14 @@ def main(
                         colorB=(0, 252, 0),
                         offset=5,
                     )
-                    person_activity_times[person_class][activity_class.lower()] += (
-                        1 / original_fps
-                    )
+                    # Accumulate time for person and activity
+                    time_accumulation[person_class][activity_class] += 1 / original_fps
                     break
             if not activity_detected:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 cvzone.putTextRect(
                     img,
-                    f"{person_class}",
+                    f"{person_class} is idle",
                     (max(0, x1), max(35, y1)),
                     scale=2,
                     thickness=2,
@@ -205,26 +147,63 @@ def main(
                     offset=5,
                 )
 
-        # Insert data into database every second
-        if time.time() - last_timestamp >= 1:
-            timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-            absent_person = ",".join(
-                [
-                    p
-                    for p in class_names_people
-                    if p not in [d[4] for d in detections_people]
-                ]
-            )
-            insert_activity_data(
-                cursor, timestamp, person_activity_times, absent_person
-            )
-            connection.commit()
-            last_timestamp = time.time()
+        # Display time accumulation at the right edge
+        y_position = 15
+        absent_persons = set(class_names_people)
+        for person in time_accumulation:
+            for activity in time_accumulation[person]:
+                time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
+                cvzone.putTextRect(
+                    img,
+                    time_text,
+                    (img.shape[1] - 300, y_position),
+                    scale=1,
+                    thickness=1,
+                    colorT=(255, 255, 255),
+                    colorR=(0, 0, 0),
+                    colorB=(0, 0, 0),
+                    offset=5,
+                )
+                y_position += 17
+            # Remove present persons from the absent list
+            if any(
+                time_accumulation[person][activity] > 0
+                for activity in class_names_activities
+            ):
+                absent_persons.discard(person)
 
         out.write(img)
 
+        # Resize the frame before displaying
         img_resized = cv2.resize(img, new_dim)
         cv2.imshow("Image", img_resized)
+
+        frame_counter += 1
+        if frame_counter >= original_fps:
+            # Insert data into MySQL every second
+            frame_counter = 0
+            timestamp = format_time(int(time.time() - start_time))
+            for person in class_names_people:
+                wrapping_time = format_time(int(time_accumulation[person]["Wrapping"]))
+                unloading_time = format_time(
+                    int(time_accumulation[person]["unloading"])
+                )
+                packing_time = format_time(int(time_accumulation[person]["packing"]))
+                sorting_time = format_time(int(time_accumulation[person]["sorting"]))
+                absent_person_str = ",".join(absent_persons)
+
+                sql = "INSERT INTO activity_log (timestamp, employee_name, wrapping_time, unloading_time, packing_time, sorting_time, absent_person) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                val = (
+                    timestamp,
+                    person,
+                    wrapping_time,
+                    unloading_time,
+                    packing_time,
+                    sorting_time,
+                    absent_person_str,
+                )
+                mycursor.execute(sql, val)
+                mydb.commit()
 
         processing_time = time.time() - start_time
         wait_time = max(1, frame_delay - int(processing_time * 1000))
@@ -234,17 +213,15 @@ def main(
     cap.release()
     out.release()
     cv2.destroyAllWindows()
-    cursor.close()
-    connection.close()
+    mydb.close()
 
 
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4"
-    output_path = "runs/videos/output_video.avi"
-    model_people_path = "runs/detect/train_employees/weights/best.pt"
-    model_activities_path = "runs/detect/train_subhanallah/weights/best.pt"
+    output_path = ".runs/videos/output_video.avi"
+    model_people_path = ".runs/detect/Employees-1/weights/best.pt"
+    model_activities_path = ".runs/detect/GarmentFinishing-1/weights/best.pt"
     scale_factor = 0.75
-    id = 0
 
     main(
         video_path, output_path, model_people_path, model_activities_path, scale_factor
