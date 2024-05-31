@@ -1,9 +1,0 @@
-Ordered Progress
-  > Tampilkan pop up orang yang tidak ada pada display
-Progress
-  > Membuat report
-Capaian
-  > Report display sudah
-  > Report data realtime csv/mySQL belum sempurna
-Kekurangan
-  > Report data realtime csv/mySQL hanya terbaru tidak dapat di track yang sebelumnya
