@@ -6,4 +6,6 @@
 .venv/*
 .conda/*
 .vscode/*
+
+# Directory yang kadang ada dimana-mana
 **/__pycache__/*
