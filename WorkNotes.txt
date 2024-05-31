@@ -7,3 +7,10 @@ Capaian
   > Report data realtime csv/mySQL belum sempurna
 Kekurangan
   > Report data realtime csv/mySQL hanya terbaru tidak dapat di track yang sebelumnya
+
+
+
+> CARA menampilkan output keseluruhan training di jupyter vscode: https://chatgpt.com/share/746991d4-2941-4283-adda-2123890ddef6
+
+> JUMAT PULANG 31 MEI> https://chatgpt.com/share/746991d4-2941-4283-adda-2123890ddef6
+https://chatgpt.com/share/746991d4-2941-4283-adda-2123890ddef6
