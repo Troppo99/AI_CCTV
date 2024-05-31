@@ -71,10 +71,7 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
 
     # Connect to MySQL
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="robot123",
-        database="report_ai_cctv",
+        host="localhost", user="robot", password="robot123", database="report_ai_cctv", port=3307
     )
     mycursor = mydb.cursor()
 
