@@ -1,10 +1,10 @@
 # Directory or file dibawah merupakan file yang harus di arsipkan
 .runs/*
-.arc/*
-.train/*
 
 # Directory yang bisa berbeda tiap device
 .venv/*
 .conda/*
 .vscode/*
+
+# Directory yang ada dimana-mana
 **/__pycache__/*
