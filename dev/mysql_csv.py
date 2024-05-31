@@ -4,9 +4,10 @@ import mysql.connector
 # Koneksi ke database MySQL
 conn = mysql.connector.connect(
     host="localhost",
-    user="root",
+    user="robot",
     password="robot123",
     database="report_ai_cctv",
+    port=3307
 )
 
 # Query untuk mengambil data dari tabel
