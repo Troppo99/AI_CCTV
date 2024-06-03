@@ -3,12 +3,12 @@ from ultralytics import YOLO
 
 def main():
     data_path = "D:/Punya Waas/SEMANGAT_1/data.yaml"
-    model = YOLO("runs/weights/yolov8l.pt")
+    model = YOLO(".runs/weights/yolov8l.pt")
     model.train(
         data=data_path,
-        epochs=50,
+        epochs=100,
         imgsz=640,
-        project="runs/detect",
+        project=".runs/detect",
         name="anyar",
     )
 
