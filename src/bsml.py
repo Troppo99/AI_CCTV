@@ -13,9 +13,7 @@ def initialize_video_capture(video_path):
 
 
 def initialize_video_writer(output_path, frame_width, frame_height, fps):
-    return cv2.VideoWriter(
-        output_path, cv2.VideoWriter_fourcc(*"XVID"), fps, (frame_width, frame_height)
-    )
+    return cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"XVID"), fps, (frame_width, frame_height))
 
 
 def process_detections(results, img, class_names, confidence_threshold):
@@ -40,9 +38,7 @@ def format_time(seconds):
     return f"{hours:02}:{mins:02}:{secs:02}"
 
 
-def main(
-    video_path, output_path, model_people_path, model_activities_path, scale_factor
-):
+def main(video_path, output_path, model_people_path, model_activities_path, scale_factor):
     cap = initialize_video_capture(video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -70,10 +66,7 @@ def main(
     class_names_activities = ["Wrapping", "unloading", "packing", "sorting"]
 
     # Initialize time accumulation dictionary
-    time_accumulation = {
-        person: {activity: 0 for activity in class_names_activities}
-        for person in class_names_people
-    }
+    time_accumulation = {person: {activity: 0 for activity in class_names_activities} for person in class_names_people}
 
     while True:
         start_time = time.time()
@@ -84,12 +77,8 @@ def main(
         results_people = model_people(img, stream=True)
         results_activities = model_activities(img, stream=True)
 
-        detections_people = process_detections(
-            results_people, img, class_names_people, 0.8
-        )
-        detections_activities = process_detections(
-            results_activities, img, class_names_activities, 0.25
-        )
+        detections_people = process_detections(results_people, img, class_names_people, 0.8)
+        detections_activities = process_detections(results_activities, img, class_names_activities, 0.25)
 
         # Combine detections and display them
         for x1, y1, x2, y2, person_class, person_conf in detections_people:
@@ -102,9 +91,7 @@ def main(
                 activity_class,
                 activity_conf,
             ) in detections_activities:
-                if (x1 <= ax1 <= x2 and y1 <= ay1 <= y2) or (
-                    x1 <= ax2 <= x2 and y1 <= ay2 <= y2
-                ):
+                if (x1 <= ax1 <= x2 and y1 <= ay1 <= y2) or (x1 <= ax2 <= x2 and y1 <= ay2 <= y2):
                     activity_detected = True
                     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                     cvzone.putTextRect(
@@ -176,6 +163,4 @@ if __name__ == "__main__":
     model_activities_path = ".runs/detect/.arc/GarmentFinishing-1/weights/best.pt"
     scale_factor = 0.75
 
-    main(
-        video_path, output_path, model_people_path, model_activities_path, scale_factor
-    )
+    main(video_path, output_path, model_people_path, model_activities_path, scale_factor)
