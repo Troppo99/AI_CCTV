@@ -8,7 +8,7 @@ import time
 cap = cv2.VideoCapture("../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4")
 
 # Initialize YOLO model
-model = YOLO("runs/detect/Employees-1/weights/best.pt")
+model = YOLO(".runs/detect/.arc/Employees-1/weights/best.pt")
 
 # Class names
 classNames = [
@@ -36,7 +36,7 @@ frame_delay = int(1000 / original_fps)  # Delay in milliseconds
 
 # Initialize VideoWriter object with the original frame rate
 out = cv2.VideoWriter(
-    "runs/videos/output_video.avi",
+    ".runs/videos/output_video.avi",
     cv2.VideoWriter_fourcc(*"XVID"),
     original_fps,
     (frame_width, frame_height),
