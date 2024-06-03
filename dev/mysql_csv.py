@@ -17,7 +17,7 @@ query = "SELECT * FROM activity_log"
 df = pd.read_sql(query, conn)
 
 # Mengekspor data ke file CSV
-df.to_csv("D:/NWR27/AI_CCTV/.runs/data/output1.csv", index=False)
+df.to_csv("D:/NWR27/AI_CCTV/.runs/data/latest_data.csv", index=False)
 
 # Menutup koneksi
 conn.close()
