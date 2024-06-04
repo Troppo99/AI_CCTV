@@ -52,7 +52,7 @@ def format_time(seconds):
 
 
 def draw_table(img, data, percentages, start_x=10, start_y=550, row_height=33, col_width=150):
-    headers = ["camera", "timestamp", "employee_name", "wrapping_time", "%w", "unloading_time", "%u", "packing_time", "%p", "sorting_time", "%s", "idle_time", "%i", "undetected_time", "%u"]  # 15
+    headers = ["camera", "timestamp", "Name", "wrapping_time", "%w", "unloading_time", "%u", "packing_time", "%p", "sorting_time", "%s", "idle_time", "%i", "undetected_time", "%u"]  # 15
     # for i, header in enumerate(headers):
     # jarak = [80,]
     scale_text = 1.5
@@ -72,20 +72,21 @@ def draw_table(img, data, percentages, start_x=10, start_y=550, row_height=33, c
     # cvzone.putTextRect(img, header, (start_x + i * col_width, start_y), scale=scale_text, thickness=1, offset=5, colorR=(0,0,0),colorB=(255,255,255))
     # cvzone.putTextRect(img, header, (start_x + i * col_width, start_y), scale=scale_text, thickness=1, offset=5, colorR=(0,0,0),colorB=(255,255,255))
 
+    # Record
     for row_idx, (emp_class, times) in enumerate(data.items(), start=1):
         cvzone.putTextRect(img, emp_class, (20, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["wrapping_time"]), (start_x + 3 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%w']:.0f}%", (start_x + 4 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["unloading_time"]), (start_x + 5 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%u']:.0f}%", (start_x + 6 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["packing_time"]), (start_x + 7 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%p']:.0f}%", (start_x + 8 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["sorting_time"]), (start_x + 9 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%s']:.0f}%", (start_x + 10 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["idle_time"]), (start_x + 11 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (start_x + 12 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, format_time(times["undetected_time"]), (start_x + 13 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%u']:.0f}%", (start_x + 14 * col_width, start_y + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["wrapping_time"]), (150, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%w']:.0f}%", (280, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["unloading_time"]), (380, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%u']:.0f}%", (510, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["packing_time"]), (610, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%p']:.0f}%", (740, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["sorting_time"]), (840, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%s']:.0f}%", (970, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["idle_time"]), (1070, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (1200, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, format_time(times["undetected_time"]), (1300, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%u']:.0f}%", (1430, start_y-50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
 
 
 def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th):
