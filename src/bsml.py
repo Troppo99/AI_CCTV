@@ -123,22 +123,22 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
                 )
 
         # Display time accumulation at the right edge
-        y_position = 15
-        for person in time_accumulation:
-            for activity in time_accumulation[person]:
-                time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
-                cvzone.putTextRect(
-                    img,
-                    time_text,
-                    (img.shape[1] - 300, y_position),
-                    scale=1,
-                    thickness=1,
-                    colorT=(255, 255, 255),
-                    colorR=(0, 0, 0),
-                    colorB=(0, 0, 0),
-                    offset=5,
-                )
-                y_position += 17
+        # y_position = 15
+        # for person in time_accumulation:
+        #     for activity in time_accumulation[person]:
+        #         time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
+        #         cvzone.putTextRect(
+        #             img,
+        #             time_text,
+        #             (img.shape[1] - 300, y_position),
+        #             scale=1,
+        #             thickness=1,
+        #             colorT=(255, 255, 255),
+        #             colorR=(0, 0, 0),
+        #             colorB=(0, 0, 0),
+        #             offset=5,
+        #         )
+        #         y_position += 17
 
         out.write(img)
 
@@ -157,10 +157,10 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
 
 
 if __name__ == "__main__":
-    video_path = "../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4"
+    video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
     output_path = ".runs/videos/output_video.avi"
-    model_people_path = ".runs/detect/.arc/Employees-1/weights/best.pt"
-    model_activities_path = ".runs/detect/.arc/GarmentFinishing-1/weights/best.pt"
+    model_people_path = ".runs/detect/.arc/employees-1/weights/best.pt"
+    model_activities_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
     scale_factor = 0.75
 
     main(video_path, output_path, model_people_path, model_activities_path, scale_factor)
