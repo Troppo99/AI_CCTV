@@ -2,7 +2,6 @@ from ultralytics import YOLO
 import cv2
 import cvzone
 import math
-import time
 
 
 def initialize_video_capture(video_path):
@@ -10,10 +9,6 @@ def initialize_video_capture(video_path):
     if not cap.isOpened():
         print("Error: Unable to open video file.")
     return cap
-
-
-def initialize_video_writer(output_path, frame_width, frame_height, fps):
-    return cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"XVID"), fps, (frame_width, frame_height))
 
 
 def process_detections(results, img, class_names, confidence_threshold):
@@ -32,21 +27,8 @@ def process_detections(results, img, class_names, confidence_threshold):
     return detections
 
 
-def format_time(seconds):
-    mins, secs = divmod(seconds, 60)
-    hours, mins = divmod(mins, 60)
-    return f"{hours:02}:{mins:02}:{secs:02}"
-
-
-def main(video_path, output_path, model_people_path, model_activities_path, scale_factor):
+def main(video_path, model_people_path, model_activities_path):
     cap = initialize_video_capture(video_path)
-    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    original_fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_delay = int(1000 / original_fps)
-    new_dim = (int(frame_width * scale_factor), int(frame_height * scale_factor))
-
-    out = initialize_video_writer(output_path, frame_width, frame_height, original_fps)
 
     model_people = YOLO(model_people_path)
     model_activities = YOLO(model_activities_path)
@@ -65,11 +47,7 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
     ]
     class_names_activities = ["Wrapping", "unloading", "packing", "sorting"]
 
-    # Initialize time accumulation dictionary
-    time_accumulation = {person: {activity: 0 for activity in class_names_activities} for person in class_names_people}
-
     while True:
-        start_time = time.time()
         success, img = cap.read()
         if not success:
             break
@@ -105,8 +83,6 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
                         colorB=(0, 252, 0),
                         offset=5,
                     )
-                    # Accumulate time for person and activity
-                    time_accumulation[person_class][activity_class] += 1 / original_fps
                     break
             if not activity_detected:
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
@@ -122,45 +98,17 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
                     offset=5,
                 )
 
-        # Display time accumulation at the right edge
-        # y_position = 15
-        # for person in time_accumulation:
-        #     for activity in time_accumulation[person]:
-        #         time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
-        #         cvzone.putTextRect(
-        #             img,
-        #             time_text,
-        #             (img.shape[1] - 300, y_position),
-        #             scale=1,
-        #             thickness=1,
-        #             colorT=(255, 255, 255),
-        #             colorR=(0, 0, 0),
-        #             colorB=(0, 0, 0),
-        #             offset=5,
-        #         )
-        #         y_position += 17
-
-        out.write(img)
-
-        # Resize the frame before displaying
-        img_resized = cv2.resize(img, new_dim)
-        cv2.imshow("Image", img_resized)
-
-        processing_time = time.time() - start_time
-        wait_time = max(1, frame_delay - int(processing_time * 1000))
-        if cv2.waitKey(wait_time) & 0xFF == ord("q"):
+        cv2.imshow("Image", img)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     cap.release()
-    out.release()
     cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
-    output_path = ".runs/videos/output_video.avi"
     model_people_path = ".runs/detect/.arc/employees-1/weights/best.pt"
     model_activities_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
-    scale_factor = 0.75
 
-    main(video_path, output_path, model_people_path, model_activities_path, scale_factor)
+    main(video_path, model_people_path, model_activities_path)
