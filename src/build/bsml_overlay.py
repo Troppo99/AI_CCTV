@@ -3,7 +3,6 @@ import cv2
 import cvzone
 import math
 import time
-import mysql.connector
 
 
 def initialize_video_capture(video_path):
@@ -39,7 +38,40 @@ def format_time(seconds):
     return f"{hours:02}:{mins:02}:{secs:02}"
 
 
-def main(video_path, output_path, model_people_path, model_activities_path, scale_factor):
+def resize_overlay(overlay, max_width, max_height):
+    ol_h, ol_w = overlay.shape[:2]
+    if ol_w > max_width or ol_h > max_height:
+        scaling_factor = min(max_width / ol_w, max_height / ol_h)
+        new_size = (int(ol_w * scaling_factor), int(ol_h * scaling_factor))
+        overlay = cv2.resize(overlay, new_size, interpolation=cv2.INTER_AREA)
+    return overlay
+
+
+def overlay_image(background, overlay, position):
+    bg_h, bg_w = background.shape[:2]
+    ol_h, ol_w = overlay.shape[:2]
+
+    x, y = position
+
+    # Ensure the overlay fits within the background at the specified position
+    overlay = resize_overlay(overlay, bg_w - x, bg_h - y)
+    ol_h, ol_w = overlay.shape[:2]
+
+    if overlay.shape[2] == 4:  # If overlay has an alpha channel
+        alpha_overlay = overlay[:, :, 3] / 255.0
+        alpha_background = 1.0 - alpha_overlay
+
+        for c in range(0, 3):
+            background[y : y + ol_h, x : x + ol_w, c] = (
+                alpha_overlay * overlay[:, :, c] + alpha_background * background[y : y + ol_h, x : x + ol_w, c]
+            )
+    else:  # If overlay does not have an alpha channel
+        background[y : y + ol_h, x : x + ol_w] = overlay
+
+    return background
+
+
+def main(video_path, output_path, model_people_path, model_activities_path, scale_factor, overlay_image_path):
     cap = initialize_video_capture(video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -69,19 +101,11 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
     # Initialize time accumulation dictionary
     time_accumulation = {person: {activity: 0 for activity in class_names_activities} for person in class_names_people}
 
-    # Initialize present status dictionary
-    person_present = {person: False for person in class_names_people}
-
-    # Connect to MySQL
-    mydb = mysql.connector.connect(
-        host="localhost", user="robot", password="robot123", database="report_ai_cctv", port=3307
-    )
-    mycursor = mydb.cursor()
-
-    start_time = time.time()
-    frame_counter = 0
+    # Load and process overlay image
+    overlay_img = cv2.imread(overlay_image_path, cv2.IMREAD_UNCHANGED)
 
     while True:
+        start_time = time.time()
         success, img = cap.read()
         if not success:
             break
@@ -92,14 +116,9 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
         detections_people = process_detections(results_people, img, class_names_people, 0.8)
         detections_activities = process_detections(results_activities, img, class_names_activities, 0.25)
 
-        # Reset person presence status
-        for person in class_names_people:
-            person_present[person] = False
-
         # Combine detections and display them
         for x1, y1, x2, y2, person_class, person_conf in detections_people:
             activity_detected = False
-            person_present[person_class] = True
             for (
                 ax1,
                 ay1,
@@ -139,86 +158,16 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
                     offset=5,
                 )
 
-        # Display time accumulation at the right edge
-        y_position = 15
-        absent_persons = []
-        for person in class_names_people:
-            for activity in time_accumulation[person]:
-                time_text = f"{person} {activity} : {format_time(int(time_accumulation[person][activity]))}"
-                cvzone.putTextRect(
-                    img,
-                    time_text,
-                    (img.shape[1] - 300, y_position),
-                    scale=1,
-                    thickness=1,
-                    colorT=(255, 255, 255),
-                    colorR=(0, 0, 0),
-                    colorB=(0, 0, 0),
-                    offset=5,
-                )
-                y_position += 17
-            # Check if the person is absent
-            if not person_present[person]:
-                absent_persons.append(person)
-
-        # Display absent persons
-        y_position += 20
-        cvzone.putTextRect(
-            img,
-            "Absent Persons:",
-            (img.shape[1] - 300, y_position),
-            scale=1,
-            thickness=1,
-            colorT=(0, 0, 255),
-            colorR=(0, 0, 0),
-            colorB=(0, 0, 0),
-            offset=5,
-        )
-        y_position += 17
-        for person in absent_persons:
-            cvzone.putTextRect(
-                img,
-                person,
-                (img.shape[1] - 300, y_position),
-                scale=1,
-                thickness=1,
-                colorT=(0, 0, 255),
-                colorR=(0, 0, 0),
-                colorB=(0, 0, 0),
-                offset=5,
-            )
-            y_position += 17
+        # Overlay the image at the bottom-right corner
+        a = int(0.3 * (frame_width - overlay_img.shape[0]))
+        b = int(0.3 * (frame_height - overlay_img.shape[1]))
+        img = overlay_image(img, overlay_img, (a, b))
 
         out.write(img)
 
         # Resize the frame before displaying
         img_resized = cv2.resize(img, new_dim)
         cv2.imshow("Image", img_resized)
-
-        frame_counter += 1
-        if frame_counter >= original_fps:
-            # Insert data into MySQL every second
-            frame_counter = 0
-            timestamp = format_time(int(time.time() - start_time))
-            for person in class_names_people:
-                wrapping_time = format_time(int(time_accumulation[person]["Wrapping"]))
-                unloading_time = format_time(int(time_accumulation[person]["unloading"]))
-                packing_time = format_time(int(time_accumulation[person]["packing"]))
-                sorting_time = format_time(int(time_accumulation[person]["sorting"]))
-                absent_person_str = ",".join(absent_persons)
-
-                sql = "INSERT INTO activity_log (timestamp, employee_name, wrapping_time, unloading_time, packing_time, sorting_time, absent_person) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                val = (
-                    timestamp,
-                    person,
-                    wrapping_time,
-                    unloading_time,
-                    packing_time,
-                    sorting_time,
-                    absent_person_str,
-                )
-                mycursor.execute(sql, val)
-                mydb.commit()
 
         processing_time = time.time() - start_time
         wait_time = max(1, frame_delay - int(processing_time * 1000))
@@ -228,14 +177,14 @@ def main(video_path, output_path, model_people_path, model_activities_path, scal
     cap.release()
     out.release()
     cv2.destroyAllWindows()
-    mydb.close()
 
 
 if __name__ == "__main__":
-    video_path = "../MY_FILES/Videos/CCTV/Train/10_ch04_20240425073845.mp4"
+    video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
     output_path = ".runs/videos/output_video.avi"
-    model_people_path = ".runs/detect/.arc/Employees-1/weights/best.pt"
-    model_activities_path = ".runs/detect/.arc/GarmentFinishing-1/weights/best.pt"
+    model_people_path = ".runs/detect/.arc/employees-1/weights/best.pt"
+    model_activities_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
     scale_factor = 0.75
+    overlay_image_path = "../MY_FILES/Images/table.png"  # Replace with your overlay image path
 
-    main(video_path, output_path, model_people_path, model_activities_path, scale_factor)
+    main(video_path, output_path, model_people_path, model_activities_path, scale_factor, overlay_image_path)

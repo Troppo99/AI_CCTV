@@ -27,7 +27,7 @@ def process_detections(results, class_names, conf_th):
     return detections
 
 
-def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th):
+def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, screen_width, screen_height):
     cap = initialize_video_capture(video_path)
 
     model_emp = YOLO(model_emp_path)
@@ -87,7 +87,25 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th):
                     offset=5,
                 )
 
-        cv2.imshow("Image", img)
+        # Resize image to fit screen while maintaining aspect ratio
+        height, width, _ = img.shape
+        scale = min(screen_width / width, screen_height / height)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        resized_img = cv2.resize(img, (new_width, new_height))
+
+        # Create a blank image with the size of the screen
+        screen_img = cv2.resize(resized_img, (screen_width, screen_height))
+        screen_img.fill(0)
+
+        # Calculate position to center the resized image
+        x_offset = (screen_width - new_width) // 2
+        y_offset = (screen_height - new_height) // 2
+
+        # Place the resized image on the center of the blank image
+        screen_img[y_offset : y_offset + new_height, x_offset : x_offset + new_width] = resized_img
+
+        cv2.imshow("Report Display AI CCTV", screen_img)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
@@ -101,4 +119,7 @@ if __name__ == "__main__":
     model_act_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
     emp_conf_th, act_conf_th = (0.8, 0.25)
 
-    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th)
+    # Replace these with your screen resolution
+    screen_width, screen_height = int(round(1920 * 0.5, 2)), int(round(1080 * 0.5, 2))
+
+    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, screen_width, screen_height)
