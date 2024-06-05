@@ -95,7 +95,13 @@ def draw_table(img, data, percentages, start_x=10, start_y=550, row_height=33, c
         cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (1430, start_y - 50 + row_idx * row_height), scale=scale_text, thickness=1, offset=5)
 
 
-def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th):
+def resize_frame(frame, scale):
+    width = int(frame.shape[1] * scale)
+    height = int(frame.shape[0] * scale)
+    return cv2.resize(frame, (width, height))
+
+
+def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale):
     cap = initialize_video_capture(video_path)
     model_emp = YOLO(model_emp_path)
     model_act = YOLO(model_act_path)
@@ -169,7 +175,8 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th):
         percentages = calculate_percentages(data, total_time)
         draw_table(img, data, percentages)
 
-        cv2.imshow("Image", img)
+        resized_img = resize_frame(img, scale)
+        cv2.imshow("Image", resized_img)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
@@ -182,5 +189,6 @@ if __name__ == "__main__":
     model_emp_path = ".runs/detect/.arc/employees-1/weights/best.pt"
     model_act_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
     emp_conf_th, act_conf_th = (0.8, 0.25)
+    scale = 0.75  # Set the scale from 0 to 1
 
-    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th)
+    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale)
