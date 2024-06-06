@@ -51,11 +51,10 @@ def calculate_percentages(data, total_time):
     return percentages
 
 
-def format_time(seconds):
-    return str(timedelta(seconds=int(seconds)))
-
-
 def draw_table(img, data, percentages, row_height=40):
+    def format_time(seconds):
+        return str(timedelta(seconds=int(seconds)))
+
     # cvzone.putTextRect(img, f"Report Table", (20, 500), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
     cv2.putText(img, f"Report Table", (20, 535), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (255, 255, 255), 1, cv2.LINE_AA)
     headers = ["Employee", "Wrapping", "Unloading", "Packing", "Sorting", "Idle", "Absent"]  # 7
@@ -102,12 +101,6 @@ def draw_table(img, data, percentages, row_height=40):
         cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (x_position[11], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
 
-def resize_frame(frame, scale):
-    width = int(frame.shape[1] * scale)
-    height = int(frame.shape[0] * scale)
-    return cv2.resize(frame, (width, height))
-
-
 def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale):
     cap = initialize_video_capture(video_path)
     model_emp = YOLO(model_emp_path)
@@ -119,7 +112,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
     data = {}
     total_time = 0
     frame_rate = cap.get(cv2.CAP_PROP_FPS)
-    show_table = False  # Flag to toggle table display
+    show_table = True  # Flag to toggle table display
 
     while True:
         success, img = cap.read()
@@ -189,7 +182,9 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
         if show_table:
             draw_table(img, data, percentages)
 
-        resized_img = resize_frame(img, scale)
+        width = int(img.shape[1] * scale)
+        height = int(img.shape[0] * scale)
+        resized_img = cv2.resize(img, (width, height))
         cv2.imshow("Image", resized_img)
 
         key = cv2.waitKey(1) & 0xFF
@@ -204,9 +199,8 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
-    model_emp_path = ".runs/detect/.arc/employees-1/weights/best.pt"
-    model_act_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
+    model_emp_path, model_act_path = ".runs/detect/.arc/employees-1/weights/best.pt", ".runs/detect/.arc/eactivity-1/weights/best.pt"
     emp_conf_th, act_conf_th = (0.8, 0.25)
-    scale = 0.75
+    video_scale = 0.75
 
-    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale)
+    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, video_scale)
