@@ -58,15 +58,7 @@ def format_time(seconds):
 def draw_table(img, data, percentages, row_height=40):
     # cvzone.putTextRect(img, f"Report Table", (20, 500), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
     cv2.putText(img, f"Report Table", (20, 535), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (255, 255, 255), 1, cv2.LINE_AA)
-    headers = [
-        "Employee",
-        "Wrapping",
-        "Unloading",
-        "Packing",
-        "Sorting",
-        "Idle",
-        "Absent",
-    ]  # 7
+    headers = ["Employee", "Wrapping", "Unloading", "Packing", "Sorting", "Idle", "Absent"]  # 7
 
     # Column
     scale_text = 2
@@ -122,7 +114,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
     model_act = YOLO(model_act_path)
 
     class_names_emp = ["Neneng", "Imas", "Euis", "Siti", "Enok", "Puti", "Sausan", "Eti", "Atik", "Imam"]
-    class_names_act = ["Wrapping", "unloading", "packing", "sorting"]
+    class_names_act = ["wrapping", "unloading", "packing", "sorting"]
 
     data = {}
     total_time = 0
@@ -133,7 +125,12 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
         success, img = cap.read()
         if not success:
             break
-        start_time = datetime.now()
+        # start_time = datetime.now() # unused
+
+        # Header
+        cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
+        cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
         results_emp = model_emp(img, stream=True)
         results_act = model_act(img, stream=True)
@@ -160,7 +157,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
             if act_detected:
                 cvzone.putTextRect(
                     img,
-                    f"{emp_class} = {act_class}",
+                    f"{emp_class} is {act_class}",
                     (max(0, x1), max(35, y1)),
                     scale=2,
                     thickness=2,
@@ -182,12 +179,6 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                     offset=5,
                 )
 
-        # Header
-        cameras = ["CAM001", "CAM002", "CAM003"]
-        waktu = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-        cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, f"Timestamp : {waktu}", (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
-
         # Assume no detection means the employee is absent
         detected_employees = [emp_class for _, _, _, _, emp_class, _ in detections_emp]
         for emp_class in class_names_emp:
@@ -202,7 +193,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
         cv2.imshow("Image", resized_img)
 
         key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
+        if key == ord("n"):
             break
         elif key == ord("s"):
             show_table = not show_table
@@ -216,6 +207,6 @@ if __name__ == "__main__":
     model_emp_path = ".runs/detect/.arc/employees-1/weights/best.pt"
     model_act_path = ".runs/detect/.arc/eactivity-1/weights/best.pt"
     emp_conf_th, act_conf_th = (0.8, 0.25)
-    scale = 0.75  # Set the scale from 0 to 1
+    scale = 0.75
 
     main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale)

@@ -12,3 +12,6 @@ print(len(iniTuples))
 iniSets = {"Indonesia", 2, 3, False}
 print(iniSets)
 print(len(iniSets))
+
+ini_tuple = ("Nana", 22, True)
+print(ini_tuple[1])
