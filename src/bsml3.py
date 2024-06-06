@@ -120,11 +120,6 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
             break
         # start_time = datetime.now() # unused
 
-        # Header
-        cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
-        cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
-
         results_emp = model_emp(img, stream=True)
         results_act = model_act(img, stream=True)
 
@@ -181,6 +176,11 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
         percentages = calculate_percentages(data, total_time)
         if show_table:
             draw_table(img, data, percentages)
+
+        # Header
+        cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
+        cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
         width = int(img.shape[1] * scale)
         height = int(img.shape[0] * scale)
