@@ -129,6 +129,8 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 
             last_insert_time = datetime.now()  # Initialize the last insert time
 
+            # cv2.namedWindow("Area Folding", cv2.WINDOW_NORMAL)
+
             while True:
                 success, img = cap.read()
                 if not success:
@@ -204,13 +206,13 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 
                 # Header
                 cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
-                cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
-                cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
+                cvzone.putTextRect(img, f"Camera : {cameras[0]}", (1200, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
+                cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (1200, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
                 width = int(img.shape[1] * scale)
                 height = int(img.shape[0] * scale)
                 resized_img = cv2.resize(img, (width, height))
-                cv2.imshow("Image", resized_img)
+                cv2.imshow("Area Folding", resized_img)
 
                 key = cv2.waitKey(1) & 0xFF
                 if key == ord("n"):
