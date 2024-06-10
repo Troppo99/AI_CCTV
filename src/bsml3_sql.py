@@ -46,7 +46,7 @@ def update_data_table(data, emp_class, act_class, frame_duration):
         data[emp_class]["idle_time"] += frame_duration
 
 
-def calculate_percentages(data, total_time):
+def calculate_percentages(data):
     percentages = {}
     for emp_class in data:
         total_emp_time = sum(data[emp_class].values())
@@ -74,230 +74,42 @@ def draw_table(img, data, percentages, row_height=40):
         1,
         cv2.LINE_AA,
     )
-    headers = [
-        "Employee",
-        "Wrapping",
-        "Unloading",
-        "Packing",
-        "Sorting",
-        "Idle",
-        "Absent",
-    ]
+    headers = ["Employee", "Working", "Unloading", "Packing", "Sorting", "Idle", "Absent"]
 
     scale_text = 2
-    x_position = [
-        218,
-        368,
-        506,
-        656,
-        794,
-        944,
-        1082,
-        1232,
-        1370,
-        1520,
-        1658,
-        1808,
-    ]
-    cvzone.putTextRect(
-        img,
-        headers[0],
-        (20, 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[1],
-        (x_position[0], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[2],
-        (x_position[2], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[3],
-        (x_position[4], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[4],
-        (x_position[6], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[5],
-        (x_position[8], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
-    cvzone.putTextRect(
-        img,
-        headers[6],
-        (x_position[10], 600),
-        scale=scale_text,
-        thickness=2,
-        offset=5,
-        colorR=(0, 0, 0),
-        colorB=(255, 255, 255),
-    )
+    x_position = [218, 368, 506, 656, 794, 944, 1082, 1232, 1370, 1520, 1658, 1808]
+    cvzone.putTextRect(img, headers[0], (20, 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[1], (x_position[0], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    # cvzone.putTextRect(img, headers[2], (x_position[2], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    # cvzone.putTextRect(img, headers[3], (x_position[4], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    # cvzone.putTextRect(img, headers[4], (x_position[6], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[5], (x_position[8], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[6], (x_position[10], 600), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
     pink_color = (255, 0, 255)
     dpink_color = (145, 0, 145)
     for row_idx, (emp_class, times) in enumerate(data.items(), start=1):
         y_position = 600 + row_idx * row_height
         color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
-        cvzone.putTextRect(
-            img,
-            emp_class,
-            (20, y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        cvzone.putTextRect(img, emp_class, (20, y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["wrapping_time"]),
-            (x_position[0], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%w']:.0f}%",
-            (x_position[1], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        cvzone.putTextRect(img, format_time(times["wrapping_time"]), (x_position[0], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%w']:.0f}%", (x_position[1], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["unloading_time"]),
-            (x_position[2], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%u']:.0f}%",
-            (x_position[3], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        # cvzone.putTextRect(img, format_time(times["unloading_time"]), (x_position[2], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        # cvzone.putTextRect(img, f"{percentages[emp_class]['%u']:.0f}%", (x_position[3], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["packing_time"]),
-            (x_position[4], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%p']:.0f}%",
-            (x_position[5], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        # cvzone.putTextRect(img, format_time(times["packing_time"]), (x_position[4], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        # cvzone.putTextRect(img, f"{percentages[emp_class]['%p']:.0f}%", (x_position[5], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["sorting_time"]),
-            (x_position[6], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%s']:.0f}%",
-            (x_position[7], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        # cvzone.putTextRect(img, format_time(times["sorting_time"]), (x_position[6], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        # cvzone.putTextRect(img, f"{percentages[emp_class]['%s']:.0f}%", (x_position[7], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["idle_time"]),
-            (x_position[8], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%i']:.0f}%",
-            (x_position[9], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        cvzone.putTextRect(img, format_time(times["idle_time"]), (x_position[8], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (x_position[9], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(
-            img,
-            format_time(times["absent_time"]),
-            (x_position[10], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
-        cvzone.putTextRect(
-            img,
-            f"{percentages[emp_class]['%a']:.0f}%",
-            (x_position[11], y_position),
-            scale=scale_text,
-            thickness=1,
-            offset=5,
-            colorR=color_rect,
-        )
+        cvzone.putTextRect(img, format_time(times["absent_time"]), (x_position[10], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (x_position[11], y_position), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
 
 def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
@@ -325,33 +137,15 @@ def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
 
 
 def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale):
-    connection = mysql.connector.connect(
-        host="localhost",
-        database="report_ai_cctv",
-        user="robot",
-        password="robot123",
-        port=3307,
-    )
-    if connection.is_connected():
-        cursor = connection.cursor()
-        print("Connected to MySQL database")
+    conn = mysql.connector.connect(host="localhost", database="report_ai_cctv", user="robot", password="robot123", port=3307)
+    if conn.is_connected():
+        cursor = conn.cursor()
 
         cap = initialize_video_capture(video_path)
         model_emp = YOLO(model_emp_path)
         model_act = YOLO(model_act_path)
 
-        class_names_emp = [
-            "Neneng",
-            "Imas",
-            "Euis",
-            "Siti",
-            "Enok",
-            "Puti",
-            "Sausan",
-            "Eti",
-            "Atik",
-            "Imam",
-        ]
+        class_names_emp = ["Neneng", "Imas", "Euis", "Siti", "Enok", "Puti", "Sausan", "Eti", "Atik", "Imam"]
         class_names_act = ["wrapping", "unloading", "packing", "sorting"]
 
         data = {}
@@ -360,8 +154,6 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
         show_table = True  # Flag to toggle table display
 
         last_insert_time = datetime.now()  # Initialize the last insert time
-
-        # cv2.namedWindow("Area Folding", cv2.WINDOW_NORMAL)
 
         while True:
             success, img = cap.read()
@@ -383,12 +175,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                 for ax1, ay1, ax2, ay2, act_class, act_conf in detections_act:
                     if (x1 <= ax1 <= x2 and y1 <= ay1 <= y2) or (x1 <= ax2 <= x2 and y1 <= ay2 <= y2):
                         act_detected = True
-                        update_data_table(
-                            data,
-                            emp_class,
-                            act_class.lower() + "_time",
-                            frame_duration,
-                        )
+                        update_data_table(data, emp_class, act_class.lower() + "_time", frame_duration)
                         break
                 if not act_detected:
                     update_data_table(data, emp_class, "idle_time", frame_duration)
@@ -396,29 +183,9 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                 # Draw bounding box for employee
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 if act_detected:
-                    cvzone.putTextRect(
-                        img,
-                        f"{emp_class} is {act_class}",
-                        (max(0, x1), max(35, y1)),
-                        scale=2,
-                        thickness=2,
-                        colorT=(0, 0, 255),
-                        colorR=(0, 255, 255),
-                        colorB=(0, 252, 0),
-                        offset=5,
-                    )
+                    cvzone.putTextRect(img, f"{emp_class} is {act_class}", (max(0, x1), max(35, y1)), scale=2, thickness=2, colorT=(0, 0, 255), colorR=(0, 255, 255), colorB=(0, 252, 0), offset=5)
                 else:
-                    cvzone.putTextRect(
-                        img,
-                        f"{emp_class} is idle",
-                        (max(0, x1), max(35, y1)),
-                        scale=2,
-                        thickness=2,
-                        colorT=(0, 0, 0),
-                        colorR=(255, 255, 255),
-                        colorB=(0, 252, 0),
-                        offset=5,
-                    )
+                    cvzone.putTextRect(img, f"{emp_class} is idle", (max(0, x1), max(35, y1)), scale=2, thickness=2, colorT=(0, 0, 0), colorR=(255, 255, 255), colorB=(0, 252, 0), offset=5)
 
             # Assume no detection means the employee is absent
             detected_employees = [emp_class for _, _, _, _, emp_class, _ in detections_emp]
@@ -426,7 +193,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                 if emp_class not in detected_employees:
                     update_data_table(data, emp_class, "absent_time", frame_duration)
 
-            percentages = calculate_percentages(data, total_time)
+            percentages = calculate_percentages(data)
             if show_table:
                 draw_table(img, data, percentages)
 
@@ -438,31 +205,13 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                     insert_data_to_mysql(cursor, "CAM001", timestamp, emp_class, times)
 
                 # Commit the transaction
-                connection.commit()
+                conn.commit()
                 last_insert_time = current_time
 
             # Header
             cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
-            cvzone.putTextRect(
-                img,
-                f"Camera : {cameras[0]}",
-                (1200, 60),
-                scale=4,
-                thickness=2,
-                offset=7,
-                colorR=(0, 0, 0),
-                colorB=(255, 255, 255),
-            )
-            cvzone.putTextRect(
-                img,
-                f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
-                (1200, 100),
-                scale=2,
-                thickness=2,
-                offset=4,
-                colorR=(0, 0, 0),
-                colorB=(255, 255, 255),
-            )
+            cvzone.putTextRect(img, f"Camera : {cameras[0]}", (1200, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
+            cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (1200, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
             width = int(img.shape[1] * scale)
             height = int(img.shape[0] * scale)
@@ -477,3 +226,21 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 
         cap.release()
         cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    copyright_text = """
+    ====================================================================================================
+
+    © 2024 Nana Wartana alias Troppo Lungo. All rights reserved (VERSION 3) with mySQL database.
+
+    Program Title: AI CCTV for Employee Detection at PT GISTEX GARMEN INDONESIA
+
+    This code is designed to facilitate employee detection using advanced AI and
+    computer vision techniques. It is proprietary software and unauthorized copying,
+    modification, or distribution is strictly prohibited.
+
+    ====================================================================================================
+    \n
+    """
+    print(copyright_text)
