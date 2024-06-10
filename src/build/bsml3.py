@@ -4,7 +4,6 @@ import cvzone
 import math
 from datetime import datetime, timedelta
 import mysql.connector
-from mysql.connector import Error
 
 
 def initialize_video_capture(video_path):
@@ -202,7 +201,10 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
     # video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
-    model_emp_path, model_act_path = ".runs/detect/.arc/employees-1/weights/best.pt", ".runs/detect/.arc/eactivity-1/weights/best.pt"
+    model_emp_path, model_act_path = (
+        ".runs/detect/.arc/employees-1/weights/best.pt",
+        ".runs/detect/.arc/eactivity-1/weights/best.pt",
+    )
     emp_conf_th, act_conf_th = (0.8, 0.25)
     video_scale = 0.75
 
