@@ -97,22 +97,13 @@ def draw_table(img, data, percentages, row_height=25):
 
 def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
     query = """
-        INSERT INTO empact (cam, timestamp, employee_name, wrapping_time, unloading_time, packing_time, sorting_time, idle_time, absent_time)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO empact (cam, timestamp, employee_name, working_time, idle_time, absent_time)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
+    t_working = times["wrapping_time"] + times["unloading_time"] + times["packing_time"] + times["sorting_time"]
     cursor.execute(
         query,
-        (
-            cam,
-            timestamp,
-            emp_class,
-            times["wrapping_time"],
-            times["unloading_time"],
-            times["packing_time"],
-            times["sorting_time"],
-            times["idle_time"],
-            times["absent_time"],
-        ),
+        (cam, timestamp, emp_class, t_working, times["idle_time"], times["absent_time"]),
     )
 
 
