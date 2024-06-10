@@ -179,8 +179,26 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 
         # Header
         cameras = ["CAM001", "CAM002", "CAM003"]  # Amount of camera used
-        cvzone.putTextRect(img, f"Camera : {cameras[0]}", (20, 60), scale=4, thickness=2, offset=7, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"), (20, 100), scale=2, thickness=2, offset=4, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(
+            img,
+            f"Camera : {cameras[0]}",
+            (20, 60),
+            scale=4,
+            thickness=2,
+            offset=7,
+            colorR=(0, 0, 0),
+            colorB=(255, 255, 255),
+        )
+        cvzone.putTextRect(
+            img,
+            f"Timestamp : " + datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+            (20, 100),
+            scale=2,
+            thickness=2,
+            offset=4,
+            colorR=(0, 0, 0),
+            colorB=(255, 255, 255),
+        )
 
         width = int(img.shape[1] * scale)
         height = int(img.shape[0] * scale)
@@ -213,3 +231,11 @@ if __name__ == "__main__":
     \n
     """
     print(copyright_text)
+    video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
+    # video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
+    model_emp_path, model_act_path = ".runs/detect/.arc/employees-1/weights/best.pt", ".runs/detect/.arc/eactivity-1/weights/best.pt"
+    emp_conf_th, act_conf_th = (0.8, 0.25)
+    video_scale = 0.75
+
+    main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, video_scale)
+
