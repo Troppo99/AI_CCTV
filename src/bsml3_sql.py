@@ -66,14 +66,14 @@ def draw_table(img, data, percentages, row_height=25):
 
     x_move = 1250
     y_move = 150
-    cv2.putText(img, f"Report Table", (20 + x_move, 540+y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.putText(img, f"Report Table", (20 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
     headers = ["Employee", "Working", "Unloading", "Packing", "Sorting", "Idle", "Absent"]
 
     scale_text = 1.2
-    cvzone.putTextRect(img, headers[0], (20+x_move, 595+y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-    cvzone.putTextRect(img, headers[1], (138+x_move, 595+y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-    cvzone.putTextRect(img, headers[5], (300+x_move, 595+y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-    cvzone.putTextRect(img, headers[6], (460+x_move, 595+y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[0], (20 + x_move, 595 + y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[1], (138 + x_move, 595 + y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[5], (300 + x_move, 595 + y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+    cvzone.putTextRect(img, headers[6], (460 + x_move, 595 + y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
     pink_color = (255, 0, 255)
     dpink_color = (145, 0, 145)
@@ -83,40 +83,37 @@ def draw_table(img, data, percentages, row_height=25):
         working_time = times["wrapping_time"] + times["unloading_time"] + times["packing_time"] + times["sorting_time"]
         working_percentages = percentages[emp_class]["%w"] + percentages[emp_class]["%u"] + percentages[emp_class]["%p"] + percentages[emp_class]["%s"]
 
-        cvzone.putTextRect(img, emp_class, (20+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, emp_class, (20 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(img, format_time(working_time), (138+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
-        cvzone.putTextRect(img, f"{(working_percentages):.0f}%", (228+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, format_time(working_time), (138 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{(working_percentages):.0f}%", (228 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(img, format_time(times["idle_time"]), (300+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (390+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, format_time(times["idle_time"]), (300 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (390 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(img, format_time(times["absent_time"]), (460+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (550+x_move, y_position+y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, format_time(times["absent_time"]), (460 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
 
 def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
-    try:
-        query = """
+    query = """
         INSERT INTO empact (cam, timestamp, employee_name, wrapping_time, unloading_time, packing_time, sorting_time, idle_time, absent_time)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(
-            query,
-            (
-                cam,
-                timestamp,
-                emp_class,
-                times["wrapping_time"],
-                times["unloading_time"],
-                times["packing_time"],
-                times["sorting_time"],
-                times["idle_time"],
-                times["absent_time"],
-            ),
-        )
-    except Error as e:
-        print(f"Error: {e}")
+    cursor.execute(
+        query,
+        (
+            cam,
+            timestamp,
+            emp_class,
+            times["wrapping_time"],
+            times["unloading_time"],
+            times["packing_time"],
+            times["sorting_time"],
+            times["idle_time"],
+            times["absent_time"],
+        ),
+    )
 
 
 def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, scale):
@@ -202,9 +199,9 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
             cv2.imshow("Area Folding", resized_img)
 
             key = cv2.waitKey(1) & 0xFF
-            if key == ord("n"):
+            if key is ord("n"):
                 break
-            elif key == ord("s"):
+            elif key is ord("s"):
                 show_table = not show_table
 
         cap.release()
