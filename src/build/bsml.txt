@@ -1,0 +1,3 @@
+bsml version 1 : dasar pembacaan model
+bsml version 2 : pengambilan data dengan display tidak rapih
+bsml version 3 : pengambilan data tingkat lanjut dengan display rapih dan sudah terintegrasi mySQL server
