@@ -1,4 +1,4 @@
 # **!🤏😎!🤏🕶️😉!**
-# **WELCOME to Line, MYREPO, Buddy!**
+# **WELCOME to MYREPO, Buddy!**
 
 CopyRight Nana Wartana alias Troppo99
