@@ -1,3 +1,20 @@
-from ultralytics.data.annotator import auto_annotate
+from ultralytics import YOLO
+import cv2
 
-auto_annotate(data="ultralytics/assets", det_model="yolov8n.pt", sam_model="mobile_sam.pt")
+rtsp_url = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
+cap = cv2.VideoCapture(rtsp_url)
+
+model = YOLO("../../MY_FILES/Archives/yang_diignore/.runs/weights/yolov8l.pt")
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+    result = model(frame, stream=True)
+
+    cv2.imshow("Area Line Tengah", frame)
+    if cv2.waitKey(1) & 0xFF == ord("n"):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
