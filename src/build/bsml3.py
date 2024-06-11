@@ -37,7 +37,7 @@ def update_data_table(data, emp_class, act_class, frame_duration):
             "packing_time": 0,
             "sorting_time": 0,
             "idle_time": 0,
-            "absent_time": 0,
+            "offsite_time": 0,
         }
     if act_class in data[emp_class]:
         data[emp_class][act_class] += frame_duration
@@ -66,7 +66,7 @@ def draw_table(img, data, percentages, row_height=25):
     x_move = 1250
     y_move = 150
     cv2.putText(img, f"Report Table", (20 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
-    headers = ["Employee", "Working", "Unloading", "Packing", "Sorting", "Idle", "Absent"]
+    headers = ["Employee", "Working", "Unloading", "Packing", "Sorting", "Idle", "Offsite"]
 
     scale_text = 1.2
     cvzone.putTextRect(img, headers[0], (20 + x_move, 595 + y_move), scale=scale_text, thickness=1, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
@@ -90,19 +90,19 @@ def draw_table(img, data, percentages, row_height=25):
         cvzone.putTextRect(img, format_time(times["idle_time"]), (300 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
         cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (390 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
-        cvzone.putTextRect(img, format_time(times["absent_time"]), (460 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, format_time(times["offsite_time"]), (460 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
         cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
 
 def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
     query = """
-        INSERT INTO empact (cam, timestamp, employee_name, working_time, idle_time, absent_time)
+        INSERT INTO empact (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
     t_working = times["wrapping_time"] + times["unloading_time"] + times["packing_time"] + times["sorting_time"]
     cursor.execute(
         query,
-        (cam, timestamp, emp_class, t_working, times["idle_time"], times["absent_time"]),
+        (cam, timestamp, emp_class, t_working, times["idle_time"], times["offsite_time"]),
     )
 
 
@@ -151,17 +151,17 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
                     update_data_table(data, emp_class, "idle_time", frame_duration)
 
                 # Draw bounding box for employee
-                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                # cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
                 if act_detected:
                     cvzone.putTextRect(img, f"{emp_class} is {act_class}", (max(0, x1), max(35, y1)), scale=2, thickness=2, colorT=(0, 0, 255), colorR=(0, 255, 255), colorB=(0, 252, 0), offset=5)
                 else:
                     cvzone.putTextRect(img, f"{emp_class} is idle", (max(0, x1), max(35, y1)), scale=2, thickness=2, colorT=(0, 0, 0), colorR=(255, 255, 255), colorB=(0, 252, 0), offset=5)
 
-            # Assume no detection means the employee is absent
+            # Assume no detection means the employee is offsite
             detected_employees = [emp_class for _, _, _, _, emp_class, _ in detections_emp]
             for emp_class in class_names_emp:
                 if emp_class not in detected_employees:
-                    update_data_table(data, emp_class, "absent_time", frame_duration)
+                    update_data_table(data, emp_class, "offsite_time", frame_duration)
 
             percentages = calculate_percentages(data)
             if show_table:
