@@ -45,7 +45,7 @@ def update_data_table(data, emp_class, act_class, frame_duration):
         data[emp_class]["idle_time"] += frame_duration
 
 
-def calculate_percentages(data):
+def calculate_percentages(data):  # Harus dikaji lagi mengeni detected time and undetected time
     percentages = {}
     for emp_class in data:
         total_emp_time = sum(data[emp_class].values())
@@ -91,7 +91,7 @@ def draw_table(img, data, percentages, row_height=25):
         cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (390 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
         cvzone.putTextRect(img, format_time(times["offsite_time"]), (460 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
-        cvzone.putTextRect(img, f"{percentages[emp_class]['%a']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
+        cvzone.putTextRect(img, f"{percentages[emp_class]['%o']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=1, offset=5, colorR=color_rect)
 
 
 def insert_data_to_mysql(cursor, cam, timestamp, emp_class, times):
@@ -201,10 +201,7 @@ def main(video_path, model_emp_path, model_act_path, emp_conf_th, act_conf_th, s
 if __name__ == "__main__":
     video_path = "../MY_FILES/Videos/CCTV/source/10_ch04_20240425073845.mp4"
     # video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
-    model_emp_path, model_act_path = (
-        ".runs/detect/.arc/employees-1/weights/best.pt",
-        ".runs/detect/.arc/eactivity-1/weights/best.pt",
-    )
+    model_emp_path, model_act_path = (".runs/detect/.arc/employees-1/weights/best.pt", ".runs/detect/.arc/eactivity-1/weights/best.pt")
     emp_conf_th, act_conf_th = (0.8, 0.25)
     video_scale = 0.75
 
