@@ -6,5 +6,5 @@
 .conda/*
 .vscode/*
 
-# Directory yang ada dimana-mana
+# Directory yang kadang ada dimana-mana
 **/__pycache__/*
