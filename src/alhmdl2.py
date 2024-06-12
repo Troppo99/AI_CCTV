@@ -18,9 +18,7 @@ def last_time(seconds):
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-def main(video_path, scale, model_path):
-    cap = cv2.VideoCapture(video_path)
-    model = YOLO(model_path)
+def result_elaboration(result, frame):
     classNames = [
         "person",
         "bicycle",
@@ -103,38 +101,51 @@ def main(video_path, scale, model_path):
         "hair drier",
         "toothbrush",
     ]
+    for r in result:
+        boxes = r.boxes
+        for box in boxes:
+            x1, y1, x2, y2 = box.xyxy[0]
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+            w, h = x2 - x1, y2 - y1
+            cvzone.cornerRect(frame, (x1, y1, w, h))
+            conf = math.ceil(box.conf[0] * 100) / 100
+            cls = int(box.cls[0])
+            if conf >= 0.5:
+                cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
+
+
+def main(video_path, scale, model_path, mask_path):
+    cap = cv2.VideoCapture(video_path)
+    model = YOLO(model_path)
+    seconds = time.time()
+    mask = cv2.imread(mask_path)
     try:
-        seconds = time.time()
         while True:
             ret, frame = cap.read()
-            result = model(frame, stream=True)
-            for r in result:
-                boxes = r.boxes
-                for box in boxes:
-                    x1, y1, x2, y2 = box.xyxy[0]
-                    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                    w, h = x2 - x1, y2 - y1
-                    cvzone.cornerRect(frame, (x1, y1, w, h))
-                    conf = math.ceil(box.conf[0] * 100) / 100
-                    cls = int(box.cls[0])
-                    cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
-
-            frame = resize(frame, scale)
-            cv2.imshow("cctv", frame)
-            if cv2.waitKey(1) & 0xFF == ord("n"):
-                last_time(seconds)
+            if ret is True:
+                frame_region = cv2.bitwise_and(frame, mask)
+                result_1 = model(frame_region, stream=True)
+                result_elaboration(result_1, frame)
+                frame = resize(frame, scale)
+                cv2.imshow("cctv", frame)
+                if cv2.waitKey(1) & 0xFF == ord("n"):
+                    last_time(seconds)
+                    break
+            else:
                 break
         cap.release()
         cv2.destroyAllWindows()
-    except:
+    except Exception as ex:
+        print(f"Exception invalid data : {ex}")
         last_time(seconds)
-
     finally:
-        print("Good luck!")
+        print("Good luck,Na!")
 
 
 if __name__ == "__main__":
     video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
     scale = 0.75
     model_path = ".runs/weights/yolov8l.pt"
-    main(video_path, scale, model_path)
+    mask_path = ".runs/images/mask2.png"
+
+    main(video_path, scale, model_path, mask_path)
