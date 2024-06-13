@@ -123,8 +123,8 @@ def main(video_path, scale, model_path, mask_path):
         while True:
             ret, frame = cap.read()
             if ret is True:
-                frame_region = cv2.bitwise_and(frame, mask)
-                result_1 = model(frame_region, stream=True)
+                # frame_region = cv2.bitwise_and(frame, mask)
+                result_1 = model(frame, stream=True)
                 result_elaboration(result_1, frame)
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
@@ -139,13 +139,14 @@ def main(video_path, scale, model_path, mask_path):
         print(f"Exception invalid data : {ex}")
         last_time(seconds)
     finally:
-        print("Good luck,Na!")
+        print("Good luck, Na!")
 
 
 if __name__ == "__main__":
-    video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
-    scale = 0.75
+    # video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
+    video_path = ".runs/videos/trytwo.mp4"
+    scale = 0.2
     model_path = ".runs/weights/yolov8l.pt"
-    mask_path = ".runs/images/mask2.png"
+    mask_path = ".runs/images/mask_trytwo.png"
 
     main(video_path, scale, model_path, mask_path)
