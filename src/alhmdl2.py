@@ -121,14 +121,13 @@ def result_elaboration(result, frame, conf_th, detection_times, frame_count, sav
                     detection_times["mouse"] = t.time()
 
                 mouse_detected = True
-                # Calculate the duration of detection--------------------------------------------------------------------------------
+                # Calculate the duration of detection
                 duration = t.time() - detection_times["mouse"]
                 duration_text = f"Duration: {timedelta(seconds=int(duration))}"
 
                 # Blink ALERTING! text and save frame only once
                 if duration >= 3:
                     if frame_count % 20 < 15:  # Blinking technique
-                        """KIRIM DATA"""
                         cvzone.putTextRect(frame, "ALERTING!", (300, 300), scale=2, thickness=3, colorR=(0, 0, 255))
                         if "saved" not in detection_times:
                             # Save the frame when duration is >= 3 and ALERTING! is displayed
@@ -136,7 +135,7 @@ def result_elaboration(result, frame, conf_th, detection_times, frame_count, sav
                             filename = os.path.join(save_folder, f"alert_frame_{capture_time}.jpg")
                             cv2.imwrite(filename, frame)
                             print(f"Frame saved at {capture_time} as {filename}")
-                            detection_times["saved"] = True #------------------------------------------------------------------------
+                            detection_times["saved"] = True
 
     # If mouse is not detected, reset the detection time and remove saved flag
     if not mouse_detected:
