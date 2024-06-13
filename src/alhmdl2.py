@@ -109,7 +109,7 @@ def result_elaboration(result, frame, conf_th):
             w, h = x2 - x1, y2 - y1
             conf = math.ceil(box.conf[0] * 100) / 100
             cls = int(box.cls[0])
-            if conf >= conf_th and classNames[cls]="mouse":
+            if conf >= conf_th and classNames[cls]=="mouse":
                 cvzone.cornerRect(frame, (x1, y1, w, h))
                 cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
 
