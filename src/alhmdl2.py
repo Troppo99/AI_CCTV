@@ -1,5 +1,5 @@
 import cv2
-import time
+import time as t
 from datetime import timedelta
 from ultralytics import YOLO
 import cvzone
@@ -14,7 +14,7 @@ def resize(frame, scale):
 
 
 def last_time(seconds):
-    seconds = time.time() - seconds
+    seconds = t.time() - seconds
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
@@ -102,6 +102,7 @@ def result_elaboration(result, frame, conf_th):
         "toothbrush",
     ]
     duration_text = ""
+    mouse_detected = False
     for r in result:
         boxes = r.boxes
         for box in boxes:
@@ -112,15 +113,24 @@ def result_elaboration(result, frame, conf_th):
             cls = int(box.cls[0])
             if conf >= conf_th and classNames[cls] == "mouse":
                 cvzone.cornerRect(frame, (x1, y1, w, h))
-                cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
+                cvzone.putTextRect(frame, f"{classNames[cls]}", (max(0, x1), max(35, y1)))
 
                 # Record the time of detection start
                 if "mouse" not in detection_times:
-                    detection_times["mouse"] = time.time()
+                    detection_times["mouse"] = t.time()
 
                 # Calculate the duration of detection
-                duration = time.time() - detection_times["mouse"]
+                duration = t.time() - detection_times["mouse"]
                 duration_text = f"Duration: {str(timedelta(seconds=int(duration)))}"
+                mouse_detected = True
+                while duration >= 3:
+                    
+                    cvzone.putTextRect(frame, f"ALERTING!", (300,300))
+
+    # If mouse is not detected, reset the detection time
+    if not mouse_detected:
+        detection_times.pop("mouse", None)
+        duration_text = "Duration: 0:00:00"
 
     return duration_text
 
@@ -128,7 +138,7 @@ def result_elaboration(result, frame, conf_th):
 def main(video_path, model_path, mask_path, conf_th, scale):
     cap = cv2.VideoCapture(video_path)
     model = YOLO(model_path)
-    seconds = time.time()
+    seconds = t.time()
     mask = cv2.imread(mask_path)
     try:
         while True:
@@ -141,10 +151,10 @@ def main(video_path, model_path, mask_path, conf_th, scale):
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
                 if cv2.waitKey(1) & 0xFF == ord("n"):
-                    last_time(seconds)
                     break
             else:
                 break
+        last_time(seconds)
         cap.release()
         cv2.destroyAllWindows()
     except Exception as ex:
