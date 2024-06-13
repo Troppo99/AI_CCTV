@@ -18,7 +18,7 @@ def last_time(seconds):
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-def result_elaboration(result, frame):
+def result_elaboration(result, frame, conf_th):
     classNames = [
         "person",
         "bicycle",
@@ -107,14 +107,14 @@ def result_elaboration(result, frame):
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2 - y1
-            cvzone.cornerRect(frame, (x1, y1, w, h))
             conf = math.ceil(box.conf[0] * 100) / 100
             cls = int(box.cls[0])
-            if conf >= 0.5:
+            if conf >= conf_th and classNames[cls]="mouse":
+                cvzone.cornerRect(frame, (x1, y1, w, h))
                 cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
 
 
-def main(video_path, scale, model_path, mask_path):
+def main(video_path, model_path, mask_path, conf_th, scale):
     cap = cv2.VideoCapture(video_path)
     model = YOLO(model_path)
     seconds = time.time()
@@ -123,9 +123,9 @@ def main(video_path, scale, model_path, mask_path):
         while True:
             ret, frame = cap.read()
             if ret is True:
-                # frame_region = cv2.bitwise_and(frame, mask)
-                result_1 = model(frame, stream=True)
-                result_elaboration(result_1, frame)
+                frame_region = cv2.bitwise_and(frame, mask)
+                result_1 = model(frame_region, stream=True)
+                result_elaboration(result_1, frame, conf_th)
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
                 if cv2.waitKey(1) & 0xFF == ord("n"):
@@ -143,10 +143,8 @@ def main(video_path, scale, model_path, mask_path):
 
 
 if __name__ == "__main__":
-    # video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
-    video_path = ".runs/videos/trytwo.mp4"
-    scale = 0.2
+    video_path = ".runs/videos/mouse.mp4"
     model_path = ".runs/weights/yolov8l.pt"
-    mask_path = ".runs/images/mask_trytwo.png"
+    mask_path = ".runs/images/mask3.png"
 
-    main(video_path, scale, model_path, mask_path)
+    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.75)
