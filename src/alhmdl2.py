@@ -101,6 +101,7 @@ def result_elaboration(result, frame, conf_th):
         "hair drier",
         "toothbrush",
     ]
+    duration_text = ""
     for r in result:
         boxes = r.boxes
         for box in boxes:
@@ -109,9 +110,19 @@ def result_elaboration(result, frame, conf_th):
             w, h = x2 - x1, y2 - y1
             conf = math.ceil(box.conf[0] * 100) / 100
             cls = int(box.cls[0])
-            if conf >= conf_th and classNames[cls]=="mouse":
+            if conf >= conf_th and classNames[cls] == "mouse":
                 cvzone.cornerRect(frame, (x1, y1, w, h))
                 cvzone.putTextRect(frame, f"{classNames[cls]} {conf}", (max(0, x1), max(35, y1)))
+
+                # Record the time of detection start
+                if "mouse" not in detection_times:
+                    detection_times["mouse"] = time.time()
+
+                # Calculate the duration of detection
+                duration = time.time() - detection_times["mouse"]
+                duration_text = f"Duration: {str(timedelta(seconds=int(duration)))}"
+
+    return duration_text
 
 
 def main(video_path, model_path, mask_path, conf_th, scale):
@@ -125,7 +136,8 @@ def main(video_path, model_path, mask_path, conf_th, scale):
             if ret is True:
                 frame_region = cv2.bitwise_and(frame, mask)
                 result_1 = model(frame_region, stream=True)
-                result_elaboration(result_1, frame, conf_th)
+                duration_text = result_elaboration(result_1, frame, conf_th)
+                cvzone.putTextRect(frame, duration_text, (100, 100))
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
                 if cv2.waitKey(1) & 0xFF == ord("n"):
@@ -136,7 +148,7 @@ def main(video_path, model_path, mask_path, conf_th, scale):
         cap.release()
         cv2.destroyAllWindows()
     except Exception as ex:
-        print(f"Exception invalid data : {ex}")
+        print(f"Exception invalid data: {ex}")
         last_time(seconds)
     finally:
         print("Good luck, Na!")
@@ -146,5 +158,6 @@ if __name__ == "__main__":
     video_path = ".runs/videos/mouse.mp4"
     model_path = ".runs/weights/yolov8l.pt"
     mask_path = ".runs/images/mask3.png"
+    detection_times = {}
 
-    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.75)
+    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.5)
