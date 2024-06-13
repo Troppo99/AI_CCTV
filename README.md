@@ -1,4 +1,4 @@
-# **😝!😜!🤪!🤓!😎!🥸**
-# **WELCOME to notebook, Buddy!**
+# **!🤏😎!🤏🕶️😉!**
+# **WELCOME to Line, Buddy!**
 
-CopyRight Nana Wartana alias Troppo99 
+CopyRight Nana Wartana alias Troppo99
