@@ -18,7 +18,7 @@ def last_time(seconds):
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-def result_elaboration(result, frame, conf_th):
+def result_elaboration(result, frame, conf_th, detection_times, frame_count):
     classNames = [
         "person",
         "bicycle",
@@ -121,11 +121,14 @@ def result_elaboration(result, frame, conf_th):
 
                 # Calculate the duration of detection
                 duration = t.time() - detection_times["mouse"]
-                duration_text = f"Duration: {str(timedelta(seconds=int(duration)))}"
+                duration_text = f"Duration: {timedelta(seconds=int(duration))}"
                 mouse_detected = True
-                while duration >= 3:
-                    
-                    cvzone.putTextRect(frame, f"ALERTING!", (300,300))
+
+                # Blink ALERTING! text
+                if duration >= 3:
+                    if frame_count % 20 < 15:  # Blinking technique
+                        """KIRIM DATA"""
+                        cvzone.putTextRect(frame, "ALERTING!", (300, 300), scale=2, thickness=3, colorR=(0, 0, 255))
 
     # If mouse is not detected, reset the detection time
     if not mouse_detected:
@@ -140,21 +143,24 @@ def main(video_path, model_path, mask_path, conf_th, scale):
     model = YOLO(model_path)
     seconds = t.time()
     mask = cv2.imread(mask_path)
+    detection_times = {}
+    frame_count = 0
     try:
         while True:
             ret, frame = cap.read()
             if ret is True:
                 frame_region = cv2.bitwise_and(frame, mask)
                 result_1 = model(frame_region, stream=True)
-                duration_text = result_elaboration(result_1, frame, conf_th)
+                duration_text = result_elaboration(result_1, frame, conf_th, detection_times, frame_count)
                 cvzone.putTextRect(frame, duration_text, (100, 100))
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
+                frame_count += 1
                 if cv2.waitKey(1) & 0xFF == ord("n"):
+                    last_time(seconds)
                     break
             else:
                 break
-        last_time(seconds)
         cap.release()
         cv2.destroyAllWindows()
     except Exception as ex:
@@ -168,6 +174,5 @@ if __name__ == "__main__":
     video_path = ".runs/videos/mouse.mp4"
     model_path = ".runs/weights/yolov8l.pt"
     mask_path = ".runs/images/mask3.png"
-    detection_times = {}
 
     main(video_path, model_path, mask_path, conf_th=0.5, scale=0.5)
