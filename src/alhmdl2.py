@@ -4,6 +4,7 @@ from datetime import timedelta
 from ultralytics import YOLO
 import cvzone
 import math
+import os
 
 
 def resize(frame, scale):
@@ -18,7 +19,7 @@ def last_time(seconds):
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-def result_elaboration(result, frame, conf_th, detection_times, frame_count):
+def result_elaboration(result, frame, conf_th, detection_times, frame_count, save_folder):
     classNames = [
         "person",
         "bicycle",
@@ -119,39 +120,51 @@ def result_elaboration(result, frame, conf_th, detection_times, frame_count):
                 if "mouse" not in detection_times:
                     detection_times["mouse"] = t.time()
 
-                # Calculate the duration of detection
+                mouse_detected = True
+                # Calculate the duration of detection--------------------------------------------------------------------------------
                 duration = t.time() - detection_times["mouse"]
                 duration_text = f"Duration: {timedelta(seconds=int(duration))}"
-                mouse_detected = True
 
-                # Blink ALERTING! text
+                # Blink ALERTING! text and save frame only once
                 if duration >= 3:
                     if frame_count % 20 < 15:  # Blinking technique
                         """KIRIM DATA"""
                         cvzone.putTextRect(frame, "ALERTING!", (300, 300), scale=2, thickness=3, colorR=(0, 0, 255))
+                        if "saved" not in detection_times:
+                            # Save the frame when duration is >= 3 and ALERTING! is displayed
+                            capture_time = t.strftime("%Y%m%d_%H%M%S")
+                            filename = os.path.join(save_folder, f"alert_frame_{capture_time}.jpg")
+                            cv2.imwrite(filename, frame)
+                            print(f"Frame saved at {capture_time} as {filename}")
+                            detection_times["saved"] = True #------------------------------------------------------------------------
 
-    # If mouse is not detected, reset the detection time
+    # If mouse is not detected, reset the detection time and remove saved flag
     if not mouse_detected:
         detection_times.pop("mouse", None)
+        detection_times.pop("saved", None)
         duration_text = "Duration: 0:00:00"
 
     return duration_text
 
 
-def main(video_path, model_path, mask_path, conf_th, scale):
+def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
     cap = cv2.VideoCapture(video_path)
     model = YOLO(model_path)
     seconds = t.time()
     mask = cv2.imread(mask_path)
     detection_times = {}
     frame_count = 0
+
+    # Create the save folder if it doesn't exist
+    os.makedirs(save_folder, exist_ok=True)
+
     try:
         while True:
             ret, frame = cap.read()
             if ret is True:
                 frame_region = cv2.bitwise_and(frame, mask)
                 result_1 = model(frame_region, stream=True)
-                duration_text = result_elaboration(result_1, frame, conf_th, detection_times, frame_count)
+                duration_text = result_elaboration(result_1, frame, conf_th, detection_times, frame_count, save_folder)
                 cvzone.putTextRect(frame, duration_text, (100, 100))
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
@@ -174,5 +187,6 @@ if __name__ == "__main__":
     video_path = ".runs/videos/mouse.mp4"
     model_path = ".runs/weights/yolov8l.pt"
     mask_path = ".runs/images/mask3.png"
+    save_folder = ".runs/images/alert"
 
-    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.5)
+    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.5, save_folder=save_folder)
