@@ -21,8 +21,9 @@ def format_time(waktu):
 # Loop melalui frame video
 while cap.isOpened():
     success, frame = cap.read()
+    frame_region=cv2.bitwise_and(frame, cv2.imread(".runs/images/mask2.png"))
     if success:
-        results = model.track(frame, persist=True)
+        results = model.track(frame_region, persist=True)
         annotated_frame = results[0].plot()
 
         # Proses hasil deteksi
