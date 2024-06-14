@@ -1,5 +1,6 @@
 # Directory or file dibawah merupakan file yang harus di arsipkan
 .runs/*
+.dev/*
 
 # Directory yang bisa berbeda tiap device
 .venv/*
