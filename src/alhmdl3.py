@@ -103,7 +103,7 @@ def results_elaboration(result, frame, conf_th, detection_times, frame_count, sa
         "toothbrush",
     ]
     duration_text = ""
-    mouse_detected = False
+    person_detected = False
     for r in result:
         boxes = r.boxes
         for box in boxes:
@@ -112,17 +112,17 @@ def results_elaboration(result, frame, conf_th, detection_times, frame_count, sa
             w, h = x2 - x1, y2 - y1
             conf = math.ceil(box.conf[0] * 100) / 100
             cls = int(box.cls[0])
-            if conf >= conf_th and classNames[cls] == "mouse":
+            if conf >= conf_th and classNames[cls] == "person":
                 cvzone.cornerRect(frame, (x1, y1, w, h))
                 cvzone.putTextRect(frame, f"{classNames[cls]}", (max(0, x1), max(35, y1)))
 
                 # Record the time of detection start
-                if "mouse" not in detection_times:
-                    detection_times["mouse"] = t.time()
+                if "person" not in detection_times:
+                    detection_times["person"] = t.time()
 
-                mouse_detected = True
+                person_detected = True
                 # Calculate the duration of detection
-                duration = t.time() - detection_times["mouse"]
+                duration = t.time() - detection_times["person"]
                 duration_text = f"Duration: {timedelta(seconds=int(duration))}"
 
                 # Blink ALERTING! text and save frame only once
@@ -137,9 +137,9 @@ def results_elaboration(result, frame, conf_th, detection_times, frame_count, sa
                             print(f"Frame saved at {capture_time} as {filename}")
                             detection_times["saved"] = True
 
-    # If mouse is not detected, reset the detection time and remove saved flag
-    if not mouse_detected:
-        detection_times.pop("mouse", None)
+    # If person is not detected, reset the detection time and remove saved flag
+    if not person_detected:
+        detection_times.pop("person", None)
         detection_times.pop("saved", None)
         duration_text = "Duration: 0:00:00"
 
@@ -166,7 +166,7 @@ def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
                 duration_text = results_elaboration(results_1, frame, conf_th, detection_times, frame_count, save_folder)
                 cvzone.putTextRect(frame, duration_text, (100, 100))
                 frame = resize(frame, scale)
-                cv2.imshow("cctv", frame)
+                cv2.imshow("Area Line Tengah", frame)
                 frame_count += 1
                 if cv2.waitKey(1) & 0xFF == ord("n"):
                     last_time(seconds)
@@ -183,9 +183,9 @@ def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
 
 
 if __name__ == "__main__":
-    video_path = ".runs/videos/mouse.mp4"
+    video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
     model_path = ".runs/weights/yolov8l.pt"
-    mask_path = ".runs/images/mask3.png"
+    mask_path = ".runs/images/mask2.png"
     save_folder = ".runs/images/alert"
 
-    main(video_path, model_path, mask_path, conf_th=0.5, scale=0.5, save_folder=save_folder)
+    main(video_path, model_path, mask_path, conf_th=0, scale=0.5, save_folder=save_folder)
