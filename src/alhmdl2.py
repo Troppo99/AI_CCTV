@@ -19,7 +19,7 @@ def last_time(seconds):
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-def result_elaboration(result, frame, conf_th, detection_times, frame_count, save_folder):
+def results_elaboration(result, frame, conf_th, detection_times, frame_count, save_folder):
     classNames = [
         "person",
         "bicycle",
@@ -162,8 +162,8 @@ def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
             ret, frame = cap.read()
             if ret is True:
                 frame_region = cv2.bitwise_and(frame, mask)
-                result_1 = model(frame_region, stream=True)
-                duration_text = result_elaboration(result_1, frame, conf_th, detection_times, frame_count, save_folder)
+                results_1 = model(frame_region, stream=True)
+                duration_text = results_elaboration(results_1, frame, conf_th, detection_times, frame_count, save_folder)
                 cvzone.putTextRect(frame, duration_text, (100, 100))
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
