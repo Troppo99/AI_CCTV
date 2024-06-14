@@ -8,7 +8,6 @@ import torch
 from threading import Thread, Lock
 
 
-# Thread untuk pengambilan frame dari video
 class VideoCaptureThread(Thread):
     def __init__(self, video_path):
         Thread.__init__(self)
@@ -32,7 +31,6 @@ class VideoCaptureThread(Thread):
         self.cap.release()
 
 
-# Fungsi untuk resize frame
 def resize(frame, scale):
     width = int(frame.shape[1] * scale)
     height = int(frame.shape[0] * scale)
@@ -40,13 +38,11 @@ def resize(frame, scale):
     return frame
 
 
-# Fungsi untuk menghitung durasi waktu
 def last_time(seconds):
     seconds = t.time() - seconds
     print(f"Durasi bertahan selama {timedelta(seconds=int(seconds))}")
 
 
-# Fungsi untuk memproses hasil deteksi
 def results_elaboration(result, frame, detection_times):
     classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed", "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
     for r in result:
@@ -78,7 +74,6 @@ def results_elaboration(result, frame, detection_times):
     return frame
 
 
-# Fungsi utama
 def main(video_path, model_path):
     # Verifikasi apakah GPU tersedia
     if not torch.cuda.is_available():
@@ -147,6 +142,6 @@ def main(video_path, model_path):
 if __name__ == "__main__":
     video_path = ".runs/videos/area_line_tengah.mp4"
 
-    
+
     model_path = ".runs/weights/yolov8l.pt"
     main(video_path, model_path)
