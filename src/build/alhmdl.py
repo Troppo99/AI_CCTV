@@ -119,19 +119,31 @@ def main(video_path, scale, model_path, mask_path):
     model = YOLO(model_path)
     seconds = time.time()
     mask = cv2.imread(mask_path)
+    prev_time = time.time()
+    fps = 0
+
     try:
         while True:
             ret, frame = cap.read()
             if ret is True:
+                current_time = time.time()
+                fps = 1 / (current_time - prev_time)
+                prev_time = current_time
+
                 frame_region = cv2.bitwise_and(frame, mask)
                 result_1 = model(frame_region, stream=True)
                 result_elaboration(result_1, frame)
+
+                # Menampilkan FPS pada frame
+                cv2.putText(frame, f"FPS: {fps:.0f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+
                 frame = resize(frame, scale)
                 cv2.imshow("cctv", frame)
                 if cv2.waitKey(1) & 0xFF == ord("n"):
                     last_time(seconds)
                     break
             else:
+                last_time(seconds)
                 break
         cap.release()
         cv2.destroyAllWindows()
@@ -144,6 +156,7 @@ def main(video_path, scale, model_path, mask_path):
 
 if __name__ == "__main__":
     video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
+    video_path = ".runs/videos/area_line_tengah.mp4"
     scale = 0.75
     model_path = ".runs/weights/yolov8l.pt"
     mask_path = ".runs/images/mask2.png"
