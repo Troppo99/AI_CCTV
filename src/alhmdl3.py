@@ -114,7 +114,7 @@ def results_elaboration(result, frame, conf_th, detection_times, frame_count, sa
             cls = int(box.cls[0])
             if conf >= conf_th and classNames[cls] == "person":
                 cvzone.cornerRect(frame, (x1, y1, w, h))
-                cvzone.putTextRect(frame, f"{classNames[cls]}", (max(0, x1), max(35, y1)))
+                cvzone.putTextRect(frame, duration_text, (max(0, x1), max(35, y1)))
 
                 # Record the time of detection start
                 if "person" not in detection_times:
@@ -143,8 +143,6 @@ def results_elaboration(result, frame, conf_th, detection_times, frame_count, sa
         detection_times.pop("saved", None)
         duration_text = "Duration: 0:00:00"
 
-    return duration_text
-
 
 def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
     cap = cv2.VideoCapture(video_path)
@@ -163,8 +161,7 @@ def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
             if ret is True:
                 frame_region = cv2.bitwise_and(frame, mask)
                 results_1 = model(frame_region, stream=True)
-                duration_text = results_elaboration(results_1, frame, conf_th, detection_times, frame_count, save_folder)
-                cvzone.putTextRect(frame, duration_text, (100, 100))
+                results_elaboration(results_1, frame, conf_th, detection_times, frame_count, save_folder)
                 frame = resize(frame, scale)
                 cv2.imshow("Area Line Tengah", frame)
                 frame_count += 1
@@ -183,7 +180,8 @@ def main(video_path, model_path, mask_path, conf_th, scale, save_folder):
 
 
 if __name__ == "__main__":
-    video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
+    # video_path = "rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1"
+    video_path = ".runs/videos/area_line_tengah.mp4"
     model_path = ".runs/weights/yolov8l.pt"
     mask_path = ".runs/images/mask2.png"
     save_folder = ".runs/images/alert"
