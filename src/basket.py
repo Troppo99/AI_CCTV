@@ -5,24 +5,14 @@ import math
 import time
 
 cap = cv2.VideoCapture("D:/NWR27/AI_CCTV/.runs/videos/record1.mp4")
-
-# Initialize YOLO model
 model = YOLO(".runs/detect/basket/weights/best.pt")
-
-# Class names
 classNames = ["0", "2", "3", "basket"]
-
-# Dimensions for imshow
-scaleof = 0.75  # 0 to 1.5 (1280 x 720 default video resolution)
+scaleof = 0.75
 newDim = (int(1280 * scaleof), int(720 * scaleof))
-
-# Get frame width, height, and original frame rate
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 original_fps = cap.get(cv2.CAP_PROP_FPS)
-frame_delay = int(1000 / original_fps)  # Delay in milliseconds
-
-# Initialize VideoWriter object with the original frame rate
+frame_delay = int(1000 / original_fps)
 out = cv2.VideoWriter(
     ".runs/videos/test.avi",
     cv2.VideoWriter_fourcc(*"XVID"),
@@ -34,20 +24,15 @@ while True:
     start_time = time.time()
     success, img = cap.read()
     if not success:
-        print("...Gagal muka cv2 bro...")
         break
-
     results = model(img, stream=True)
-
     for r in results:
         boxes = r.boxes
         for box in boxes:
             x1, y1, x2, y2 = box.xyxy[0]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             w, h = x2 - x1, y2 - y1
-            # Confidence
             conf = math.ceil((box.conf[0] * 100)) / 100
-            # Class Name
             cls = int(box.cls[0])
             currentClass = classNames[cls]
             if conf > 0.3:
@@ -63,21 +48,14 @@ while True:
                     colorB=(0, 252, 0),
                     offset=5,
                 )
-
-    # Write the frame to the video file
     out.write(img)
-
-    # Display the frame
     img_resized = cv2.resize(img, newDim)
     cv2.imshow("Image", img_resized)
-
-    # Calculate processing time and add delay
     processing_time = time.time() - start_time
-    wait_time = max(1, frame_delay - int(processing_time * 1000))  # Ensure non-negative wait time
+    wait_time = max(1, frame_delay - int(processing_time * 1000))
     if cv2.waitKey(wait_time) & 0xFF == ord("n"):
         break
 
-# Release the VideoCapture and VideoWriter objects
 cap.release()
 out.release()
 cv2.destroyAllWindows()
