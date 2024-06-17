@@ -1,16 +1,10 @@
-# from ultralytics import YOLO
-
-# model = YOLO(".runs/detect/basket/weights/best.pt")
-# results = model(source="", show=True, conf=0, save=True)
-
 from ultralytics import YOLO
 import cv2
 import cvzone
 import math
 import time
 
-# Initialize video capture
-cap = cv2.VideoCapture("rtsp://admin:oracle2015@192.168.100.2:554/Streaming/Channels/1")
+cap = cv2.VideoCapture("D:/NWR27/AI_CCTV/.runs/videos/record1.mp4")
 
 # Initialize YOLO model
 model = YOLO(".runs/detect/basket/weights/best.pt")
