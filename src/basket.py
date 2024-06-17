@@ -4,7 +4,8 @@ import cvzone
 import math
 import time
 
-cap = cv2.VideoCapture("D:/NWR27/AI_CCTV/.runs/videos/record1.mp4")
+# cap = cv2.VideoCapture("D:/NWR27/AI_CCTV/.runs/videos/record1_e.mp4")
+cap = cv2.VideoCapture("D:/NWR27/AI_CCTV/.runs/videos/record1_e.mp4")
 model = YOLO(".runs/detect/basket/weights/best.pt")
 classNames = ["0", "2", "3", "basket"]
 scaleof = 0.75
@@ -12,7 +13,7 @@ newDim = (int(1280 * scaleof), int(720 * scaleof))
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 original_fps = cap.get(cv2.CAP_PROP_FPS)
-frame_delay = int(1000 / original_fps)
+frame_delay = int(1000/ original_fps)
 out = cv2.VideoWriter(
     ".runs/videos/test.avi",
     cv2.VideoWriter_fourcc(*"XVID"),
