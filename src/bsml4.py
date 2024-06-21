@@ -7,6 +7,8 @@ import cvzone
 def main(video_path, scale):
     cap = cv2.VideoCapture(video_path)
     model = YOLO(".runs/weights/act.pt")
+    pink = (255,0,255)
+    pink_reduce = (255, 200, 255)
 
     while True:
         ret, frame = cap.read()
@@ -16,14 +18,19 @@ def main(video_path, scale):
         for result in results:
             if result.boxes:
                 for box in result.boxes:
-                    x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()  # Convert to CPU and then to NumPy
-                    track_id = int(box.id[0].cpu().numpy())  # Get the track ID
-                    cls = int(box.cls[0].cpu().numpy())  # Convert to CPU and then to NumPy
+                    warna = pink
+                    x1, y1, x2, y2 = box.xyxy[0]  # Convert to CPU and then to NumPy
+                    track_id = int(box.id[0])  # Get the track ID
+                    cls = int(box.cls[0])  # Convert to CPU and then to NumPy
                     class_name = model.names[cls]  # Get class name
 
                     # Draw bounding box
-                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
-                    cvzone.putTextRect(frame, f"{class_name} ID: {track_id}", (int(x1), int(y1 - 10)), scale=2, thickness=2)
+                    if class_name == "Folding":
+                        warna = pink
+                    else:
+                        warna = pink_reduce
+                    # cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
+                    cvzone.putTextRect(frame, f"{class_name} ID: {track_id}", (int(x1), int(y1 - 10)), scale=2, thickness=2,colorR=warna)
 
         width = int(frame.shape[1] * scale)
         height = int(frame.shape[0] * scale)
@@ -37,6 +44,6 @@ def main(video_path, scale):
 
 
 if __name__ == "__main__":
-    # video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
-    video_path = ".runs/videos/folding/01.mp4"
+    video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
+    # video_path = ".runs/videos/folding/01.mp4"
     main(video_path, scale=0.5)
