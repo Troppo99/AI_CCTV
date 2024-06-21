@@ -1,5 +1,6 @@
 # Directory or file dibawah merupakan file yang harus di arsipkan
 .runs/*
+.dev/*
 
 # Directory yang bisa berbeda tiap device
 .venv/*
@@ -7,4 +8,4 @@
 .vscode/*
 
 # Directory yang kadang ada dimana-mana
-**/__pycache__/*
+*/_pycache_/
