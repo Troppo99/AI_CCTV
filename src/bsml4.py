@@ -14,16 +14,16 @@ def main(video_path, scale):
         _, frame = cap.read()
         results = model.track(source=frame, persist=True)
 
-        for result in results:
-            if result.boxes:
-                for box in result.boxes:
+        for r in results:
+            if r.boxes:
+                for box in r.boxes:
                     if box.id is not None and box.id[0] is not None:
                         x1, y1, x2, y2 = box.xyxy[0]
-                        track_id = int(box.id[0])
+                        id = int(box.id[0])
                         cls = int(box.cls[0])
                         class_name = model.names[cls]
                         warna = pink if class_name == "person" else pink_reduce
-                        cvzone.putTextRect(frame, f"{class_name} ID: {track_id}", (int(x1), int(y1 - 10)), scale=2, thickness=2, colorR=warna)
+                        cvzone.putTextRect(frame, f"{class_name} ID: {id}", (int(x1), int(y1 - 10)), scale=2, thickness=2, colorR=warna)
                     else:
                         print("Box ID is None, skipping")
 
