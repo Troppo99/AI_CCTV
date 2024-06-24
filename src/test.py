@@ -162,7 +162,7 @@ class REPORT(AICCTV):
                     percentages[emp_class][percentage_key] = 0
         return percentages
 
-    def draw_table(self, img, data, percentages, row_height=25):
+    def draw_table(self, img, data, percentages, row_height=30):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
@@ -171,7 +171,7 @@ class REPORT(AICCTV):
         cv2.putText(img, f"Report Table", (20 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
-        scale_text = 1.2
+        scale_text = 1.8
         cvzone.putTextRect(img, headers[0], (20 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
         cvzone.putTextRect(img, headers[1], (138 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
         cvzone.putTextRect(img, headers[2], (300 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
@@ -205,5 +205,5 @@ if __name__ == "__main__":
     emp_model_path = ".runs/detect/two_women/weights/best.pt"
     act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
 
-    report_processor = REPORT(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
-    report_processor()
+    report_cctv = REPORT(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
+    report_cctv()
