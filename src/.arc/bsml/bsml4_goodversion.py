@@ -1,5 +1,6 @@
 import torch
 import cv2
+from time import time
 from ultralytics import YOLO
 import math
 import cvzone
@@ -16,46 +17,45 @@ class AICCTV:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
 
-    def process_results(self, frame, results, classes, color):
-        for result in results:
-            boxes = result.boxes.cpu().numpy()
-            for box in boxes:
-                x1, y1, x2, y2 = self.get_coordinates(box)
-                conf = self.get_confidence(box)
-                class_id = classes[int(box.cls[0])]
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 3)
-                cvzone.putTextRect(frame, f"{class_id} {conf}", (max(0, x1), max(35, y1)))
-        return frame
-
     def process_frame(self, frame):
         frame_region = cv2.bitwise_and(frame, self.mask)
 
         # Process employee detection
         results_emp = self.model_emp(source=frame_region, stream=True)
-        frame = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
+        for result in results_emp:
+            boxes = result.boxes.cpu().numpy()
+            for box in boxes:
+                x1, y1, x2, y2 = self.get_coordinates(box)
+                conf_emp = self.get_confidence(box)
+                class_id_emp = self.class_emp[int(box.cls[0])]
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                cvzone.putTextRect(frame, f"{class_id_emp} {conf_emp}", (max(0, x1), max(35, y1)))
 
         # Process activity detection
         results_act = self.model_act(source=frame_region, stream=True)
-        frame = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
+        for result in results_act:
+            boxes = result.boxes.cpu().numpy()
+            for box in boxes:
+                ax1, ay1, ax2, ay2 = self.get_coordinates(box)
+                conf_act = self.get_confidence(box)
+                class_id_act = self.class_act[int(box.cls[0])]
+                cvzone.putTextRect(frame, f"{class_id_act} {conf_act}", (max(0, x1), y2))
 
         return frame
 
-    @staticmethod
-    def get_coordinates(box):
+    def get_coordinates(self, box):
         x1, y1, x2, y2 = box.xyxy[0]
         return int(x1), int(y1), int(x2), int(y2)
 
-    @staticmethod
-    def get_confidence(box):
+    def get_confidence(self, box):
         return math.ceil(box.conf[0] * 100) / 100
 
-    @staticmethod
-    def resize_frame(frame, scale=0.6):
+    def resize_frame(self, frame, scale=0.6):
         height = int(frame.shape[0] * scale)
         width = int(frame.shape[1] * scale)
         return cv2.resize(frame, (width, height))
 
-    def __call__(self):
+    def run(self):
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if not ret:
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
 
     ai_cctv_processor = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
-    ai_cctv_processor()
+    ai_cctv_processor.run()
