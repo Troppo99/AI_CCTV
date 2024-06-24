@@ -167,15 +167,15 @@ class REPORT(AICCTV):
             return str(timedelta(seconds=int(seconds)))
 
         x_move = 1250
-        y_move = 150
-        cv2.putText(img, f"Report Table", (20 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
+        y_move = 270
+        cv2.putText(img, f"Report Table", (-160 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
         scale_text = 1.8
-        cvzone.putTextRect(img, headers[0], (20 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[1], (138 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[2], (300 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[3], (460 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, headers[0], (-160 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, headers[1], (x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, headers[2], (210 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(img, headers[3], (420 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
         pink_color = (255, 0, 255)
         dpink_color = (145, 0, 145)
@@ -185,20 +185,20 @@ class REPORT(AICCTV):
             folding_time = times["folding_time"]
             folding_percentages = percentages[emp_class]["%f"]
 
-            cvzone.putTextRect(img, emp_class, (20 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(folding_time), (138 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(img, f"{(folding_percentages):.0f}%", (228 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, format_time(folding_time), (x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, f"{(folding_percentages):.0f}%", (130 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(times["idle_time"]), (300 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (390 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, format_time(times["idle_time"]), (210 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (340 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(times["offsite_time"]), (460 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(img, format_time(times["offsite_time"]), (420 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
             cvzone.putTextRect(img, f"{percentages[emp_class]['%o']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
 if __name__ == "__main__":
-    emp_classes = ["Umi", "Nina"]
+    emp_classes = ["Siti Umi", "Nina"]
     act_classes = ["Idle", "Folding"]
     video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
     mask_path = ".runs/images/mask6.png"
