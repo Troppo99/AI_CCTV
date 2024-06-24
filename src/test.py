@@ -17,28 +17,28 @@ class AICCTV:
         print(f"Using device: {self.device}")
 
     def process_results(self, frame, results, classes, color):
+        boxes_info = []
         for result in results:
             boxes = result.boxes.cpu().numpy()
             for box in boxes:
                 x1, y1, x2, y2 = self.get_coordinates(box)
                 conf = self.get_confidence(box)
                 class_id = classes[int(box.cls[0])]
-                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 3)
-                cvzone.putTextRect(frame, f"{class_id} {conf}", (max(0, x1), max(35, y1)))
-        return frame
+                boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+        return frame, boxes_info
 
     def process_frame(self, frame):
         frame_region = cv2.bitwise_and(frame, self.mask)
 
         # Process employee detection
         results_emp = self.model_emp(source=frame_region, stream=True)
-        frame = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
+        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
 
         # Process activity detection
         results_act = self.model_act(source=frame_region, stream=True)
-        frame = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
+        frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
 
-        return frame
+        return frame, emp_boxes_info + act_boxes_info
 
     @staticmethod
     def get_coordinates(box):
@@ -55,13 +55,20 @@ class AICCTV:
         width = int(frame.shape[1] * scale)
         return cv2.resize(frame, (width, height))
 
+    @staticmethod
+    def draw_box(frame, x1, y1, x2, y2, class_id, conf, color, thickness=3, font_scale=3, font_thickness=3):
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
+        cvzone.putTextRect(frame, f"{class_id} {conf}", (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
+
     def __call__(self):
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if not ret:
                 break
 
-            frame = self.process_frame(frame)
+            frame, boxes_info = self.process_frame(frame)
+            for box_info in boxes_info:
+                self.draw_box(frame, *box_info)
             frame = self.resize_frame(frame)
             cv2.imshow("AI on Folding Area", frame)
 
@@ -73,12 +80,12 @@ class AICCTV:
 
 
 if __name__ == "__main__":
+    emp_classes = ["Umi", "Nina"]
+    act_classes = ["Idle", "Folding"]
     video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
     mask_path = ".runs/images/mask6.png"
     emp_model_path = ".runs/detect/two_women/weights/best.pt"
     act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
-    emp_classes = ["Umi", "Nina"]
-    act_classes = ["Folding", "Idle"]
 
     ai_cctv_processor = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
     ai_cctv_processor()
