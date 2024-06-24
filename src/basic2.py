@@ -33,7 +33,7 @@ class ObjectDetections:
                     confidences.append(box[4])
                     class_ids.append(int(box[5]))
 
-        return xyxys, confidences, class_ids
+        return results[0].plot(), xyxys, confidences, class_ids
 
     def __call__(self):
         cap = cv2.VideoCapture(self.capture_index)
@@ -48,7 +48,7 @@ class ObjectDetections:
 
             start_time = time()
             results = self.predict(frame)
-            xyxys, confidences, class_ids = self.plot_bboxes(results)
+            annotated_frame, xyxys, confidences, class_ids = self.plot_bboxes(results)
             end_time = time()
             fps = 1 / (end_time - start_time)
 
@@ -59,16 +59,16 @@ class ObjectDetections:
                     confidence = confidences[i]
                     class_id = class_ids[i]
                     label = f"{class_id} {confidence:.2f}"
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                    cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(annotated_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
             # Display FPS on the frame
-            cv2.putText(frame, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
+            cv2.putText(annotated_frame, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
 
             # Show the frame
-            cv2.imshow("YOLOv8 Detection", frame)
+            cv2.imshow("YOLOv8 Detection", annotated_frame)
 
-            if cv2.waitKey(5) & 0xFF == 27:  # Esc key to stop
+            if cv2.waitKey(1) & 0xFF == ord("n"):
                 break
 
         cap.release()
