@@ -38,8 +38,8 @@ class ObjectDetections:
     def __call__(self):
         cap = cv2.VideoCapture(self.capture_index)
         assert cap.isOpened()
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 900)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1600)
 
         while cap.isOpened():
             ret, frame = cap.read()

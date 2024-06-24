@@ -1,44 +1,49 @@
-from ultralytics import YOLO
-import cv2
+import torch
 import numpy as np
-import cvzone
+import cv2
+from time import time
+from ultralytics import YOLO
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
 
-def main(video_path, scale):
-    cap = cv2.VideoCapture(video_path)
-    model = YOLO(".runs/weights/yolov8l.pt")
-    pink = (255, 0, 255)
-    pink_reduce = (255, 200, 255)
+model = YOLO(".runs/detect/two_women/weights/best.pt")
+model.fuse()
 
-    while True:
-        _, frame = cap.read()
-        results = model.track(source=frame, persist=True)
+cap = cv2.VideoCapture("D:/AI_CCTV/.runs/videos/0624.mp4")
+assert cap.isOpened()
+while cap.isOpened():
+    ret, frame = cap.read()
+    start_time = time()
+    
+    results = model(frame)
+    xyxys = []
+    confidences = []
+    class_ids = []
+    for result in results:
+        boxes = result.boxes.cpu().numpy()
+        for box in boxes:
+            if len(box) == 4:
+                xyxys.append(box[:4])
+                confidences.append(box[4])
+                class_ids.append(int(box[5]))
 
-        for r in results:
-            if r.boxes:
-                for box in r.boxes:
-                    if box.id is not None and box.id[0] is not None:
-                        x1, y1, x2, y2 = box.xyxy[0]
-                        id = int(box.id[0])
-                        cls = int(box.cls[0])
-                        class_name = model.names[cls]
-                        warna = pink if class_name == "person" else pink_reduce
-                        cvzone.putTextRect(frame, f"{class_name} ID: {id}", (int(x1), int(y1 - 10)), scale=2, thickness=2, colorR=warna)
-                    else:
-                        print("Box ID is None, skipping")
+    end_time = time()
+    fps = 1 / (end_time - start_time)
 
-        width = int(frame.shape[1] * scale)
-        height = int(frame.shape[0] * scale)
-        resized_frame = cv2.resize(frame, (width, height))
-        cv2.imshow("Area Folding", resized_frame)
-        if cv2.waitKey(1) & 0xFF == ord("n"):
-            break
+    for i, box in enumerate(xyxys):
+        if len(box) == 4:
+            x1, y1, x2, y2 = map(int, box)
+            confidence = confidences[i]
+            class_id = class_ids[i]
+            label = f"{class_id} {confidence:.2f}"
+            cv2.rectangle(results[0].plot(), (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(results[0].plot(), label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-    cap.release()
-    cv2.destroyAllWindows()
+    cv2.putText(results[0].plot(), f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
+    cv2.imshow("YOLOv8 Detection", results[0].plot())
+    if cv2.waitKey(1) & 0xFF == ord("n"):
+        break
 
-
-if __name__ == "__main__":
-    video_path = "rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1"
-    video_path = ".runs/videos/folding/01.mp4"
-    main(video_path, scale=0.75)
+cap.release()
+cv2.destroyAllWindows()
