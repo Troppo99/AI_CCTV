@@ -90,6 +90,10 @@ class AICCTV:
         return False
 
 
+class REPORT(AICCTV):
+    pass
+
+
 if __name__ == "__main__":
     emp_classes = ["Umi", "Nina"]
     act_classes = ["Idle", "Folding"]
