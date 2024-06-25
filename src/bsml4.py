@@ -136,56 +136,51 @@ class REPORT:
             cvzone.putTextRect(img, f"{percentages[emp_class]['%o']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
-def main():
-    emp_classes = ["Siti Umi", "Nina"]
-    act_classes = ["Idle", "Folding"]
-    # video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
-    video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
-    mask_path = ".runs/images/mask7.png"
-    emp_model_path = ".runs/detect/two_women/weights/best.pt"
-    act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
+# video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
+video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
+mask_path = ".runs/images/mask7.png"
+emp_model_path = ".runs/detect/two_women/weights/best.pt"
+act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
+emp_classes = ["Siti Umi", "Nina"]
+act_classes = ["Idle", "Folding"]
 
-    ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
-    report = REPORT(emp_classes)
-    frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
+ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
+report = REPORT(emp_classes)
+frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
 
-    while ai_cctv.cap.isOpened():
-        _, frame = ai_cctv.cap.read()
-        mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
+while ai_cctv.cap.isOpened():
+    _, frame = ai_cctv.cap.read()
+    mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
 
-        frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
-        frame_duration = 1 / frame_rate
+    frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
+    frame_duration = 1 / frame_rate
 
-        for x1, y1, x2, y2, emp_class, _, _ in emp_boxes_info:
-            act_detected = False
-            for ax1, ay1, ax2, ay2, act_class, _, _ in act_boxes_info:
-                if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
-                    act_detected = True
-                    report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
-                    text = f"{emp_class} is {act_class}"
-                    ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
-                    break
-            if not act_detected:
-                report.update_data_table(emp_class, "idle_time", frame_duration)
-                text = f"{emp_class} is idle"
-                ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (255, 255, 0))
+    for x1, y1, x2, y2, emp_class, _, _ in emp_boxes_info:
+        act_detected = False
+        for ax1, ay1, ax2, ay2, act_class, _, _ in act_boxes_info:
+            if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
+                act_detected = True
+                report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
+                text = f"{emp_class} is {act_class}"
+                ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
+                break
+        if not act_detected:
+            report.update_data_table(emp_class, "idle_time", frame_duration)
+            text = f"{emp_class} is idle"
+            ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (255, 255, 0))
 
-        detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
-        for emp_class in emp_classes:
-            if emp_class not in detected_employees:
-                report.update_data_table(emp_class, "offsite_time", frame_duration)
+    detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
+    for emp_class in emp_classes:
+        if emp_class not in detected_employees:
+            report.update_data_table(emp_class, "offsite_time", frame_duration)
 
-        percentages = report.calculate_percentages()
-        report.draw_table(frame, percentages)
+    percentages = report.calculate_percentages()
+    report.draw_table(frame, percentages)
 
-        frame = ai_cctv.resize_frame(frame)
-        cv2.imshow("AI on Folding Area", frame)
-        if cv2.waitKey(1) & 0xFF == ord("n"):
-            break
+    frame = ai_cctv.resize_frame(frame)
+    cv2.imshow("AI on Folding Area", frame)
+    if cv2.waitKey(1) & 0xFF == ord("n"):
+        break
 
-    ai_cctv.cap.release()
-    cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    main()
+ai_cctv.cap.release()
+cv2.destroyAllWindows()
