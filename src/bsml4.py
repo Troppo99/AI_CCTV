@@ -101,39 +101,33 @@ class REPORT:
                     percentages[emp_class][percentage_key] = 0
         return percentages
 
-    def draw_table(self, img, percentages, row_height=30):
+    def draw_table(self, frame, percentages, row_height=42, x_move=2100, y_move=500, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        x_move = 2200
-        y_move = 900
-        cv2.putText(img, f"Report Table", (-160 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
+        geser_x = 1000
+        cv2.putText(frame, f"Report Table", (-160 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 3, (20, 20, 20), 2, cv2.LINE_AA)
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
-        scale_text = 1.8
-        cvzone.putTextRect(img, headers[0], (-160 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[1], (x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[2], (210 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(img, headers[3], (420 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[0], (-160 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[1], (120 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[2], (490 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[3], (860 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
-        pink_color = (255, 0, 255)
-        dpink_color = (145, 0, 145)
         for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 600 + row_idx * row_height
-            folding_time = times["folding_time"]
-            folding_percentages = percentages[emp_class]["%f"]
 
-            cvzone.putTextRect(img, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(folding_time), (x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(img, f"{(folding_percentages):.0f}%", (130 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["folding_time"]), (120 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{(percentages[emp_class]['%f']):.0f}%", (320 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(times["idle_time"]), (210 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(img, f"{percentages[emp_class]['%i']:.0f}%", (340 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["idle_time"]), (490 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{percentages[emp_class]['%i']:.0f}%", (690 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(img, format_time(times["offsite_time"]), (420 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(img, f"{percentages[emp_class]['%o']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["offsite_time"]), (860 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{percentages[emp_class]['%o']:.0f}%", (1060 + x_move + geser_x, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
 # video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
