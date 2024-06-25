@@ -18,7 +18,7 @@ class AICCTV:
         print(f"Using device: {self.device}")
 
     def process_frame(self, frame, mask):
-        # Apply mask to frame for processing
+
         frame_region = cv2.bitwise_and(frame, mask)
 
         results_emp = self.model_emp(source=frame_region, stream=True)
@@ -150,14 +150,9 @@ def main():
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
 
     while ai_cctv.cap.isOpened():
-        success, frame = ai_cctv.cap.read()
-        if not success:
-            break
-
-        # Resize mask to match the frame size
+        _, frame = ai_cctv.cap.read()
         mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
 
-        # Process frame with mask
         frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
         frame_duration = 1 / frame_rate
 
