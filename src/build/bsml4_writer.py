@@ -18,7 +18,6 @@ class AICCTV:
         print(f"Using device: {self.device}")
 
     def process_frame(self, frame, mask):
-
         frame_region = cv2.bitwise_and(frame, mask)
 
         results_emp = self.model_emp(source=frame_region, stream=True)
@@ -101,7 +100,7 @@ class REPORT:
                     percentages[emp_class][percentage_key] = 0
         return percentages
 
-    def draw_table(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
+    def draw_table(self, frame, percentages, row_height=42, x_move=2100, y_move=500, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
@@ -110,9 +109,9 @@ class REPORT:
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
         cvzone.putTextRect(frame, headers[0], (-160 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(frame, headers[1], (90 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(frame, headers[2], (430 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
-        cvzone.putTextRect(frame, headers[3], (770 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[1], (120 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[2], (490 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
+        cvzone.putTextRect(frame, headers[3], (860 + x_move, 595 + y_move), scale=scale_text, thickness=2, offset=5, colorR=(0, 0, 0), colorB=(255, 255, 255))
 
         for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
@@ -120,14 +119,26 @@ class REPORT:
 
             cvzone.putTextRect(frame, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(frame, format_time(times["folding_time"]), (90 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{(percentages[emp_class]['%f']):.0f}%", (285 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["folding_time"]), (120 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{(percentages[emp_class]['%f']):.0f}%", (320 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(frame, format_time(times["idle_time"]), (430 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{percentages[emp_class]['%i']:.0f}%", (625 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["idle_time"]), (490 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{percentages[emp_class]['%i']:.0f}%", (690 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-            cvzone.putTextRect(frame, format_time(times["offsite_time"]), (770 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{percentages[emp_class]['%o']:.0f}%", (965 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, format_time(times["offsite_time"]), (860 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            cvzone.putTextRect(frame, f"{percentages[emp_class]['%o']:.0f}%", (1060 + x_move + geser_x, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+
+
+class VideoSaver:
+    def __init__(self, output_path, frame_width, frame_height, fps=20.0):
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        self.out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
+
+    def write_frame(self, frame):
+        self.out.write(frame)
+
+    def release(self):
+        self.out.release()
 
 
 # video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
@@ -137,13 +148,19 @@ emp_model_path = ".runs/detect/two_women/weights/best.pt"
 act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
 emp_classes = ["Siti Umi", "Nina"]
 act_classes = ["Idle", "Folding"]
+output_path = ".runs/videos/writer/output_video.mp4"
 
 ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
 report = REPORT(emp_classes)
 frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
+ret, frame = ai_cctv.cap.read()
+video_saver = VideoSaver(output_path, frame.shape[1], frame.shape[0], frame_rate)
 
 while ai_cctv.cap.isOpened():
-    _, frame = ai_cctv.cap.read()
+    ret, frame = ai_cctv.cap.read()
+    if not ret:
+        break
+
     mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
 
     frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
@@ -171,10 +188,12 @@ while ai_cctv.cap.isOpened():
     percentages = report.calculate_percentages()
     report.draw_table(frame, percentages)
 
-    frame = ai_cctv.resize_frame(frame)
-    cv2.imshow("AI on Folding Area", frame)
+    frame_resized = ai_cctv.resize_frame(frame)
+    video_saver.write_frame(frame)
+    cv2.imshow("AI on Folding Area", frame_resized)
     if cv2.waitKey(1) & 0xFF == ord("n"):
         break
 
 ai_cctv.cap.release()
+video_saver.release()
 cv2.destroyAllWindows()
