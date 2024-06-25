@@ -3,7 +3,7 @@ import cv2
 from ultralytics import YOLO
 import math
 import cvzone
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class AICCTV:
@@ -17,26 +17,19 @@ class AICCTV:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
 
-    def __call__(self):
-        while self.cap.isOpened():
-            success, frame = self.cap.read()
-            if not success:
-                break
-            frame, emp_boxes_info, act_boxes_info = self.process_frame(frame)
+    def process_frame(self, frame, mask):
+        # Apply mask to frame for processing
+        frame_region = cv2.bitwise_and(frame, mask)
 
-            for x1, y1, x2, y2, emp_class, emp_conf, _ in emp_boxes_info:
-                for ax1, ay1, ax2, ay2, act_class, act_conf, _ in act_boxes_info:
-                    if self.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
-                        text = f"{emp_class} is {act_class}"
-                        self.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
+        results_emp = self.model_emp(source=frame_region, stream=True)
+        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
 
-            frame = self.resize_frame(frame)
-            cv2.imshow("AI on Folding Area", frame)
-            if cv2.waitKey(1) & 0xFF == ord("n"):
-                break
+        act_boxes_info = []
+        if emp_boxes_info:
+            results_act = self.model_act(source=frame_region, stream=True)
+            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
 
-        self.cap.release()
-        cv2.destroyAllWindows()
+        return frame, emp_boxes_info, act_boxes_info
 
     def process_results(self, frame, results, classes, color):
         boxes_info = []
@@ -49,21 +42,6 @@ class AICCTV:
                 boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
         return frame, boxes_info
 
-    def process_frame(self, frame):
-        # frame_region = cv2.bitwise_and(frame, self.mask)
-
-        # Process employee detection
-        results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
-
-        # Process activity detection
-        act_boxes_info = []
-        if emp_boxes_info:  # Only process activities if employees are detected
-            results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
-
-        return frame, emp_boxes_info, act_boxes_info
-
     @staticmethod
     def get_coordinates(box):
         x1, y1, x2, y2 = box.xyxy[0]
@@ -74,7 +52,7 @@ class AICCTV:
         return math.ceil(box.conf[0] * 100) / 100
 
     @staticmethod
-    def resize_frame(frame, scale=0.6):
+    def resize_frame(frame, scale=0.4):
         height = int(frame.shape[0] * scale)
         width = int(frame.shape[1] * scale)
         return cv2.resize(frame, (width, height))
@@ -93,49 +71,10 @@ class AICCTV:
         return False
 
 
-class REPORT(AICCTV):
-    def __init__(self, video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes):
-        super().__init__(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
+class REPORT:
+    def __init__(self, emp_classes):
         self.data = {}
-        self.frame_rate = self.cap.get(cv2.CAP_PROP_FPS)
-
-    def __call__(self):
-        while self.cap.isOpened():
-            success, frame = self.cap.read()
-            if not success:
-                break
-            frame, emp_boxes_info, act_boxes_info = self.process_frame(frame)
-            frame_duration = 1 / self.frame_rate
-
-            for x1, y1, x2, y2, emp_class, _, _ in emp_boxes_info:
-                act_detected = False
-                for ax1, ay1, ax2, ay2, act_class, _, _ in act_boxes_info:
-                    if self.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
-                        act_detected = True
-                        self.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
-                        text = f"{emp_class} is {act_class}"
-                        self.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
-                        break
-                if not act_detected:
-                    self.update_data_table(emp_class, "idle_time", frame_duration)
-                    text = f"{emp_class} is idle"
-                    self.draw_box(frame, x1, y1, x2, y2, text, (255, 255, 0))
-
-            detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
-            for emp_class in self.class_emp:
-                if emp_class not in detected_employees:
-                    self.update_data_table(emp_class, "offsite_time", frame_duration)
-
-            percentages = self.calculate_percentages(self.data)
-            self.draw_table(frame, self.data, percentages)
-
-            frame = self.resize_frame(frame)
-            cv2.imshow("AI on Folding Area", frame)
-            if cv2.waitKey(1) & 0xFF == ord("n"):
-                break
-
-        self.cap.release()
-        cv2.destroyAllWindows()
+        self.emp_classes = emp_classes
 
     def update_data_table(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
@@ -149,25 +88,25 @@ class REPORT(AICCTV):
         else:
             self.data[emp_class]["idle_time"] += frame_duration
 
-    def calculate_percentages(self, data):
+    def calculate_percentages(self):
         percentages = {}
-        for emp_class in data:
-            total_emp_time = sum(data[emp_class].values())
+        for emp_class in self.data:
+            total_emp_time = sum(self.data[emp_class].values())
             percentages[emp_class] = {}
-            for key in data[emp_class]:
+            for key in self.data[emp_class]:
                 percentage_key = f"%{key[0]}"
                 if total_emp_time > 0:
-                    percentages[emp_class][percentage_key] = (data[emp_class][key] / total_emp_time) * 100
+                    percentages[emp_class][percentage_key] = (self.data[emp_class][key] / total_emp_time) * 100
                 else:
                     percentages[emp_class][percentage_key] = 0
         return percentages
 
-    def draw_table(self, img, data, percentages, row_height=30):
+    def draw_table(self, img, percentages, row_height=30):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        x_move = 1250
-        y_move = 270
+        x_move = 2200
+        y_move = 900
         cv2.putText(img, f"Report Table", (-160 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 2, (0, 0, 0), 1, cv2.LINE_AA)
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
@@ -179,7 +118,7 @@ class REPORT(AICCTV):
 
         pink_color = (255, 0, 255)
         dpink_color = (145, 0, 145)
-        for row_idx, (emp_class, times) in enumerate(data.items(), start=1):
+        for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 600 + row_idx * row_height
             folding_time = times["folding_time"]
@@ -197,13 +136,61 @@ class REPORT(AICCTV):
             cvzone.putTextRect(img, f"{percentages[emp_class]['%o']:.0f}%", (550 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
-if __name__ == "__main__":
+def main():
     emp_classes = ["Siti Umi", "Nina"]
     act_classes = ["Idle", "Folding"]
-    video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
-    mask_path = ".runs/images/mask6.png"
+    # video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
+    video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
+    mask_path = ".runs/images/mask7.png"
     emp_model_path = ".runs/detect/two_women/weights/best.pt"
     act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
 
-    report_cctv = REPORT(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
-    report_cctv()
+    ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
+    report = REPORT(emp_classes)
+    frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
+
+    while ai_cctv.cap.isOpened():
+        success, frame = ai_cctv.cap.read()
+        if not success:
+            break
+
+        # Resize mask to match the frame size
+        mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
+
+        # Process frame with mask
+        frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
+        frame_duration = 1 / frame_rate
+
+        for x1, y1, x2, y2, emp_class, _, _ in emp_boxes_info:
+            act_detected = False
+            for ax1, ay1, ax2, ay2, act_class, _, _ in act_boxes_info:
+                if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
+                    act_detected = True
+                    report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
+                    text = f"{emp_class} is {act_class}"
+                    ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
+                    break
+            if not act_detected:
+                report.update_data_table(emp_class, "idle_time", frame_duration)
+                text = f"{emp_class} is idle"
+                ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (255, 255, 0))
+
+        detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
+        for emp_class in emp_classes:
+            if emp_class not in detected_employees:
+                report.update_data_table(emp_class, "offsite_time", frame_duration)
+
+        percentages = report.calculate_percentages()
+        report.draw_table(frame, percentages)
+
+        frame = ai_cctv.resize_frame(frame)
+        cv2.imshow("AI on Folding Area", frame)
+        if cv2.waitKey(1) & 0xFF == ord("n"):
+            break
+
+    ai_cctv.cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()
