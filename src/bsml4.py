@@ -130,6 +130,18 @@ class REPORT:
             cvzone.putTextRect(frame, f"{percentages[emp_class]['%o']:.0f}%", (965 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
+class VideoSaver:
+    def __init__(self, output_path, frame_width, frame_height, fps=20.0):
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        self.out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
+
+    def write_frame(self, frame):
+        self.out.write(frame)
+
+    def release(self):
+        self.out.release()
+
+
 # video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
 video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
 mask_path = ".runs/images/mask7.png"
@@ -141,6 +153,11 @@ act_classes = ["Idle", "Folding"]
 ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
 report = REPORT(emp_classes)
 frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
+
+""" * * *---> Start of Video Saver 1 <---* * * """
+ret, frame = ai_cctv.cap.read()
+video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
+""" --------> End of Video Saver 1 <-------- """
 
 while ai_cctv.cap.isOpened():
     _, frame = ai_cctv.cap.read()
@@ -171,10 +188,18 @@ while ai_cctv.cap.isOpened():
     percentages = report.calculate_percentages()
     report.draw_table(frame, percentages)
 
+    """ * * *---> Start of Video Saver 1 <---* * * """
+    video_saver.write_frame(frame)
+    """ --------> End of Video Saver 1 <-------- """
+
     frame = ai_cctv.resize_frame(frame)
     cv2.imshow("AI on Folding Area", frame)
     if cv2.waitKey(1) & 0xFF == ord("n"):
         break
+
+""" * * *---> Start of Video Saver 1 <---* * * """
+video_saver.release()
+""" --------> End of Video Saver 1 <-------- """
 
 ai_cctv.cap.release()
 cv2.destroyAllWindows()
