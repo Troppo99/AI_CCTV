@@ -105,7 +105,7 @@ class REPORT:
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        cv2.putText(frame, f"Report Table", (-160 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 3, (200, 200, 200), 2, cv2.LINE_AA)
+        cv2.putText(frame, f"Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
         headers = ["Employee", "Folding", "Idle", "Offsite"]
 
         cv2.putText(frame, headers[0], (-160 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
@@ -115,7 +115,7 @@ class REPORT:
 
         for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
-            y_position = 600 + row_idx * row_height
+            y_position = 610 + row_idx * row_height
 
             cvzone.putTextRect(frame, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
@@ -153,14 +153,14 @@ ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_clas
 report = REPORT(emp_classes)
 frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
 
-""" * * *---> Start of Video Saver 1 <---* * * """
+""" #######-> Start of Video Saver 1 <-####### """
 # ret, frame = ai_cctv.cap.read()
 # video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
 """ --------> End of Video Saver 1 <-------- """
 
-""" * * *---> Start of overlay 2 <---* * * """
+""" #######-> Start of overlay 2 <-####### """
 table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
-new_width = 500
+new_width = 1350
 aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
 new_height = int(new_width / aspect_ratio)
 table_bg = cv2.resize(table_bg, (new_width, new_height))
@@ -169,6 +169,7 @@ table_bg = cv2.resize(table_bg, (new_width, new_height))
 while ai_cctv.cap.isOpened():
     _, frame = ai_cctv.cap.read()
     mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
+
 
     frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
     frame_duration = 1 / frame_rate
@@ -192,6 +193,10 @@ while ai_cctv.cap.isOpened():
         if emp_class not in detected_employees:
             report.update_data_table(emp_class, "offsite_time", frame_duration)
 
+    """ #######-> Start of overlay 2 <-####### """
+    frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
+    # cv2.imshow("Video with Overlay", frame_with_overlay)
+    """ --------> End of overlay 2 <-------- """
     percentages = report.calculate_percentages()
     report.draw_table(frame, percentages)
 
@@ -200,11 +205,7 @@ while ai_cctv.cap.isOpened():
     """ --------> End of Video Saver 1 <-------- """
 
     frame = ai_cctv.resize_frame(frame)
-    """ * * *---> Start of overlay 2 <---* * * """
-    # frame_with_overlay = cvzone.overlayPNG(frame, table_bg, (720, 400))
-    # cv2.imshow("Video with Overlay", frame_with_overlay)
-    """ --------> End of overlay 2 <-------- """
-    # cv2.imshow("AI on Folding Area", frame)
+    cv2.imshow("AI on Folding Area", frame)
     if cv2.waitKey(1) & 0xFF == ord("n"):
         break
 
