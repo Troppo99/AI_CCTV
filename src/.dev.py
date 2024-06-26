@@ -25,20 +25,43 @@
 """ * * *---> Start of experiment 3 <---* * * """
 
 
-class Negara:
-    def __init__(self, city="Majalengka"):
-        self.kota = city
-        # self.desaKu() # ini ada hubungannya dengan ^^^^
+# class Negara:
+#     def __init__(self, city="Majalengka"):
+#         self.kota = city
+#         # self.desaKu() # ini ada hubungannya dengan ^^^^
 
-    def desaKu(self, desa="Mekarmulya", dusun="Cisahang"):
-        self.desa = desa
-        self.dusun = dusun
+#     def desaKu(self, desa="Mekarmulya", dusun="Cisahang"):
+#         self.desa = desa
+#         self.dusun = dusun
 
 
-alamat = Negara("Bandung")
-print(alamat.kota)
+# alamat = Negara("Bandung")
+# print(alamat.kota)
 
-alamat.desaKu("Isola")  # ^^^^
-print(alamat.desa)
-print(alamat.dusun)
+# alamat.desaKu("Isola")  # ^^^^
+# print(alamat.desa)
+# print(alamat.dusun)
 """ --------> End of experiment 3 <-------- """
+""" * * *---> Start of experiment 4 <---* * * """
+import cv2
+import cvzone
+
+cap = cv2.VideoCapture("D:/AI_CCTV/.runs/videos/0624.mp4")
+table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
+
+new_width = 1000
+aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
+new_height = int(new_width / aspect_ratio)
+table_bg = cv2.resize(table_bg, (new_width, new_height))
+
+while True:
+    _, frame = cap.read()
+    frame_with_overlay = cvzone.overlayPNG(frame, table_bg, (50, 50))
+    cv2.imshow("Video with Overlay", frame_with_overlay)
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+""" --------> End of experiment 4 <-------- """
