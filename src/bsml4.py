@@ -141,11 +141,11 @@ class VideoSaver:
         self.out.release()
 
 
-# video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
-video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
+video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
+# video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
 mask_path = ".runs/images/mask7.png"
-emp_model_path = ".runs/detect/two_women/weights/best.pt"
-act_model_path = ".runs/detect/emp_gm1_rev/weights/best.pt"
+emp_model_path = ".runs/detect/.arc/two_women/weights/best.pt"
+act_model_path = ".runs/detect/.arc/emp_gm1_rev/weights/best.pt"
 emp_classes = ["Siti Umi", "Nina"]
 act_classes = ["Idle", "Folding"]
 
@@ -159,11 +159,11 @@ frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
 """ --------> End of Video Saver 1 <-------- """
 
 """ #######-> Start of overlay 2 <-####### """
-table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
-new_width = 1350
-aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
-new_height = int(new_width / aspect_ratio)
-table_bg = cv2.resize(table_bg, (new_width, new_height))
+# table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
+# new_width = 1350
+# aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
+# new_height = int(new_width / aspect_ratio)
+# table_bg = cv2.resize(table_bg, (new_width, new_height))
 """ --------> End of overlay 2 <-------- """
 
 while ai_cctv.cap.isOpened():
@@ -194,7 +194,7 @@ while ai_cctv.cap.isOpened():
             report.update_data_table(emp_class, "offsite_time", frame_duration)
 
     """ #######-> Start of overlay 2 <-####### """
-    frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
+    # frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
     # cv2.imshow("Video with Overlay", frame_with_overlay)
     """ --------> End of overlay 2 <-------- """
     percentages = report.calculate_percentages()
