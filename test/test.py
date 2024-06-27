@@ -83,7 +83,8 @@ class ObjectDetections:
 
 detection = ObjectDetections(
     # capture_index="C:/Users/Troppo/Downloads/Person_1913.jpg",
-    model_path=".runs/detect/test_02/weights/best.pt",
+    # model_path=".runs/detect/test_02/weights/best.pt",
+    model_path=".runs/weights/folding.pt",
     # is_saved=True,
 )
 detection()
