@@ -6,19 +6,26 @@ from ultralytics import YOLO
 
 
 class ObjectDetections:
-    def __init__(self, capture_index):
+
+    def __init__(
+        self,
+        capture_index="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+        model_path=".runs/weights/yolov8l.pt",
+        is_saved=False,
+    ):
         self.capture_index = capture_index
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print("Using Device: ", self.device)
-        self.model = self.load_model()
+        self.model = self.load_model(model_path)
+        self.is_saved = is_saved
 
-    def load_model(self):
-        model = YOLO(".runs/detect/two_women/weights/best.pt")
+    def load_model(self, model_path):
+        model = YOLO(model_path)
         model.fuse()
         return model
 
-    def predict(self, frame):
-        results = self.model(frame)
+    def predict(self, frame, is_saved):
+        results = self.model(frame, save=is_saved)
         return results
 
     def plot_bboxes(self, results):
@@ -38,8 +45,6 @@ class ObjectDetections:
     def __call__(self):
         cap = cv2.VideoCapture(self.capture_index)
         assert cap.isOpened()
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -47,7 +52,7 @@ class ObjectDetections:
                 break
 
             start_time = time()
-            results = self.predict(frame)
+            results = self.predict(frame, self.is_saved)
             annotated_frame, xyxys, confidences, class_ids = self.plot_bboxes(results)
             end_time = time()
             fps = 1 / (end_time - start_time)
@@ -62,6 +67,10 @@ class ObjectDetections:
                     cv2.putText(annotated_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
             cv2.putText(annotated_frame, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
+            """ #######-> Start of experiment [1] <-####### """
+            scale = 0.25  # 0 to 1
+            annotated_frame = cv2.resize(annotated_frame, (int(cv2.CAP_PROP_FRAME_HEIGHT * scale * 1000), int(cv2.CAP_PROP_FRAME_WIDTH * scale * 1000)))
+            """ --------> End of experiment [1] <-------- """
 
             cv2.imshow("YOLOv8 Detection", annotated_frame)
 
@@ -72,6 +81,9 @@ class ObjectDetections:
         cv2.destroyAllWindows()
 
 
-if __name__ == "__main__":
-    detection = ObjectDetections(capture_index="D:/AI_CCTV/.runs/videos/0624.mp4")
-    detection()
+detection = ObjectDetections(
+    # capture_index="C:/Users/Troppo/Downloads/Person_1913.jpg",
+    model_path=".runs/detect/test_02/weights/best.pt",
+    # is_saved=True,
+)
+detection()
