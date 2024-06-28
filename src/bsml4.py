@@ -98,14 +98,30 @@ class REPORT:
     def calculate_percentages(self):
         percentages = {}
         for emp_class in self.data:
-            total_emp_time = sum(self.data[emp_class].values())
-            percentages[emp_class] = {}
-            for key in self.data[emp_class]:
-                percentage_key = f"%{key[0]}"
-                if total_emp_time > 0:
-                    percentages[emp_class][percentage_key] = (self.data[emp_class][key] / total_emp_time) * 100
-                else:
-                    percentages[emp_class][percentage_key] = 0
+            t_f = self.data[emp_class]["working_time"]
+            t_i = self.data[emp_class]["idle_time"]
+            t_off = self.data[emp_class]["offsite_time"]
+
+            t_onsite = t_f + t_i
+            t_total = t_onsite + t_off
+
+            # Menghitung persentase berdasarkan rumus yang baru
+            if t_onsite > 0:
+                percentages[emp_class] = {
+                    "%t_f": (t_f / t_onsite) * 100,
+                    "%t_i": (t_i / t_onsite) * 100,
+                }
+            else:
+                percentages[emp_class] = {
+                    "%t_f": 0,
+                    "%t_i": 0,
+                }
+
+            if t_total > 0:
+                percentages[emp_class]["%t_off"] = (t_off / t_total) * 100
+            else:
+                percentages[emp_class]["%t_off"] = 0
+
         return percentages
 
     def draw_table(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
@@ -124,7 +140,7 @@ class REPORT:
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 610 + row_idx * row_height
 
-            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%w']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%o']:.0f}%", 965)]
+            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%t_f']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%t_i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%t_off']:.0f}%", 965)]
 
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
