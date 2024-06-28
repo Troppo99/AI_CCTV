@@ -33,7 +33,7 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
             for ax1, ay1, ax2, ay2, act_class, _, act_color in act_boxes_info:
                 if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
                     act_detected = True
-                    report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
+                    report.update_data_table(emp_class, "working_time", frame_duration)
                     text = f"{emp_class} is {act_class}"
                     ai_cctv.draw_box(frame, x1, y1, x2, y2, text, act_color)
                     break
@@ -53,16 +53,16 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
         percentages = report.calculate_percentages()
         report.draw_table(frame, percentages)
 
-        """ * * *---> Start of Video Saver 1 <---* * * """
+        """ #######-> Start of Video Saver 1 <-####### """
         # video_saver.write_frame(frame)
         """ --------> End of Video Saver 1 <-------- """
 
         frame = ai_cctv.resize_frame(frame)
-        cv2.imshow("AI on Folding Area", frame)
+        cv2.imshow(act_model_path, frame)
         if cv2.waitKey(1) & 0xFF == ord("n"):
             break
 
-    """ * * *---> Start of Video Saver 1 <---* * * """
+    """ #######-> Start of Video Saver 1 <-####### """
     # video_saver.release()
     """ --------> End of Video Saver 1 <-------- """
 

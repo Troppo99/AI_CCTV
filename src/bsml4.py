@@ -113,7 +113,7 @@ class REPORT:
             return str(timedelta(seconds=int(seconds)))
 
         cv2.putText(frame, f"Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
-        headers = ["Employee", "Folding", "Idle", "Offsite"]
+        headers = ["Employee", "Working", "Idle", "Offsite"]
 
         cv2.putText(frame, headers[0], (-160 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
         cv2.putText(frame, headers[1], (90 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
