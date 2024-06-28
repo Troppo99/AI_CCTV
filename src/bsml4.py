@@ -15,7 +15,7 @@ class AICCTV:
         act_model_path,
         emp_classes,
         act_classes,
-        video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+        video_path,
     ):
         self.cap = cv2.VideoCapture(video_path)
         self.model_emp = YOLO(emp_model_path)
@@ -140,7 +140,3 @@ class VideoSaver:
 
     def release(self):
         self.out.release()
-
-
-if __name__ == "__main__":
-    print("This is BSML4!\n")

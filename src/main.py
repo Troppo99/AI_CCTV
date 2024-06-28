@@ -2,20 +2,13 @@ from bsml4 import AICCTV, REPORT
 import cv2
 
 
-def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, mask_path=None):
+def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", mask_path=None):
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes)
     """ #######-> Start of Video Saver 1 <-####### """
     # ret, frame = ai_cctv.cap.read()
     # video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
     """ --------> End of Video Saver 1 <-------- """
-    """ #######-> Start of overlay 2 <-####### """
-    # table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
-    # new_width = 1350
-    # aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
-    # new_height = int(new_width / aspect_ratio)
-    # table_bg = cv2.resize(table_bg, (new_width, new_height))
-    """ --------> End of overlay 2 <-------- """
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     mask = cv2.imread(mask_path) if mask_path is not None else None
     while ai_cctv.cap.isOpened():
@@ -42,10 +35,6 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
             if emp_class not in detected_employees:
                 report.update_data_table(emp_class, "offsite_time", frame_duration)
 
-        """ #######-> Start of overlay 2 <-####### """
-        # frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
-        # cv2.imshow("Video with Overlay", frame_with_overlay)
-        """ --------> End of overlay 2 <-------- """
         percentages = report.calculate_percentages()
         report.draw_table(frame, percentages)
 
@@ -63,7 +52,3 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
     """ --------> End of Video Saver 1 <-------- """
     ai_cctv.cap.release()
     cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    print("This is main!\n")
