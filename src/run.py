@@ -1,6 +1,6 @@
-import main
+from main import main
 
-main.main(
+main(
     emp_model_path=".runs/detect/.arc/two_women/weights/best.pt",
     act_model_path=".runs/detect/fold-m/weights/best.pt",
     emp_classes=["Siti Umi", "Nina"],

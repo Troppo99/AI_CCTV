@@ -1,6 +1,7 @@
 from bsml4 import AICCTV, REPORT
 import cv2
 
+
 def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, mask_path=None):
     # Create Instances
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
@@ -67,3 +68,7 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
 
     ai_cctv.cap.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    print("This is main!\n")
