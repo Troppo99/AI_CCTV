@@ -16,6 +16,7 @@ class ObjectDetections:
         self.capture_index = capture_index
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print("Using Device: ", self.device)
+        self.model_path = model_path
         self.model = self.load_model(model_path)
         self.is_saved = is_saved
 
@@ -72,7 +73,7 @@ class ObjectDetections:
             annotated_frame = cv2.resize(annotated_frame, (int(cv2.CAP_PROP_FRAME_HEIGHT * scale * 1000), int(cv2.CAP_PROP_FRAME_WIDTH * scale * 1000)))
             """ --------> End of experiment [1] <-------- """
 
-            cv2.imshow("YOLOv8 Detection", annotated_frame)
+            cv2.imshow(self.model_path, annotated_frame)
 
             if cv2.waitKey(1) & 0xFF == ord("n"):
                 break
@@ -82,9 +83,8 @@ class ObjectDetections:
 
 
 detection = ObjectDetections(
-    capture_index="D:/AI_CCTV/.runs/videos/0624.mp4",
+    # capture_index="D:/AI_CCTV/.runs/videos/0624.mp4",
     model_path=".runs/detect/person/weights/best.pt",
-    # model_path=".runs/weights/folding.pt",
     # is_saved=True,
 )
 detection()
