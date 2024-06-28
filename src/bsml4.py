@@ -86,7 +86,7 @@ class REPORT:
     def update_data_table(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
             self.data[emp_class] = {
-                "folding_time": 0,
+                "working_time": 0,
                 "idle_time": 0,
                 "offsite_time": 0,
             }
@@ -112,28 +112,22 @@ class REPORT:
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        cv2.putText(frame, f"Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
         headers = ["Employee", "Working", "Idle", "Offsite"]
+        header_positions = [(-160, 595), (90, 595), (430, 595), (770, 595)]
+        header_colors = [(255, 255, 255)] * len(headers)
 
-        cv2.putText(frame, headers[0], (-160 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
-        cv2.putText(frame, headers[1], (90 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
-        cv2.putText(frame, headers[2], (430 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
-        cv2.putText(frame, headers[3], (770 + x_move, 595 + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
+        cv2.putText(frame, "Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
+        for header, pos, color in zip(headers, header_positions, header_colors):
+            cv2.putText(frame, header, (pos[0] + x_move, pos[1] + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, color, 3, cv2.LINE_AA)
 
         for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 610 + row_idx * row_height
 
-            cvzone.putTextRect(frame, emp_class, (-160 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%w']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%o']:.0f}%", 965)]
 
-            cvzone.putTextRect(frame, format_time(times["folding_time"]), (90 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{(percentages[emp_class]['%f']):.0f}%", (285 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-
-            cvzone.putTextRect(frame, format_time(times["idle_time"]), (430 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{percentages[emp_class]['%i']:.0f}%", (625 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-
-            cvzone.putTextRect(frame, format_time(times["offsite_time"]), (770 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
-            cvzone.putTextRect(frame, f"{percentages[emp_class]['%o']:.0f}%", (965 + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+            for text, x_pos in columns:
+                cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
 
 class VideoSaver:

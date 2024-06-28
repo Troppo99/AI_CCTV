@@ -3,15 +3,12 @@ import cv2
 
 
 def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, mask_path=None):
-    # Create Instances
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes)
-
     """ #######-> Start of Video Saver 1 <-####### """
     # ret, frame = ai_cctv.cap.read()
     # video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
     """ --------> End of Video Saver 1 <-------- """
-
     """ #######-> Start of overlay 2 <-####### """
     # table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
     # new_width = 1350
@@ -19,7 +16,6 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
     # new_height = int(new_width / aspect_ratio)
     # table_bg = cv2.resize(table_bg, (new_width, new_height))
     """ --------> End of overlay 2 <-------- """
-
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     mask = cv2.imread(mask_path) if mask_path is not None else None
     while ai_cctv.cap.isOpened():
@@ -65,7 +61,6 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, m
     """ #######-> Start of Video Saver 1 <-####### """
     # video_saver.release()
     """ --------> End of Video Saver 1 <-------- """
-
     ai_cctv.cap.release()
     cv2.destroyAllWindows()
 
