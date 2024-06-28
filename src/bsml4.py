@@ -4,12 +4,20 @@ from ultralytics import YOLO
 import math
 import cvzone
 from datetime import timedelta
+import numpy as np
 
 
 class AICCTV:
-    def __init__(self, video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes):
+
+    def __init__(
+        self,
+        emp_model_path,
+        act_model_path,
+        emp_classes,
+        act_classes,
+        video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+    ):
         self.cap = cv2.VideoCapture(video_path)
-        self.mask = cv2.imread(mask_path)
         self.model_emp = YOLO(emp_model_path)
         self.model_act = YOLO(act_model_path)
         self.class_emp = emp_classes
@@ -18,17 +26,16 @@ class AICCTV:
         print(f"Using device: {self.device}")
 
     def process_frame(self, frame, mask):
-
-        frame_region = cv2.bitwise_and(frame, mask)
-
+        if mask is not None and np.any(mask):
+            frame_region = cv2.bitwise_and(frame, mask)
+        else:
+            frame_region = frame
         results_emp = self.model_emp(source=frame_region, stream=True)
-        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (0, 255, 0))
-
+        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (255, 0, 0))
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame_region, stream=True)
-            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (255, 0, 0))
-
+            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (0, 255, 0))
         return frame, emp_boxes_info, act_boxes_info
 
     def process_results(self, frame, results, classes, color):
@@ -141,77 +148,73 @@ class VideoSaver:
         self.out.release()
 
 
-video_path = "D:/AI_CCTV/.runs/videos/0624.mp4"
-# video_path = "rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1"
-mask_path = ".runs/images/mask7.png"
-emp_model_path = ".runs/detect/.arc/two_women/weights/best.pt"
-act_model_path = ".runs/detect/.arc/emp_gm1_rev/weights/best.pt"
-emp_classes = ["Siti Umi", "Nina"]
-act_classes = ["Idle", "Folding"]
+def main(mask_path, emp_model_path, act_model_path, emp_classes, act_classes, video_path):
+    # Create Instances
+    ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
+    report = REPORT(emp_classes)
 
-ai_cctv = AICCTV(video_path, mask_path, emp_model_path, act_model_path, emp_classes, act_classes)
-report = REPORT(emp_classes)
-frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
-
-""" #######-> Start of Video Saver 1 <-####### """
-# ret, frame = ai_cctv.cap.read()
-# video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
-""" --------> End of Video Saver 1 <-------- """
-
-""" #######-> Start of overlay 2 <-####### """
-# table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
-# new_width = 1350
-# aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
-# new_height = int(new_width / aspect_ratio)
-# table_bg = cv2.resize(table_bg, (new_width, new_height))
-""" --------> End of overlay 2 <-------- """
-
-while ai_cctv.cap.isOpened():
-    _, frame = ai_cctv.cap.read()
-    mask_resized = cv2.resize(ai_cctv.mask, (frame.shape[1], frame.shape[0]))
-
-
-    frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
-    frame_duration = 1 / frame_rate
-
-    for x1, y1, x2, y2, emp_class, _, _ in emp_boxes_info:
-        act_detected = False
-        for ax1, ay1, ax2, ay2, act_class, _, _ in act_boxes_info:
-            if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
-                act_detected = True
-                report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
-                text = f"{emp_class} is {act_class}"
-                ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (0, 255, 0))
-                break
-        if not act_detected:
-            report.update_data_table(emp_class, "idle_time", frame_duration)
-            text = f"{emp_class} is idle"
-            ai_cctv.draw_box(frame, x1, y1, x2, y2, text, (255, 255, 0))
-
-    detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
-    for emp_class in emp_classes:
-        if emp_class not in detected_employees:
-            report.update_data_table(emp_class, "offsite_time", frame_duration)
-
-    """ #######-> Start of overlay 2 <-####### """
-    # frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
-    # cv2.imshow("Video with Overlay", frame_with_overlay)
-    """ --------> End of overlay 2 <-------- """
-    percentages = report.calculate_percentages()
-    report.draw_table(frame, percentages)
-
-    """ * * *---> Start of Video Saver 1 <---* * * """
-    # video_saver.write_frame(frame)
+    """ #######-> Start of Video Saver 1 <-####### """
+    # ret, frame = ai_cctv.cap.read()
+    # video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
     """ --------> End of Video Saver 1 <-------- """
 
-    frame = ai_cctv.resize_frame(frame)
-    cv2.imshow("AI on Folding Area", frame)
-    if cv2.waitKey(1) & 0xFF == ord("n"):
-        break
+    """ #######-> Start of overlay 2 <-####### """
+    # table_bg = cv2.imread(".runs/images/OL1.png", cv2.IMREAD_UNCHANGED)
+    # new_width = 1350
+    # aspect_ratio = table_bg.shape[1] / table_bg.shape[0]
+    # new_height = int(new_width / aspect_ratio)
+    # table_bg = cv2.resize(table_bg, (new_width, new_height))
+    """ --------> End of overlay 2 <-------- """
 
-""" * * *---> Start of Video Saver 1 <---* * * """
-# video_saver.release()
-""" --------> End of Video Saver 1 <-------- """
+    frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
+    mask = cv2.imread(mask_path)
+    while ai_cctv.cap.isOpened():
+        _, frame = ai_cctv.cap.read()
+        mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0]))
+        frame_duration = 1 / frame_rate
 
-ai_cctv.cap.release()
-cv2.destroyAllWindows()
+        frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
+        for x1, y1, x2, y2, emp_class, _, emp_color in emp_boxes_info:
+            act_detected = False
+            for ax1, ay1, ax2, ay2, act_class, _, act_color in act_boxes_info:
+                if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
+                    act_detected = True
+                    report.update_data_table(emp_class, act_class.lower() + "_time", frame_duration)
+                    text = f"{emp_class} is {act_class}"
+                    ai_cctv.draw_box(frame, x1, y1, x2, y2, text, act_color)
+                    break
+            if not act_detected:
+                report.update_data_table(emp_class, "idle_time", frame_duration)
+                text = f"{emp_class} is idle"
+                ai_cctv.draw_box(frame, x1, y1, x2, y2, text, emp_color)
+        detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
+        for emp_class in emp_classes:
+            if emp_class not in detected_employees:
+                report.update_data_table(emp_class, "offsite_time", frame_duration)
+
+        """ #######-> Start of overlay 2 <-####### """
+        # frame = cvzone.overlayPNG(frame, table_bg, (1800, 1055))
+        # cv2.imshow("Video with Overlay", frame_with_overlay)
+        """ --------> End of overlay 2 <-------- """
+        percentages = report.calculate_percentages()
+        report.draw_table(frame, percentages)
+
+        """ * * *---> Start of Video Saver 1 <---* * * """
+        # video_saver.write_frame(frame)
+        """ --------> End of Video Saver 1 <-------- """
+
+        frame = ai_cctv.resize_frame(frame)
+        cv2.imshow("AI on Folding Area", frame)
+        if cv2.waitKey(1) & 0xFF == ord("n"):
+            break
+
+    """ * * *---> Start of Video Saver 1 <---* * * """
+    # video_saver.release()
+    """ --------> End of Video Saver 1 <-------- """
+
+    ai_cctv.cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    print("Hello Nana Wartana!\n")
