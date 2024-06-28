@@ -79,9 +79,11 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes):
+    def __init__(self, emp_classes, anto_time=10):
         self.data = {}
         self.emp_classes = emp_classes
+        self.anto_time = anto_time
+        self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
 
     def update_data_table(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
@@ -90,10 +92,25 @@ class REPORT:
                 "idle_time": 0,
                 "offsite_time": 0,
             }
-        if act_class in self.data[emp_class]:
-            self.data[emp_class][act_class] += frame_duration
-        else:
-            self.data[emp_class]["idle_time"] += frame_duration
+
+        # Handle working time directly
+        if act_class == "working_time":
+            self.data[emp_class]["working_time"] += frame_duration
+            # Reset anomaly trackers
+            self.anomaly_tracker[emp_class]["idle_time"] = 0
+            self.anomaly_tracker[emp_class]["offsite_time"] = 0
+
+        # Handle idle time with anomaly tolerance
+        elif act_class == "idle_time":
+            self.anomaly_tracker[emp_class]["idle_time"] += frame_duration
+            if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
+                self.data[emp_class]["idle_time"] += frame_duration
+
+        # Handle offsite time with anomaly tolerance
+        elif act_class == "offsite_time":
+            self.anomaly_tracker[emp_class]["offsite_time"] += frame_duration
+            if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
+                self.data[emp_class]["offsite_time"] += frame_duration
 
     def calculate_percentages(self):
         percentages = {}
@@ -104,7 +121,8 @@ class REPORT:
 
             t_onsite = t_f + t_i
             t_total = t_onsite + t_off
-            
+
+            # Menghitung persentase berdasarkan rumus yang baru
             if t_onsite > 0:
                 percentages[emp_class] = {
                     "%t_f": (t_f / t_onsite) * 100,
