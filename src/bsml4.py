@@ -104,8 +104,7 @@ class REPORT:
 
             t_onsite = t_f + t_i
             t_total = t_onsite + t_off
-
-            # Menghitung persentase berdasarkan rumus yang baru
+            
             if t_onsite > 0:
                 percentages[emp_class] = {
                     "%t_f": (t_f / t_onsite) * 100,
