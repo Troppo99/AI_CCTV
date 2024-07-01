@@ -43,7 +43,7 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="r
         """ --------> End of Video Saver 1 <-------- """
 
         frame = ai_cctv.resize_frame(frame)
-        cv2.imshow(f"{anto_time}", frame)
+        cv2.imshow(f"Toleransi {anto_time} detik", frame)
         if cv2.waitKey(1) & 0xFF == ord("n"):
             break
 
