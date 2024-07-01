@@ -5,6 +5,7 @@ import math
 import cvzone
 from datetime import timedelta
 import numpy as np
+import os
 
 
 class AICCTV:
@@ -71,7 +72,7 @@ class AICCTV:
         return False
 
 
-class TABLE:
+class REPORT:
     def __init__(self, emp_classes, anto_time):
         self.data = {}
         self.emp_classes = emp_classes
@@ -167,3 +168,13 @@ class VideoSaver:
 
     def release(self):
         self.out.release()
+
+    @staticmethod
+    def uniquifying(base_path, base_name, extension):
+        version = 1
+        while True:
+            filename = f"{base_name}_v{version}{extension}"
+            full_path = os.path.join(base_path, filename)
+            if not os.path.exists(full_path):
+                return full_path
+            version += 1

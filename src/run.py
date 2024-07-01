@@ -8,5 +8,6 @@ main(
     # video_path="D:/AI_CCTV/.runs/videos/00000000302000000.mp4",
     # video_path=0,
     # mask_path=".runs/images/mask7.png",
-    anto_time=3,
+    anto_time=300,
+    # saver=True,
 )
