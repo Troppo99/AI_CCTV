@@ -79,6 +79,7 @@ class TABLE:
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
 
     def update_data_table(self, emp_class, act_class, frame_duration):
+        # frame_duration = int(round(frame_duration))
         if emp_class not in self.data:
             self.data[emp_class] = {
                 "working_time": 0,
