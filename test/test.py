@@ -84,8 +84,10 @@ class ObjectDetections:
 
 detection = ObjectDetections(
     # capture_index="D:/AI_CCTV/.runs/videos/0624.mp4",
+    capture_index="D:/AI_CCTV/.runs/videos/00000000302000000.mp4",
     # model_path=".runs/detect/person-m-v2/weights/best.pt",
-    model_path=".runs/weights/fold.pt",
+    model_path=".runs/detect/emp-m/weights/best.pt",
+    # model_path=".runs/weights/fold.pt",
     # is_saved=True,
 )
 detection()

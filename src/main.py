@@ -2,9 +2,26 @@ from bsml4 import AICCTV, REPORT, VideoSaver
 import cv2
 
 
-def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", anto_time=10, mask_path=None, saver=False):
+def main(
+    emp_model_path,
+    act_model_path,
+    emp_classes,
+    act_classes,
+    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+    anto_time=10,
+    mask_path=None,
+    saver=False,
+    send=False,
+    host=None,
+    user=None,
+    password=None,
+    database=None,
+    port=None,
+    interval=60,
+    table_sql="cam00",
+):
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
-    report = REPORT(emp_classes, anto_time)
+    report = REPORT(emp_classes, anto_time,interval)
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     if saver:
         _, frame = ai_cctv.cap.read()
@@ -42,7 +59,9 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="r
         if saver:
             video_saver.write_frame(frame)
         frame = ai_cctv.resize_frame(frame)
-        cv2.imshow(f"Toleransi: {anto_time} detik - Masking: {mask_path} - Saver: {saver}", frame)
+        cv2.imshow(f"Toleransi: {anto_time} detik - Masking: {mask_path} - Saver: {saver} - SQL: {send}", frame)
+        if send:
+            report.send_to_sql(host, user, password, database, port, table_sql)
         if cv2.waitKey(1) & 0xFF == ord("n"):
             break
 

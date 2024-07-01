@@ -6,7 +6,8 @@ import cvzone
 from datetime import timedelta
 import numpy as np
 import os
-import mysql.connector as sql
+import pymysql
+import time
 
 
 class AICCTV:
@@ -74,11 +75,14 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time):
+
+    def __init__(self, emp_classes, anto_time, interval=60):
         self.data = {}
         self.emp_classes = emp_classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
+        self.interval = interval
+        self.last_sent_time = time.time()
 
     def update_data_table(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
@@ -141,6 +145,23 @@ class REPORT:
 
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+
+    def send_to_sql(self, host, user, password, database, port, table_sql):
+        current_time = time.time()
+        if current_time - self.last_sent_time >= self.interval:
+            conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
+            cursor = conn.cursor()
+            for emp_class, times in self.data.items():
+                query = f"""
+                INSERT INTO {table_sql} (timestamp, employee, working_time, idle_time, offsite_time)
+                VALUES (%s, %s, %s, %s, %s)
+                """
+                values = (time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
+                cursor.execute(query, values)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            self.last_sent_time = current_time
 
 
 class VideoSaver:
