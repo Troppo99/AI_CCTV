@@ -9,14 +9,7 @@ import numpy as np
 
 class AICCTV:
 
-    def __init__(
-        self,
-        emp_model_path,
-        act_model_path,
-        emp_classes,
-        act_classes,
-        video_path,
-    ):
+    def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path):
         self.cap = cv2.VideoCapture(video_path)
         self.model_emp = YOLO(emp_model_path)
         self.model_act = YOLO(act_model_path)
@@ -78,8 +71,8 @@ class AICCTV:
         return False
 
 
-class REPORT:
-    def __init__(self, emp_classes, anto_time=10):
+class TABLE:
+    def __init__(self, emp_classes, anto_time):
         self.data = {}
         self.emp_classes = emp_classes
         self.anto_time = anto_time
@@ -115,22 +108,22 @@ class REPORT:
     def calculate_percentages(self):
         percentages = {}
         for emp_class in self.data:
-            t_f = self.data[emp_class]["working_time"]
+            t_w = self.data[emp_class]["working_time"]
             t_i = self.data[emp_class]["idle_time"]
             t_off = self.data[emp_class]["offsite_time"]
 
-            t_onsite = t_f + t_i
+            t_onsite = t_w + t_i
             t_total = t_onsite + t_off
 
             # Menghitung persentase berdasarkan rumus yang baru
             if t_onsite > 0:
                 percentages[emp_class] = {
-                    "%t_f": (t_f / t_onsite) * 100,
+                    "%t_w": (t_w / t_onsite) * 100,
                     "%t_i": (t_i / t_onsite) * 100,
                 }
             else:
                 percentages[emp_class] = {
-                    "%t_f": 0,
+                    "%t_w": 0,
                     "%t_i": 0,
                 }
 
@@ -157,7 +150,7 @@ class REPORT:
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 610 + row_idx * row_height
 
-            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%t_f']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%t_i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%t_off']:.0f}%", 965)]
+            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%t_w']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%t_i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%t_off']:.0f}%", 965)]
 
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)

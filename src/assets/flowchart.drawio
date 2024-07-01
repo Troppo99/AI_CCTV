@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-06-28T01:23:22.685Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" etag="WEynl61MXNBAayEi5BP0" version="24.6.0" type="device">
+<mxfile host="app.diagrams.net" modified="2024-07-01T00:55:41.328Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" etag="h7SmZwfzxKZU7P99QlYq" version="24.6.4" type="device">
   <diagram name="Page-1" id="1uPHbWjP7XGhoeDmrcKO">
-    <mxGraphModel dx="928" dy="493" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+    <mxGraphModel dx="2476" dy="1316" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -431,39 +431,39 @@
         <mxCell id="0K6v0SR-kfQ_nzcjlXtt-1" value="is keyboard &quot;n&quot;" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Dank Mono;fillColor=#dae8fc;strokeColor=#000000;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="2104.5" y="575" width="119" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;strokeWidth=2;shape=link;dashPattern=1 1;opacity=20;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-1" target="QQNjEQj8tN8XqSvT7jvH-3">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;strokeWidth=2;shape=link;dashPattern=1 1;opacity=20;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-1" target="QQNjEQj8tN8XqSvT7jvH-3" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-1" value="&lt;b&gt;&lt;font face=&quot;Inconsolata&quot; style=&quot;font-size: 19px;&quot;&gt;Flowchart Algoritma AI_CCTV Anomaly Tolerance (ANTO)&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-1" value="&lt;b&gt;&lt;font face=&quot;Inconsolata&quot; style=&quot;font-size: 19px;&quot;&gt;Flowchart Algoritma AI_CCTV Anomaly Tolerance (ANTO)&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="2763" y="230" width="267" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-3" target="QQNjEQj8tN8XqSvT7jvH-4">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-3" target="QQNjEQj8tN8XqSvT7jvH-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-3" value="Anto_Start" style="ellipse;whiteSpace=wrap;html=1;fontStyle=1;labelBorderColor=none;fillColor=#66FFB3;strokeColor=#000000;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-3" value="Anto_Start" style="ellipse;whiteSpace=wrap;html=1;fontStyle=1;labelBorderColor=none;fillColor=#66FFB3;strokeColor=#000000;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="3019" y="297" width="90" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-4" target="QQNjEQj8tN8XqSvT7jvH-8">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-4" target="QQNjEQj8tN8XqSvT7jvH-8" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-4" value="Read anto time:&amp;nbsp;&lt;div&gt;&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;&#39;Idle&#39;&lt;/li&gt;&lt;li&gt;&#39;Offsite&#39;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;div&gt;of each employee&lt;/div&gt;" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;align=left;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-4" value="Read anto time:&amp;nbsp;&lt;div&gt;&lt;ul style=&quot;padding-left: 20px;&quot;&gt;&lt;li&gt;&#39;Idle&#39;&lt;/li&gt;&lt;li&gt;&#39;Offsite&#39;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;div&gt;of each employee&lt;/div&gt;" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;align=left;" parent="1" vertex="1">
           <mxGeometry x="2983" y="470" width="162" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-6" value="&lt;b&gt;&amp;lt;Example data dictionary&amp;gt;&lt;/b&gt;&lt;br&gt;data = {&#39;Nana&#39; : {&#39;Idle&#39; : 2, &#39;Folding&#39; : 20, &#39;Offsite&#39; : 0}, &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&#39;Waskita&#39;: {&#39;Idle&#39; : 21, &#39;Folding&#39; : 1, &#39;Offsite&#39; : 0}}" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;align=left;spacingLeft=7;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-6" value="&lt;b&gt;&amp;lt;Example data dictionary&amp;gt;&lt;/b&gt;&lt;br&gt;data = {&#39;Nana&#39; : {&#39;Idle&#39; : 2, &#39;Folding&#39; : 20, &#39;Offsite&#39; : 0}, &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&#39;Waskita&#39;: {&#39;Idle&#39; : 21, &#39;Folding&#39; : 1, &#39;Offsite&#39; : 0}}" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;align=left;spacingLeft=7;" parent="1" vertex="1">
           <mxGeometry x="3175" y="308" width="437" height="59" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-8" target="QQNjEQj8tN8XqSvT7jvH-13">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-8" target="QQNjEQj8tN8XqSvT7jvH-13" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-16" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="QQNjEQj8tN8XqSvT7jvH-14">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-16" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="QQNjEQj8tN8XqSvT7jvH-14" vertex="1" connectable="0">
           <mxGeometry x="-0.3802" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-8" value="If anto time&lt;div&gt;is bigger than &lt;b&gt;&lt;font color=&quot;#00ff00&quot;&gt;10 seconds&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Dank Mono;fillColor=#dae8fc;strokeColor=#000000;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-8" value="If anto time&lt;div&gt;is bigger than &lt;b&gt;&lt;font color=&quot;#00ff00&quot;&gt;10 seconds&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Dank Mono;fillColor=#dae8fc;strokeColor=#000000;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="2994.25" y="614" width="139.5" height="136" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-8" target="QQNjEQj8tN8XqSvT7jvH-12">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-8" target="QQNjEQj8tN8XqSvT7jvH-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="3252" y="682" />
@@ -472,25 +472,28 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-15" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="QQNjEQj8tN8XqSvT7jvH-10">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-15" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="QQNjEQj8tN8XqSvT7jvH-10" vertex="1" connectable="0">
           <mxGeometry x="-0.8886" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-12" value="Read detections" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-12" value="Read detections" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="2994.75" y="393" width="139" height="33" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-13" target="QQNjEQj8tN8XqSvT7jvH-17">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-13" target="QQNjEQj8tN8XqSvT7jvH-17" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-13" value="Start to store anto time into data dictionary&lt;div&gt;(start from 1 seconds)&lt;/div&gt;" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-13" value="Start to store anto time into data dictionary&lt;div&gt;(start from 1 seconds)&lt;/div&gt;" style="shape=rectangle;whiteSpace=wrap;html=1;backgroundOutline=1;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="2992.63" y="794" width="143.25" height="87" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-17" value="Anto_End" style="ellipse;whiteSpace=wrap;html=1;fontStyle=1;labelBorderColor=none;fillColor=#66FFB3;strokeColor=#000000;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-17" value="Anto_End" style="ellipse;whiteSpace=wrap;html=1;fontStyle=1;labelBorderColor=none;fillColor=#66FFB3;strokeColor=#000000;fontFamily=Dank Mono;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
           <mxGeometry x="3019" y="911" width="90" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="QQNjEQj8tN8XqSvT7jvH-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="QQNjEQj8tN8XqSvT7jvH-1" target="QQNjEQj8tN8XqSvT7jvH-1">
+        <mxCell id="QQNjEQj8tN8XqSvT7jvH-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="QQNjEQj8tN8XqSvT7jvH-1" target="QQNjEQj8tN8XqSvT7jvH-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="IhbXkQpjAvLrspOXqXfY-1" value="&lt;b&gt;&lt;font face=&quot;Inconsolata&quot; style=&quot;font-size: 19px;&quot;&gt;Flowchart Python Script AI_CCTV BSML4&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="4008" y="215" width="236" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

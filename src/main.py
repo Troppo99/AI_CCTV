@@ -1,10 +1,10 @@
-from bsml4 import AICCTV, REPORT
+from bsml4 import AICCTV, TABLE
 import cv2
 
 
-def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", mask_path=None):
+def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", anto_time=10, mask_path=None):
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
-    report = REPORT(emp_classes)
+    table = TABLE(emp_classes, anto_time)
     """ #######-> Start of Video Saver 1 <-####### """
     # ret, frame = ai_cctv.cap.read()
     # video_saver = VideoSaver(".runs/videos/writer/output_video.mp4", frame.shape[1], frame.shape[0], frame_rate)
@@ -22,28 +22,28 @@ def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path="r
             for ax1, ay1, ax2, ay2, act_class, _, act_color in act_boxes_info:
                 if ai_cctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
                     act_detected = True
-                    report.update_data_table(emp_class, "working_time", frame_duration)
+                    table.update_data_table(emp_class, "working_time", frame_duration)
                     text = f"{emp_class} is {act_class}"
                     ai_cctv.draw_box(frame, x1, y1, x2, y2, text, act_color)
                     break
             if not act_detected:
-                report.update_data_table(emp_class, "idle_time", frame_duration)
+                table.update_data_table(emp_class, "idle_time", frame_duration)
                 text = f"{emp_class} is idle"
                 ai_cctv.draw_box(frame, x1, y1, x2, y2, text, emp_color)
         detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
         for emp_class in emp_classes:
             if emp_class not in detected_employees:
-                report.update_data_table(emp_class, "offsite_time", frame_duration)
+                table.update_data_table(emp_class, "offsite_time", frame_duration)
 
-        percentages = report.calculate_percentages()
-        report.draw_table(frame, percentages)
+        percentages = table.calculate_percentages()
+        table.draw_table(frame, percentages)
 
         """ #######-> Start of Video Saver 1 <-####### """
         # video_saver.write_frame(frame)
         """ --------> End of Video Saver 1 <-------- """
 
         frame = ai_cctv.resize_frame(frame)
-        cv2.imshow(act_model_path, frame)
+        cv2.imshow(f"{anto_time}", frame)
         if cv2.waitKey(1) & 0xFF == ord("n"):
             break
 
