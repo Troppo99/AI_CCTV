@@ -6,6 +6,7 @@ import cvzone
 from datetime import timedelta
 import numpy as np
 import os
+import mysql.connector as sql
 
 
 class AICCTV:
@@ -80,28 +81,20 @@ class REPORT:
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
 
     def update_data_table(self, emp_class, act_class, frame_duration):
-        # frame_duration = int(round(frame_duration))
         if emp_class not in self.data:
             self.data[emp_class] = {
                 "working_time": 0,
                 "idle_time": 0,
                 "offsite_time": 0,
             }
-
-        # Handle working time directly
         if act_class == "working_time":
             self.data[emp_class]["working_time"] += frame_duration
-            # Reset anomaly trackers
             self.anomaly_tracker[emp_class]["idle_time"] = 0
             self.anomaly_tracker[emp_class]["offsite_time"] = 0
-
-        # Handle idle time with anomaly tolerance
         elif act_class == "idle_time":
             self.anomaly_tracker[emp_class]["idle_time"] += frame_duration
             if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
                 self.data[emp_class]["idle_time"] += frame_duration
-
-        # Handle offsite time with anomaly tolerance
         elif act_class == "offsite_time":
             self.anomaly_tracker[emp_class]["offsite_time"] += frame_duration
             if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
@@ -113,27 +106,19 @@ class REPORT:
             t_w = self.data[emp_class]["working_time"]
             t_i = self.data[emp_class]["idle_time"]
             t_off = self.data[emp_class]["offsite_time"]
-
             t_onsite = t_w + t_i
             t_total = t_onsite + t_off
-
-            # Menghitung persentase berdasarkan rumus yang baru
             if t_onsite > 0:
                 percentages[emp_class] = {
                     "%t_w": (t_w / t_onsite) * 100,
                     "%t_i": (t_i / t_onsite) * 100,
                 }
             else:
-                percentages[emp_class] = {
-                    "%t_w": 0,
-                    "%t_i": 0,
-                }
-
+                percentages[emp_class] = {"%t_w": 0, "%t_i": 0}
             if t_total > 0:
                 percentages[emp_class]["%t_off"] = (t_off / t_total) * 100
             else:
                 percentages[emp_class]["%t_off"] = 0
-
         return percentages
 
     def draw_table(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
