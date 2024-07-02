@@ -1,4 +1,4 @@
-from bsml4 import AICCTV, REPORT, VideoSaver
+from bsml4 import AICCTV, REPORT, SAVER
 import cv2
 
 
@@ -8,12 +8,12 @@ def main(
     emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     act_classes=["Working"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    anto_time=10,
+    anto_time=3,
     mask_path=None,
     saver=False,
     send=False,
     interval_send=1,
-    table_sql="cam00",
+    table_sql="empact",
     server=None,
 ):
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
@@ -26,8 +26,8 @@ def main(
         base_path = ".runs/videos/writer"
         base_name = "monday"
         extension = ".mp4"
-        file_name = VideoSaver.uniquifying(base_path, base_name, extension)
-        video_saver = VideoSaver(file_name, frame.shape[1], frame.shape[0], frame_rate)
+        file_name = SAVER.uniquifying(base_path, base_name, extension)
+        video_saver = SAVER(file_name, frame.shape[1], frame.shape[0], frame_rate)
     mask = cv2.imread(mask_path) if mask_path is not None else None
     while ai_cctv.cap.isOpened():
         _, frame = ai_cctv.cap.read()
@@ -59,16 +59,19 @@ def main(
         frame = ai_cctv.resize_frame(frame)
 
         """ #######-> Start of Will be modification [1] <-####### """
+        mask_info = mask_path.split("/")[-1] if mask_path else mask_path
+        saver_info = "Recording" if saver else "Not Recording"
+        sql_info = f"Sending to {host}" if send else "Not sending"
         text_info = [
             f"Tolerance: {anto_time} seconds",
-            f"Masking: {mask_path}",
-            f"Saver: {saver}",
-            f"SQL: {send} to {server}",
+            f"Masking: {mask_info}",
+            f"Saver: {saver_info}",
+            f"SQL: {sql_info}",
             f"Interval Send: {interval_send} seconds",
         ]
         j = len(text_info) if server else len(text_info) - 1
         for i in range(j):
-            cv2.putText(frame, text_info[i], (1000, 30 * i + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
+            cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
         """ --------> End of Will be modification [1] <-------- """
 
         cv2.imshow(f"Folding Area", frame)

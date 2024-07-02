@@ -178,7 +178,7 @@ class REPORT:
         return host, user, password, database, port
 
 
-class VideoSaver:
+class SAVER:
     def __init__(self, output_path, frame_width, frame_height, fps=20.0):
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         self.out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
