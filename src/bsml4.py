@@ -11,7 +11,6 @@ import time
 
 
 class AICCTV:
-
     def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path):
         self.cap = cv2.VideoCapture(video_path)
         self.model_emp = YOLO(emp_model_path)
@@ -75,13 +74,12 @@ class AICCTV:
 
 
 class REPORT:
-
-    def __init__(self, emp_classes, anto_time, interval=60):
+    def __init__(self, emp_classes, anto_time, interval_send):
         self.data = {}
         self.emp_classes = emp_classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
-        self.interval = interval
+        self.interval_send = interval_send
         self.last_sent_time = time.time()
 
     def update_data_table(self, emp_class, act_class, frame_duration):
@@ -148,7 +146,7 @@ class REPORT:
 
     def send_to_sql(self, host, user, password, database, port, table_sql):
         current_time = time.time()
-        if current_time - self.last_sent_time >= self.interval:
+        if current_time - self.last_sent_time >= self.interval_send:
             conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
             cursor = conn.cursor()
             for emp_class, times in self.data.items():
