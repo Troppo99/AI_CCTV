@@ -61,12 +61,12 @@ def main(
         """ #######-> Start of Will be modification [1] <-####### """
         mask_info = mask_path.split("/")[-1] if mask_path else mask_path
         saver_info = "Recording" if saver else "Not Recording"
-        sql_info = f"Sending to {host}" if send else "Not sending"
+        data_info = f"Sending to {host}" if send else "Not sending"
         text_info = [
             f"Tolerance: {anto_time} seconds",
             f"Masking: {mask_info}",
             f"Saver: {saver_info}",
-            f"SQL: {sql_info}",
+            f"Data: {data_info}",
             f"Interval Send: {interval_send} seconds",
         ]
         j = len(text_info) if server else len(text_info) - 1

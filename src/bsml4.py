@@ -61,7 +61,7 @@ class AICCTV:
 
     @staticmethod
     def draw_box(frame, x1, y1, x2, y2, text, color, thickness=2, font_scale=2, font_thickness=2):
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
+        # cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
         cvzone.putTextRect(frame, text, (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
 
     @staticmethod
