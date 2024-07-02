@@ -2,43 +2,26 @@ from bsml4 import AICCTV, REPORT, VideoSaver
 import cv2
 
 
-def where_server_sql(server):
-    if server == "10.5.0.2":
-        host = ""
-        user = "robot"
-        password = "robot123"
-        database = "report_ai_cctv"
-        port = 3307
-    elif server == "10.5.0.3":
-        host = "localhost"
-        user = "root"
-        password = "robot123"
-        database = "report_ai_cctv"
-        port = 3306
-    return host, user, password, database, port
-
-
 def main(
-    emp_model_path=None,
-    act_model_path=None,
-    emp_classes=None,
-    act_classes=None,
+    emp_model_path=".runs/detect/emp-m/weights/best.pt",
+    act_model_path=".runs/detect/fold-m/weights/best.pt",
+    emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+    act_classes=["Working"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
     anto_time=10,
     mask_path=None,
     saver=False,
     send=False,
-    interval_send=10,
+    interval_send=1,
     table_sql="cam00",
     server=None,
 ):
-    if server:
-        send = True
-        host, user, password, database, port = where_server_sql(server)
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes, anto_time, interval_send)
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
-    if saver:
+    if server:
+        send = True
+        host, user, password, database, port = report.where_sql_server(server)
         _, frame = ai_cctv.cap.read()
         base_path = ".runs/videos/writer"
         base_name = "monday"
@@ -74,16 +57,17 @@ def main(
         if saver:
             video_saver.write_frame(frame)
         frame = ai_cctv.resize_frame(frame)
+
         text_info = [
-            f"Toleransi: {anto_time} detik",
+            f"Tolerance: {anto_time} seconds",
             f"Masking: {mask_path}",
             f"Saver: {saver}",
             f"SQL: {send} to {server}",
+            f"Interval Send: {interval_send} seconds",
         ]
-        cv2.putText(frame, text_info[0], (1100, 30), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
-        cv2.putText(frame, text_info[1], (1100, 50), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
-        cv2.putText(frame, text_info[2], (1100, 70), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
-        cv2.putText(frame, text_info[3], (1100, 90), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
+        j = len(text_info) if server else len(text_info) - 1
+        for i in range(j):
+            cv2.putText(frame, text_info[i], (1000, 30 * i + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
         cv2.imshow(f"Folding Area", frame)
         if send:
             report.send_to_sql(host, user, password, database, port, table_sql)

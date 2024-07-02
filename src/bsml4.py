@@ -161,6 +161,22 @@ class REPORT:
             conn.close()
             self.last_sent_time = current_time
 
+    @staticmethod
+    def where_sql_server(server):
+        if server == "Waskita":
+            host = "192.168.100.187"
+            user = "robot"
+            password = "robot123"
+            database = "report_ai_cctv"
+            port = 3307
+        elif server == "Nana":
+            host = "localhost"
+            user = "root"
+            password = "robot123"
+            database = "report_ai_cctv"
+            port = 3306
+        return host, user, password, database, port
+
 
 class VideoSaver:
     def __init__(self, output_path, frame_width, frame_height, fps=20.0):
