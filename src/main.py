@@ -58,6 +58,7 @@ def main(
             video_saver.write_frame(frame)
         frame = ai_cctv.resize_frame(frame)
 
+        """ #######-> Start of Will be modification [1] <-####### """
         text_info = [
             f"Tolerance: {anto_time} seconds",
             f"Masking: {mask_path}",
@@ -68,6 +69,8 @@ def main(
         j = len(text_info) if server else len(text_info) - 1
         for i in range(j):
             cv2.putText(frame, text_info[i], (1000, 30 * i + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 0), 1)
+        """ --------> End of Will be modification [1] <-------- """
+
         cv2.imshow(f"Folding Area", frame)
         if send:
             report.send_to_sql(host, user, password, database, port, table_sql)
