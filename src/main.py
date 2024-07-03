@@ -26,6 +26,7 @@ def main(
     if server:
         send = True
         host, user, password, database, port = report.where_sql_server(server)
+    if saver:
         _, frame = ai_cctv.cap.read()
         base_path = ".runs/videos/writer"
         base_name = "monday"
