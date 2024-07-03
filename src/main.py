@@ -15,6 +15,7 @@ def main(
     interval_send=1,
     table_sql="empact",
     server=None,
+    camera_id="CAM001",
 ):
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes, anto_time, interval_send)
@@ -76,7 +77,7 @@ def main(
 
         cv2.imshow(f"Folding Area", frame)
         if send:
-            report.send_to_sql(host, user, password, database, port, table_sql)
+            report.send_to_sql(host, user, password, database, port, table_sql, camera_id)
         if cv2.waitKey(1) & 0xFF == ord("n"):
             break
 
