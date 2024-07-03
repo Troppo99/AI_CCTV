@@ -144,17 +144,17 @@ class REPORT:
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-    def send_to_sql(self, host, user, password, database, port, table_sql):
+    def send_to_sql(self, host, user, password, database, port, table_sql, camera_id):
         current_time = time.time()
         if current_time - self.last_sent_time >= self.interval_send:
             conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
             cursor = conn.cursor()
             for emp_class, times in self.data.items():
                 query = f"""
-                INSERT INTO {table_sql} (timestamp, employee, working_time, idle_time, offsite_time)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO {table_sql} (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """
-                values = (time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
+                values = (camera_id, time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
                 cursor.execute(query, values)
             conn.commit()
             cursor.close()
