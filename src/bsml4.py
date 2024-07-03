@@ -21,18 +21,16 @@ class AICCTV:
         print(f"Using device: {self.device}")
 
     def process_frame(self, frame, mask):
-        resized_frame = self.resize_frame(frame)
         if mask is not None and np.any(mask):
-            mask_resized = cv2.resize(mask, (resized_frame.shape[1], resized_frame.shape[0]))
-            frame_region = cv2.bitwise_and(resized_frame, mask_resized)
+            frame_region = cv2.bitwise_and(frame, mask)
         else:
-            frame_region = resized_frame
+            frame_region = frame
         results_emp = self.model_emp(source=frame_region, stream=True)
-        frame, emp_boxes_info = self.process_results(resized_frame, results_emp, self.class_emp, (255, 0, 0))
+        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (255, 0, 0))
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame_region, stream=True)
-            frame, act_boxes_info = self.process_results(resized_frame, results_act, self.class_act, (0, 255, 0))
+            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (0, 255, 0))
         return frame, emp_boxes_info, act_boxes_info
 
     def process_results(self, frame, results, classes, color):
