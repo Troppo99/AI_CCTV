@@ -40,7 +40,7 @@ def main(
             timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
             print(f"- - -\nframe is None, Buddy! When it was {timestamp}")
             print(f"Program is running for {current_time-start_time:.0f}!\n- - -")
-        mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0])) if mask_path is not None else None
+        mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0])) if mask is not None else None
         frame_duration = 1 / frame_rate
         frame, emp_boxes_info, act_boxes_info = ai_cctv.process_frame(frame, mask_resized)
         for x1, y1, x2, y2, emp_class, _, emp_color in emp_boxes_info:
@@ -79,7 +79,7 @@ def main(
         ]
         j = len(text_info) if server else len(text_info) - 1
         for i in range(j):
-            cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1)
+            cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
 
         cv2.imshow(f"Folding Area", frame)
         if send:
