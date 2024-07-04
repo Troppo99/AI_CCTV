@@ -1,16 +1,9 @@
-from bsml4 import AICCTV, REPORT, SAVER
+from bsml4 import AICCTV, REPORT, SAVER, capture_frame
 import cv2
 import time
 import threading
 import queue
 
-
-def capture_frame(cap, frame_queue):
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frame_queue.put(frame)
 
 
 def main(

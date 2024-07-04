@@ -1,7 +1,7 @@
 ::: mermaid
 graph TD;
     A[Start] --> B[Initialize AICCTV, REPORT, SAVER]
-    B --> C{Start Frame Capture Thread}
+    B --> C[Start Frame Capture Thread]
     C --> D[Read Frame from Queue]
     D --> E{Frame None?}
     E -- Yes --> F[Log Error and Continue]
@@ -20,4 +20,5 @@ graph TD;
     P --> Q{Check for Interrupt or Termination}
     Q -- Yes --> R[Save Data and Exit]
     Q -- No --> D
+    
 :::

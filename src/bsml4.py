@@ -198,3 +198,11 @@ class SAVER:
             if not os.path.exists(full_path):
                 return full_path
             version += 1
+
+
+def capture_frame(cap, frame_queue):
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame_queue.put(frame)
