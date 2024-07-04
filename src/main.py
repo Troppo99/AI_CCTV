@@ -15,12 +15,13 @@ def main(
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
     anto_time=3,
     mask_path=None,
-    saver=False,
+    save=False,
     send=False,
     interval_send=1,
     table_sql="empact",
     server=None,
     camera_id="FOLDING",
+    show = False,
 ):
     start_time = time.time()
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
@@ -34,7 +35,7 @@ def main(
     if server:
         send = True
         host, user, password, database, port = report.where_sql_server(server)
-    if saver:
+    if save:
         _, frame = ai_cctv.cap.read()
         base_path = ".runs/videos/writer"
         base_name = "monday"
@@ -73,12 +74,12 @@ def main(
 
             percentages = report.calculate_percentages()
             report.draw_table(frame, percentages)
-            if saver:
+            if save:
                 video_saver.write_frame(frame)
             frame = ai_cctv.resize_frame(frame)
 
             mask_info = mask_path.split("/")[-1] if mask_path else mask_path
-            saver_info = "Recording" if saver else "Not Recording"
+            saver_info = "Recording" if save else "Not Recording"
             data_info = f"Sending to {host}" if send else "Not sending"
             text_info = [
                 f"Tolerance: {anto_time} seconds",
@@ -90,14 +91,14 @@ def main(
             j = len(text_info) if server else len(text_info) - 1
             for i in range(j):
                 cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
-
-            cv2.imshow(f"Folding Area", frame)
+            if show:
+                cv2.imshow(f"Folding Area", frame) 
             if send:
                 report.send_to_sql(host, user, password, database, port, table_sql, camera_id)
             if cv2.waitKey(1) & 0xFF == ord("n"):
                 break
 
-    if saver:
+    if save:
         video_saver.release()
     ai_cctv.cap.release()
     cv2.destroyAllWindows()

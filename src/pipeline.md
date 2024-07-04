@@ -4,7 +4,7 @@ graph TD;
     B --> C[Start Frame Capture Thread]
     C --> D[Read Frame from Queue]
     D --> E{Frame None?}
-    E -- Yes --> F[Log Error and Continue]
+    E -- Yes --> F[Log Error]
     E -- No --> G[Resize Mask]
     G --> H[Process Frame]
     H --> I[Update Data Table]
@@ -15,10 +15,9 @@ graph TD;
     L -- No --> N
     M --> N{Send to SQL?}
     N -- Yes --> O[Send Data to SQL]
-    N -- No --> P
-    O --> P
-    P --> Q{Check for Interrupt or Termination}
-    Q -- Yes --> R[Save Data and Exit]
+    N -- No --> Q
+    O --> Q
+    Q{Check for Interrupt or Termination}
+    Q -- Yes --> R[End]
     Q -- No --> D
-    
 :::
