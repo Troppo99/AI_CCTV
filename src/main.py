@@ -27,7 +27,7 @@ def main(
     interval_send=1,
     table_sql="empact",
     server=None,
-    camera_id="CAM001",
+    camera_id="FOLDING",
 ):
     start_time = time.time()
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
