@@ -5,7 +5,6 @@ import threading
 import queue
 
 
-
 def main(
     emp_model_path=".runs/detect/emp-m/weights/best.pt",
     act_model_path=".runs/detect/fold-m/weights/best.pt",
@@ -21,14 +20,13 @@ def main(
     table_sql="empact",
     server=None,
     camera_id="FOLDING",
-    show = False,
+    show=False,
 ):
     start_time = time.time()
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes, anto_time, interval_send)
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     frame_queue = queue.Queue()
-
     capture_thread = threading.Thread(target=capture_frame, args=(ai_cctv.cap, frame_queue))
     capture_thread.start()
 
@@ -38,7 +36,7 @@ def main(
     if save:
         _, frame = ai_cctv.cap.read()
         base_path = ".runs/videos/writer"
-        base_name = "monday"
+        base_name = "exp"
         extension = ".mp4"
         file_name = SAVER.uniquifying(base_path, base_name, extension)
         video_saver = SAVER(file_name, frame.shape[1], frame.shape[0], frame_rate)
@@ -92,7 +90,7 @@ def main(
             for i in range(j):
                 cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
             if show:
-                cv2.imshow(f"Folding Area", frame) 
+                cv2.imshow(f"Folding Area", frame)
             if send:
                 report.send_to_sql(host, user, password, database, port, table_sql, camera_id)
             if cv2.waitKey(1) & 0xFF == ord("n"):
