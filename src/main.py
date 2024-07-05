@@ -1,27 +1,9 @@
-from bsml4 import AICCTV, REPORT, SAVER, capture_frame
-import cv2
-import time
+from bsml4 import AICCTV, REPORT, SAVER, capture_frame, cv2, time
 import threading
 import queue
 
 
-def main(
-    emp_model_path=".runs/detect/emp-m/weights/best.pt",
-    act_model_path=".runs/detect/fold-m/weights/best.pt",
-    emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
-    act_classes=["Working"],
-    # video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1?buffer_size=102400",
-    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    anto_time=3,
-    mask_path=None,
-    save=False,
-    send=False,
-    interval_send=1,
-    table_sql="empact",
-    server=None,
-    camera_id="FOLDING",
-    show=False,
-):
+def main(emp_model_path=".runs/detect/emp-m/weights/best.pt", act_model_path=".runs/detect/fold-m/weights/best.pt", emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"], act_classes=["Working"], video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", anto_time=3, mask_path=None, save=False, send=False, interval_send=1, table_sql="empact", server=None, camera_id="FOLDING", show=False):
     start_time = time.time()
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
     report = REPORT(emp_classes, anto_time, interval_send)
@@ -69,27 +51,26 @@ def main(
             for emp_class in emp_classes:
                 if emp_class not in detected_employees:
                     report.update_data_table(emp_class, "offsite_time", frame_duration)
-
-            percentages = report.calculate_percentages()
-            report.draw_table(frame, percentages)
+            if show:
+                percentages = report.calculate_percentages()
+                report.draw_table(frame, percentages)
             if save:
                 video_saver.write_frame(frame)
             frame = ai_cctv.resize_frame(frame)
-
-            mask_info = mask_path.split("/")[-1] if mask_path else mask_path
-            saver_info = "Recording" if save else "Not Recording"
-            data_info = f"Sending to {host}" if send else "Not sending"
-            text_info = [
-                f"Tolerance: {anto_time} seconds",
-                f"Masking: {mask_info}",
-                f"Saver: {saver_info}",
-                f"Data: {data_info}",
-                f"Interval Send: {interval_send} seconds",
-            ]
-            j = len(text_info) if server else len(text_info) - 1
-            for i in range(j):
-                cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
             if show:
+                mask_info = mask_path.split("/")[-1] if mask_path else mask_path
+                saver_info = "Recording" if save else "Not Recording"
+                data_info = f"Sending to {host}" if send else "Not sending"
+                text_info = [
+                    f"Tolerance: {anto_time} seconds",
+                    f"Masking: {mask_info}",
+                    f"Saver: {saver_info}",
+                    f"Data: {data_info}",
+                    f"Interval Send: {interval_send} seconds",
+                ]
+                j = len(text_info) if server else len(text_info) - 1
+                for i in range(j):
+                    cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
                 cv2.imshow(f"Folding Area", frame)
             if send:
                 report.send_to_sql(host, user, password, database, port, table_sql, camera_id)
