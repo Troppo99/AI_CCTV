@@ -205,4 +205,6 @@ def capture_frame(cap, frame_queue):
         ret, frame = cap.read()
         if not ret:
             break
+        if frame_queue.qsize() >= 10:
+            frame_queue.get()
         frame_queue.put(frame)
