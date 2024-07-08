@@ -163,13 +163,13 @@ class REPORT:
 
     @staticmethod
     def where_sql_server(server):
-        if server == "Waskita":
-            host = "192.168.100.187"
+        if server == "10.5.0.2":
+            host = "10.5.0.2"
             user = "robot"
             password = "robot123"
             database = "report_ai_cctv"
             port = 3307
-        elif server == "Nana":
+        elif server == "10.5.0.3":
             host = "localhost"
             user = "root"
             password = "robot123"
