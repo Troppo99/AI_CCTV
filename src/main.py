@@ -5,7 +5,7 @@ import queue
 
 def main(emp_model_path=".runs/detect/emp-m/weights/best.pt", act_model_path=".runs/detect/fold-m/weights/best.pt", emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"], act_classes=["Working"], video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", anto_time=3, mask_path=None, save=False, send=False, interval_send=1, table_sql="empact", server=None, camera_id="FOLDING", show=False):
     start_time = time.time()
-    ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path)
+    ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path, server)
     report = REPORT(emp_classes, anto_time, interval_send)
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     frame_queue = queue.Queue()

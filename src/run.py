@@ -5,7 +5,7 @@ main(
     anto_time=300,
     interval_send=10,
     server="10.5.0.2",
-    # show = True,
+    show = True,
     # server="Nana",
     # save=True,
     # video_path="D:/AI_CCTV/.runs/videos/00000000302000000.mp4",
