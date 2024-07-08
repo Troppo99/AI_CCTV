@@ -80,3 +80,15 @@ def main(emp_model_path=".runs/detect/emp-m/weights/best.pt", act_model_path=".r
         video_saver.release()
     ai_cctv.cap.release()
     cv2.destroyAllWindows()
+
+
+main(
+    mask_path=".runs/images/mask8.png",
+    anto_time=300,
+    interval_send=10,
+    server="10.5.0.2",
+    show=True,
+    # server="Nana",
+    # save=True,
+    # video_path="D:/AI_CCTV/.runs/videos/00000000302000000.mp4",
+)
