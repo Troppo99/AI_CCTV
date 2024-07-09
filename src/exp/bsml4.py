@@ -76,7 +76,7 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time, interval_send):
+    def __init__(self, emp_classes, anto_time, interval_send=1):
         self.data = {}
         self.emp_classes = emp_classes
         self.anto_time = anto_time

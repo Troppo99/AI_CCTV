@@ -10,9 +10,8 @@ def main(
     act_classes=["Working"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
     anto_time=3,
-    mask_path=None,
+    mask_path=".runs/images/mask8.png",
     send=False,
-    interval_send=1,
     table_sql="empact",
     server="10.5.0.3",
     camera_id="FOLDING",
@@ -20,7 +19,7 @@ def main(
 ):
     start_time = time.time()
     ai_cctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path, server)
-    report = REPORT(emp_classes, anto_time, interval_send)
+    report = REPORT(emp_classes, anto_time)
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     frame_queue = queue.Queue()
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -68,7 +67,6 @@ def main(
                         f"Tolerance: {anto_time} seconds",
                         f"Masking: {mask_info}",
                         f"Data: {data_info}",
-                        f"Interval Send: {interval_send} seconds",
                     ]
                     j = len(text_info) if server else len(text_info) - 1
                     for i in range(j):
@@ -84,9 +82,7 @@ def main(
 
 
 main(
-    mask_path=".runs/images/mask8.png",
     anto_time=300,
-    interval_send=10,
     show=True,
     # server="10.5.0.2",
 )
