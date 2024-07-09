@@ -5,7 +5,6 @@ import math
 import cvzone
 from datetime import timedelta
 import numpy as np
-import os
 import pymysql
 import time
 
