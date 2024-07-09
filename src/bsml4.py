@@ -10,6 +10,7 @@ import pymysql
 import time
 import json
 
+
 class AICCTV:
     def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path, server):
         self.cap = cv2.VideoCapture(video_path)
@@ -185,7 +186,6 @@ class REPORT:
     def backup_data(self):
         with open(self.backup_file, "w") as file:
             json.dump(self.data, file)
-        print(f"Data backed up to {self.backup_file}")
 
     @staticmethod
     def load_backup_data(backup_file):
