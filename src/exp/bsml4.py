@@ -83,7 +83,7 @@ class REPORT:
         self.interval_send = interval_send
         self.last_sent_time = time.time()
 
-    def update_data_table(self, emp_class, act_class, frame_duration):
+    def update_data(self, emp_class, act_class):
         if emp_class not in self.data:
             self.data[emp_class] = {
                 "working_time": 0,
@@ -91,59 +91,19 @@ class REPORT:
                 "offsite_time": 0,
             }
         if act_class == "working_time":
-            self.data[emp_class]["working_time"] += frame_duration
+            self.data[emp_class]["working_time"] = 1
             self.anomaly_tracker[emp_class]["idle_time"] = 0
             self.anomaly_tracker[emp_class]["offsite_time"] = 0
         elif act_class == "idle_time":
-            self.anomaly_tracker[emp_class]["idle_time"] += frame_duration
+            self.data[emp_class]["working_time"] = 0
+            self.anomaly_tracker[emp_class]["idle_time"] = 1
             if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
-                self.data[emp_class]["idle_time"] += frame_duration
+                self.data[emp_class]["idle_time"] = 1
         elif act_class == "offsite_time":
-            self.anomaly_tracker[emp_class]["offsite_time"] += frame_duration
+            self.data[emp_class]["working_time"] = 0
+            self.anomaly_tracker[emp_class]["offsite_time"] = 1
             if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
-                self.data[emp_class]["offsite_time"] += frame_duration
-
-    def calculate_percentages(self):
-        percentages = {}
-        for emp_class in self.data:
-            t_w = self.data[emp_class]["working_time"]
-            t_i = self.data[emp_class]["idle_time"]
-            t_off = self.data[emp_class]["offsite_time"]
-            t_onsite = t_w + t_i
-            t_total = t_onsite + t_off
-            if t_onsite > 0:
-                percentages[emp_class] = {
-                    "%t_w": (t_w / t_onsite) * 100,
-                    "%t_i": (t_i / t_onsite) * 100,
-                }
-            else:
-                percentages[emp_class] = {"%t_w": 0, "%t_i": 0}
-            if t_total > 0:
-                percentages[emp_class]["%t_off"] = (t_off / t_total) * 100
-            else:
-                percentages[emp_class]["%t_off"] = 0
-        return percentages
-
-    def draw_table(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
-        def format_time(seconds):
-            return str(timedelta(seconds=int(seconds)))
-
-        headers = ["Employee", "Working", "Idle", "Offsite"]
-        header_positions = [(-160, 595), (90, 595), (430, 595), (770, 595)]
-        header_colors = [(255, 255, 255)] * len(headers)
-
-        cv2.putText(frame, "Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
-        for header, pos, color in zip(headers, header_positions, header_colors):
-            cv2.putText(frame, header, (pos[0] + x_move, pos[1] + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, color, 3, cv2.LINE_AA)
-
-        for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
-            color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
-            y_position = 610 + row_idx * row_height
-
-            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%t_w']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%t_i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%t_off']:.0f}%", 965)]
-
-            for text, x_pos in columns:
-                cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+                self.data[emp_class]["offsite_time"] = 1
 
     def send_to_sql(self, host, user, password, database, port, table_sql, camera_id):
         current_time = time.time()
