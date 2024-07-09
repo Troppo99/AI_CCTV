@@ -90,18 +90,21 @@ class REPORT:
                 "idle_time": 0,
                 "offsite_time": 0,
             }
+        # Reset all times to 0
+        self.data[emp_class]["working_time"] = 0
+        self.data[emp_class]["idle_time"] = 0
+        self.data[emp_class]["offsite_time"] = 0
+
         if act_class == "working_time":
             self.data[emp_class]["working_time"] = 1
             self.anomaly_tracker[emp_class]["idle_time"] = 0
             self.anomaly_tracker[emp_class]["offsite_time"] = 0
         elif act_class == "idle_time":
-            self.data[emp_class]["working_time"] = 0
-            self.anomaly_tracker[emp_class]["idle_time"] = 1
+            self.anomaly_tracker[emp_class]["idle_time"] += 1
             if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
                 self.data[emp_class]["idle_time"] = 1
         elif act_class == "offsite_time":
-            self.data[emp_class]["working_time"] = 0
-            self.anomaly_tracker[emp_class]["offsite_time"] = 1
+            self.anomaly_tracker[emp_class]["offsite_time"] += 1
             if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
                 self.data[emp_class]["offsite_time"] = 1
 
