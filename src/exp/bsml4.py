@@ -90,7 +90,8 @@ class REPORT:
                 "idle_time": 0,
                 "offsite_time": 0,
             }
-        # Reset all times to 0
+
+        # Reset all times to 0 for current second
         self.data[emp_class]["working_time"] = 0
         self.data[emp_class]["idle_time"] = 0
         self.data[emp_class]["offsite_time"] = 0
@@ -101,12 +102,23 @@ class REPORT:
             self.anomaly_tracker[emp_class]["offsite_time"] = 0
         elif act_class == "idle_time":
             self.anomaly_tracker[emp_class]["idle_time"] += 1
+            self.anomaly_tracker[emp_class]["offsite_time"] = 0
             if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
                 self.data[emp_class]["idle_time"] = 1
         elif act_class == "offsite_time":
             self.anomaly_tracker[emp_class]["offsite_time"] += 1
+            self.anomaly_tracker[emp_class]["idle_time"] = 0
             if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
                 self.data[emp_class]["offsite_time"] = 1
+
+        # Ensure that at least one time is set to 1
+        if self.data[emp_class]["working_time"] == 0 and self.data[emp_class]["idle_time"] == 0 and self.data[emp_class]["offsite_time"] == 0:
+            if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
+                self.data[emp_class]["idle_time"] = 1
+            elif self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
+                self.data[emp_class]["offsite_time"] = 1
+            else:
+                self.data[emp_class]["offsite_time"] = 1  # Default to offsite if no condition met
 
     def send_to_sql(self, host, user, password, database, port, table_sql, camera_id):
         current_time = time.time()
