@@ -8,7 +8,7 @@ import numpy as np
 import os
 import pymysql
 import time
-
+import json
 
 class AICCTV:
     def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path, server):
@@ -76,13 +76,14 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time, interval_send):
-        self.data = {}
+    def __init__(self, emp_classes, anto_time, interval_send, backup_file=".runs/data/backup_data.json"):
+        self.data = self.load_backup_data(backup_file)
         self.emp_classes = emp_classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
         self.interval_send = interval_send
         self.last_sent_time = time.time()
+        self.backup_file = backup_file
 
     def update_data_table(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
@@ -103,6 +104,8 @@ class REPORT:
             self.anomaly_tracker[emp_class]["offsite_time"] += frame_duration
             if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
                 self.data[emp_class]["offsite_time"] += frame_duration
+
+        self.backup_data()
 
     def calculate_percentages(self):
         percentages = {}
@@ -178,6 +181,21 @@ class REPORT:
             database = "report_ai_cctv"
             port = 3306
         return host, user, password, database, port
+
+    def backup_data(self):
+        with open(self.backup_file, "w") as file:
+            json.dump(self.data, file)
+        print(f"Data backed up to {self.backup_file}")
+
+    @staticmethod
+    def load_backup_data(backup_file):
+        if os.path.exists(backup_file):
+            with open(backup_file, "r") as file:
+                data = json.load(file)
+            print(f"Data loaded from {backup_file}")
+            return data
+        else:
+            return {}
 
 
 class SAVER:
