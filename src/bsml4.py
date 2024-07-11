@@ -198,28 +198,6 @@ class REPORT:
             return {}
 
 
-class SAVER:
-    def __init__(self, output_path, frame_width, frame_height, fps=20.0):
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        self.out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
-
-    def write_frame(self, frame):
-        self.out.write(frame)
-
-    def release(self):
-        self.out.release()
-
-    @staticmethod
-    def uniquifying(base_path, base_name, extension):
-        version = 1
-        while True:
-            filename = f"{base_name}_v{version}{extension}"
-            full_path = os.path.join(base_path, filename)
-            if not os.path.exists(full_path):
-                return full_path
-            version += 1
-
-
 def capture_frame(cap, frame_queue):
     while True:
         ret, frame = cap.read()

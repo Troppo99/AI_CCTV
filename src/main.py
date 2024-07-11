@@ -1,4 +1,4 @@
-from bsml4 import AICCTV, REPORT, SAVER, capture_frame, cv2, time
+from bsml4 import AICCTV, REPORT, capture_frame, cv2, time
 import concurrent.futures
 import queue
 
@@ -13,7 +13,6 @@ def main(
     server="10.5.0.3",
     camera_id="FOLDING",
     mask_path=None,
-    save=False,
     send=False,
     show=False,
     interval_send=1,
@@ -29,13 +28,6 @@ def main(
         if server:
             send = True
             host, user, password, database, port = report.where_sql_server(server)
-        if save:
-            _, frame = ai_cctv.cap.read()
-            base_path = ".runs/videos/writer"
-            base_name = "exp"
-            extension = ".mp4"
-            file_name = SAVER.uniquifying(base_path, base_name, extension)
-            video_saver = SAVER(file_name, frame.shape[1], frame.shape[0], frame_rate)
         mask = cv2.imread(mask_path) if mask_path is not None else None
         while ai_cctv.cap.isOpened():
             if not frame_queue.empty():
@@ -68,17 +60,13 @@ def main(
                 if show:
                     percentages = report.calculate_percentages()
                     report.draw_table(frame, percentages)
-                if save:
-                    video_saver.write_frame(frame)
                 frame = ai_cctv.resize_frame(frame)
                 if show:
                     mask_info = mask_path.split("/")[-1] if mask_path else mask_path
-                    saver_info = "Recording" if save else "Not Recording"
                     data_info = f"Sending to {host}" if send else "Not sending"
                     text_info = [
                         f"Tolerance: {anto_time} seconds",
                         f"Masking: {mask_info}",
-                        f"Saver: {saver_info}",
                         f"Data: {data_info}",
                         f"Interval Send: {interval_send} seconds",
                     ]
@@ -91,8 +79,6 @@ def main(
                 if cv2.waitKey(1) & 0xFF == ord("n"):
                     break
 
-    if save:
-        video_saver.release()
     ai_cctv.cap.release()
     cv2.destroyAllWindows()
 
@@ -103,5 +89,4 @@ main(
     interval_send=10,
     anto_time=300,
     show=True,
-    # save=True,
 )
