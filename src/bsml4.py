@@ -159,6 +159,10 @@ class REPORT:
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
+    def backup_data(self):
+        with open(self.backup_file, "w") as file:
+            json.dump(self.data, file)
+
     def send_to_sql(self, host, user, password, database, port, table_sql, camera_id):
         current_time = time.time()
         if current_time - self.last_sent_time >= self.interval_send:
@@ -175,10 +179,6 @@ class REPORT:
             cursor.close()
             conn.close()
             self.last_sent_time = current_time
-
-    def backup_data(self):
-        with open(self.backup_file, "w") as file:
-            json.dump(self.data, file)
 
     @staticmethod
     def where_sql_server(server):
