@@ -85,7 +85,7 @@ def main(
 
 main(
     mask_path=".runs/images/mask8.png",
-    # server="10.5.0.2",
+    server="10.5.0.2",
     interval_send=10,
     anto_time=300,
     show=True,
