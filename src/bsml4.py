@@ -75,6 +75,15 @@ class AICCTV:
             return True
         return False
 
+    def capture_frame(self, frame_queue):
+        while True:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            if frame_queue.qsize() >= 10:
+                frame_queue.get()
+            frame_queue.put(frame)
+
 
 class REPORT:
     def __init__(self, emp_classes, anto_time, interval_send, backup_file=".runs/data/backup_data.json"):
@@ -167,6 +176,10 @@ class REPORT:
             conn.close()
             self.last_sent_time = current_time
 
+    def backup_data(self):
+        with open(self.backup_file, "w") as file:
+            json.dump(self.data, file)
+
     @staticmethod
     def where_sql_server(server):
         if server == "10.5.0.2":
@@ -183,10 +196,6 @@ class REPORT:
             port = 3306
         return host, user, password, database, port
 
-    def backup_data(self):
-        with open(self.backup_file, "w") as file:
-            json.dump(self.data, file)
-
     @staticmethod
     def load_backup_data(backup_file):
         if os.path.exists(backup_file):
@@ -196,13 +205,3 @@ class REPORT:
             return data
         else:
             return {}
-
-
-def capture_frame(cap, frame_queue):
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        if frame_queue.qsize() >= 10:
-            frame_queue.get()
-        frame_queue.put(frame)

@@ -1,4 +1,4 @@
-from bsml4 import AICCTV, REPORT, capture_frame, cv2, time
+from bsml4 import AICCTV, REPORT, cv2, time
 import concurrent.futures
 import queue
 
@@ -24,7 +24,7 @@ def main(
     frame_rate = ai_cctv.cap.get(cv2.CAP_PROP_FPS)
     frame_queue = queue.Queue()
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.submit(capture_frame, ai_cctv.cap, frame_queue)
+        executor.submit(ai_cctv.capture_frame, frame_queue)
         if server:
             send = True
             host, user, password, database, port = report.where_sql_server(server)
