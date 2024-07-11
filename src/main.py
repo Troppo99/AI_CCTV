@@ -79,13 +79,13 @@ def main(
                 if cv2.waitKey(1) & 0xFF == ord("n"):
                     break
 
-    ai_cctv.cap.release()
-    cv2.destroyAllWindows()
+        ai_cctv.cap.release()
+        cv2.destroyAllWindows()
 
 
 main(
     mask_path=".runs/images/mask8.png",
-    server="10.5.0.2",
+    # server="10.5.0.2",
     interval_send=10,
     anto_time=300,
     show=True,
