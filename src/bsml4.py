@@ -5,9 +5,9 @@ import math
 import cvzone
 from datetime import timedelta
 import os
-import pymysql
-import time
 import json
+import time
+import pymysql
 import numpy as np
 
 
