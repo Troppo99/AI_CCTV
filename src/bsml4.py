@@ -27,6 +27,7 @@ class AICCTV:
         if mask is not None and np.any(mask):
             frame = cv2.bitwise_and(frame, mask)
 
+        emp_boxes_info = []
         results_emp = self.model_emp(source=frame, stream=True)
         frame, emp_boxes_info = self.export_results(frame, results_emp, self.emp_classes, (255, 0, 0), emp_conf_th, "emp")
 
