@@ -1,58 +1,40 @@
 from bsml4 import AICCTV, REPORT
 import cv2
-import time
-import concurrent.futures
 import queue
+import concurrent.futures
 
 
-def main(
-    emp_model_path=".runs/detect/emp-m/weights/best.pt",
-    act_model_path=".runs/detect/fold-m/weights/best.pt",
-    emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
-    act_classes=["Working"],
-    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    table_sql="empact",
-    server="10.5.0.3",
-    camera_id="FOLDING",
-    mask_path=None,
-    send=False,
-    show=False,
-    interval_send=1,
-    anto_time=3,
-):
-    start_time = time.time()
-    aicctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path, server)
-    report = REPORT(emp_classes, anto_time, interval_send)
+def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, send=False, host="10.5.0.3", table="empact", mask_path=None, show=False):
+    aicctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path, host)
+    report = REPORT(emp_classes)
+
+    frame_queue = queue.Queue(maxsize=10)
     frame_rate = aicctv.cap.get(cv2.CAP_PROP_FPS)
-    frame_queue = queue.Queue()
+    if host:
+        send = True
+        user, password, database, port = report.server_address(host)
+    mask = cv2.imread(mask_path) if mask_path is not None else None
     with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.submit(aicctv.capture_frame, frame_queue)
-        if server:
-            send = True
-            host, user, password, database, port = report.where_sql_server(server)
-        mask = cv2.imread(mask_path) if mask_path is not None else None
-        while aicctv.cap.isOpened():
+        while True:
             if not frame_queue.empty():
                 frame = frame_queue.get()
-                if frame is None:
-                    current_time = time.time()
-                    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-                    print(f"- - -\nframe is None, Buddy! When it was {timestamp}")
-                    print(f"Program is running for {current_time-start_time:.0f}!\n- - -")
-                mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0])) if mask is not None else None
                 frame_duration = 1 / frame_rate
+
+                mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0])) if mask is not None else None
+                
                 frame, emp_boxes_info, act_boxes_info = aicctv.process_frame(frame, mask_resized)
                 for x1, y1, x2, y2, emp_class, _, emp_color in emp_boxes_info:
                     act_detected = False
                     for ax1, ay1, ax2, ay2, act_class, _, act_color in act_boxes_info:
                         if aicctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
                             act_detected = True
-                            report.update_data_table(emp_class, "working_time", frame_duration)
+                            report.update_data(emp_class, "working_time", frame_duration)
                             text = f"{emp_class} is {act_class}"
-                            aicctv.draw_box(frame, x1, y1, x2, y2, text, act_color)
+                            aicctv.draw_label(frame, x1, y1, x2, y2, text, act_color)
                             break
                     if not act_detected:
-                        report.update_data_table(emp_class, "idle_time", frame_duration)
+                        report.update_data(emp_class, "idle_time", frame_duration)
                         text = f"{emp_class} is idle"
                         aicctv.draw_box(frame, x1, y1, x2, y2, text, emp_color)
                 detected_employees = [emp_class for _, _, _, _, emp_class, _, _ in emp_boxes_info]
@@ -67,17 +49,15 @@ def main(
                     mask_info = mask_path.split("/")[-1] if mask_path else mask_path
                     data_info = f"Sending to {host}" if send else "Not sending"
                     text_info = [
-                        f"Tolerance: {anto_time} seconds",
                         f"Masking: {mask_info}",
                         f"Data: {data_info}",
-                        f"Interval Send: {interval_send} seconds",
                     ]
-                    j = len(text_info) if server else len(text_info) - 1
+                    j = len(text_info) if host else len(text_info) - 1
                     for i in range(j):
                         cv2.putText(frame, text_info[i], (980, 30 + i * 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1)
                     cv2.imshow(f"Folding Area", frame)
                 if send:
-                    report.send_to_sql(host, user, password, database, port, table_sql, camera_id)
+                    report.send_to_sql(host, user, password, database, port, table)
                 if cv2.waitKey(1) & 0xFF == ord("n"):
                     break
 
@@ -86,9 +66,13 @@ def main(
 
 
 main(
+    emp_model_path=".runs/detect/emp-m/weights/best.pt",
+    act_model_path=".runs/detect/fold-m/weights/best.pt",
+    emp_classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+    act_classes=["Working"],
+    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
     mask_path=".runs/images/mask8.png",
     server="10.5.0.2",
     interval_send=10,
-    anto_time=300,
     show=True,
 )

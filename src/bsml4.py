@@ -28,16 +28,16 @@ class AICCTV:
             frame = cv2.bitwise_and(frame, mask)
 
         results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.exports_results(frame, results_emp, self.class_emp, (255, 0, 0), emp_conf_th, "emp")
+        frame, emp_boxes_info = self.export_results(frame, results_emp, self.class_emp, (255, 0, 0), emp_conf_th, "emp")
 
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.exports_results(frame, results_act, self.class_act, (0, 255, 0), act_conf_th, "act")
+            frame, act_boxes_info = self.export_results(frame, results_act, self.class_act, (0, 255, 0), act_conf_th, "act")
 
         return frame, emp_boxes_info, act_boxes_info
 
-    def exports_results(self, frame, results, classes, color, conf_th, model_type):
+    def export_results(self, frame, results, classes, color, conf_th, model_type):
         boxes_info = []
         boxes = []
         confidences = []
@@ -153,7 +153,7 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time, backup_file=".runs/data/backup_data.json"):
+    def __init__(self, emp_classes, anto_time=300, backup_file=".runs/data/backup_data.json"):
         self.data = self.load_backup_data(backup_file)
         self.emp_classes = emp_classes
         self.anto_time = anto_time
