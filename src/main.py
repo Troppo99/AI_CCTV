@@ -1,4 +1,6 @@
-from bsml4 import AICCTV, REPORT, cv2, time
+from bsml4 import AICCTV, REPORT
+import cv2
+import time
 import concurrent.futures
 import queue
 
