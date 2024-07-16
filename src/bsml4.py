@@ -21,7 +21,7 @@ class AICCTV:
         self.class_act = act_classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
-        print(f"Sending to: {self.host}")
+        print(f"Sending to: {host}")
 
     def process_frame(self, frame, conf_th=0, mask=None):
         if mask is not None and np.any(mask):
@@ -153,12 +153,11 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time, interval_send, backup_file=".runs/data/backup_data.json"):
+    def __init__(self, emp_classes, anto_time, backup_file=".runs/data/backup_data.json"):
         self.data = self.load_backup_data(backup_file)
         self.emp_classes = emp_classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
-        self.interval_send = interval_send
         self.last_sent_time = time.time()
         self.backup_file = backup_file
 
@@ -235,7 +234,15 @@ class REPORT:
             color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
             y_position = 610 + row_idx * row_height
 
-            columns = [(emp_class, -160), (format_time(times["working_time"]), 90), (f"{percentages[emp_class]['%t_w']:.0f}%", 285), (format_time(times["idle_time"]), 430), (f"{percentages[emp_class]['%t_i']:.0f}%", 625), (format_time(times["offsite_time"]), 770), (f"{percentages[emp_class]['%t_off']:.0f}%", 965)]
+            columns = [
+                (emp_class, -160),
+                (format_time(times["working_time"]), 90),
+                (f"{percentages[emp_class]['%t_w']:.0f}%", 285),
+                (format_time(times["idle_time"]), 430),
+                (f"{percentages[emp_class]['%t_i']:.0f}%", 625),
+                (format_time(times["offsite_time"]), 770),
+                (f"{percentages[emp_class]['%t_off']:.0f}%", 965),
+            ]
 
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
@@ -256,7 +263,7 @@ class REPORT:
 
     def send_data(self, host, user, password, database, port, table):
         current_time = time.time()
-        if current_time - self.last_sent_time >= self.interval_send:
+        if current_time - self.last_sent_time >= 10:
             conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
             cursor = conn.cursor()
             for emp_class, times in self.data.items():
