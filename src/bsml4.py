@@ -78,7 +78,7 @@ class AICCTV:
         return cv2.resize(frame, (width, height))
 
     @staticmethod
-    def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0,0,0), thickness=2, font_scale=2, font_thickness=2):
+    def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0, 0, 0), thickness=2, font_scale=2, font_thickness=2):
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
         cvzone.putTextRect(frame, text, (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
 
@@ -101,7 +101,7 @@ class REPORT:
         self.last_sent_time = time.time()
         self.backup_file = backup_file
 
-    def update_data_table(self, emp_class, act_class, frame_duration):
+    def update_data(self, emp_class, act_class, frame_duration):
         if emp_class not in self.data:
             self.data[emp_class] = {
                 "working_time": 0,
@@ -122,6 +122,20 @@ class REPORT:
                 self.data[emp_class]["offsite_time"] += frame_duration
 
         self.backup_data()
+
+    def backup_data(self):
+        with open(self.backup_file, "w") as file:
+            json.dump(self.data, file)
+
+    @staticmethod
+    def load_backup_data(backup_file):
+        if os.path.exists(backup_file):
+            with open(backup_file, "r") as file:
+                data = json.load(file)
+            print(f"Data loaded from {backup_file}")
+            return data
+        else:
+            return {}
 
     def calculate_percentages(self):
         percentages = {}
@@ -144,7 +158,7 @@ class REPORT:
                 percentages[emp_class]["%t_off"] = 0
         return percentages
 
-    def draw_table(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
+    def draw_report(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
@@ -165,49 +179,33 @@ class REPORT:
             for text, x_pos in columns:
                 cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
 
-    def backup_data(self):
-        with open(self.backup_file, "w") as file:
-            json.dump(self.data, file)
+    @staticmethod
+    def server_address(host):
+        if host == "localhost":
+            user = "root"
+            password = "robot123"
+            database = "report_ai_cctv"
+            port = 3306
+        elif host == "10.5.0.2":
+            user = "robot"
+            password = "robot123"
+            database = "report_ai_cctv"
+            port = 3307
+        return user, password, database, port
 
-    def send_to_sql(self, host, user, password, database, port, table_sql, camera_id):
+    def send_data(self, host, user, password, database, port, table):
         current_time = time.time()
         if current_time - self.last_sent_time >= self.interval_send:
             conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
             cursor = conn.cursor()
             for emp_class, times in self.data.items():
                 query = f"""
-                INSERT INTO {table_sql} (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
+                INSERT INTO {table} (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 """
-                values = (camera_id, time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
+                values = ("FOLDING", time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
                 cursor.execute(query, values)
             conn.commit()
             cursor.close()
             conn.close()
             self.last_sent_time = current_time
-
-    @staticmethod
-    def where_sql_server(server):
-        if server == "10.5.0.2":
-            host = "10.5.0.2"
-            user = "robot"
-            password = "robot123"
-            database = "report_ai_cctv"
-            port = 3307
-        elif server == "10.5.0.3":
-            host = "localhost"
-            user = "root"
-            password = "robot123"
-            database = "report_ai_cctv"
-            port = 3306
-        return host, user, password, database, port
-
-    @staticmethod
-    def load_backup_data(backup_file):
-        if os.path.exists(backup_file):
-            with open(backup_file, "r") as file:
-                data = json.load(file)
-            print(f"Data loaded from {backup_file}")
-            return data
-        else:
-            return {}
