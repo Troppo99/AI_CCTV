@@ -12,7 +12,8 @@ import numpy as np
 
 
 class AICCTV:
-    def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path, server):
+    def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path, host):
+        self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
         self.model_emp = YOLO(emp_model_path)
         self.model_act = YOLO(act_model_path)
@@ -20,8 +21,7 @@ class AICCTV:
         self.class_act = act_classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
-        self.server = server
-        print(f"Sending data to: {self.server}")
+        print(f"Sending to: {self.host}")
 
     def process_frame(self, frame, mask):
         if mask is not None and np.any(mask):
