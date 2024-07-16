@@ -23,16 +23,17 @@ class AICCTV:
         print(f"Using device: {self.device}")
         print(f"Sending to: {self.host}")
 
-    def process_frame(self, frame, mask):
+    def process_frame(self, frame, conf_th, mask):
         if mask is not None and np.any(mask):
-            frame_region = cv2.bitwise_and(frame, mask)
+            frame = cv2.bitwise_and(frame, mask)
         else:
-            frame_region = frame
-        results_emp = self.model_emp(source=frame_region, stream=True)
+            frame = frame
+
+        results_emp = self.model_emp(source=frame, stream=True)
         frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (255, 0, 0))
         act_boxes_info = []
         if emp_boxes_info:
-            results_act = self.model_act(source=frame_region, stream=True)
+            results_act = self.model_act(source=frame, stream=True)
             frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (0, 255, 0))
         return frame, emp_boxes_info, act_boxes_info
 
@@ -41,29 +42,43 @@ class AICCTV:
         for result in results:
             boxes = result.boxes.cpu().numpy()
             for box in boxes:
-                x1, y1, x2, y2 = self.get_coordinates(box)
-                conf = self.get_confidence(box)
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                conf = math.ceil(box.conf[0] * 100) / 100
                 class_id = classes[int(box.cls[0])]
                 boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
         return frame, boxes_info
 
-    @staticmethod
-    def get_coordinates(box):
-        x1, y1, x2, y2 = box.xyxy[0]
-        return int(x1), int(y1), int(x2), int(y2)
+    def capture_frame(self, frame_queue):
+        while True:
+            if not self.cap.isOpened():
+                print("Jaringan putus, menunggu sambungan ulang...")
+                while not self.cap.isOpened():
+                    # Coba sambungkan kembali setiap 1 detik
+                    time.sleep(1)
+                    self.cap = cv2.VideoCapture(self.video_path)
+
+            ret, frame = self.cap.read()
+            if not ret:
+                print("Jaringan putus, menunggu sambungan ulang...")
+                self.cap.release()
+                while not ret:
+                    # Coba sambungkan kembali setiap 1 detik
+                    time.sleep(1)
+                    self.cap = cv2.VideoCapture(self.video_path)
+                    ret, frame = self.cap.read()
+
+            if frame_queue.full():
+                frame_queue.get()
+            frame_queue.put(frame)
 
     @staticmethod
-    def get_confidence(box):
-        return math.ceil(box.conf[0] * 100) / 100
-
-    @staticmethod
-    def resize_frame(frame, scale=0.4):
-        height = int(frame.shape[0] * scale)
-        width = int(frame.shape[1] * scale)
+    def resize_frame(frame, show_scale):
+        height = int(frame.shape[0] * show_scale)
+        width = int(frame.shape[1] * show_scale)
         return cv2.resize(frame, (width, height))
 
     @staticmethod
-    def draw_box(frame, x1, y1, x2, y2, text, color, thickness=2, font_scale=2, font_thickness=2):
+    def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0,0,0), thickness=2, font_scale=2, font_thickness=2):
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
         cvzone.putTextRect(frame, text, (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
 
@@ -74,15 +89,6 @@ class AICCTV:
         if x1 < ax2 and x2 > ax1 and y1 < ay2 and y2 > ay1:
             return True
         return False
-
-    def capture_frame(self, frame_queue):
-        while True:
-            ret, frame = self.cap.read()
-            if not ret:
-                break
-            if frame_queue.qsize() >= 10:
-                frame_queue.get()
-            frame_queue.put(frame)
 
 
 class REPORT:
