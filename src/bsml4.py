@@ -17,8 +17,8 @@ class AICCTV:
         self.cap = cv2.VideoCapture(video_path)
         self.model_emp = YOLO(emp_model_path)
         self.model_act = YOLO(act_model_path)
-        self.class_emp = emp_classes
-        self.class_act = act_classes
+        self.emp_classes = emp_classes
+        self.act_classes = act_classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
@@ -28,12 +28,12 @@ class AICCTV:
             frame = cv2.bitwise_and(frame, mask)
 
         results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.export_results(frame, results_emp, self.class_emp, (255, 0, 0), emp_conf_th, "emp")
+        frame, emp_boxes_info = self.export_results(frame, results_emp, self.emp_classes, (255, 0, 0), emp_conf_th, "emp")
 
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.export_results(frame, results_act, self.class_act, (0, 255, 0), act_conf_th, "act")
+            frame, act_boxes_info = self.export_results(frame, results_act, self.act_classes, (0, 255, 0), act_conf_th, "act")
 
         return frame, emp_boxes_info, act_boxes_info
 
