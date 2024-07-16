@@ -23,17 +23,17 @@ class AICCTV:
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
 
-    def process_frame(self, frame, conf_th=0, mask=None):
+    def process_frame(self, frame, emp_conf_th=0, act_conf_th=0, mask=None):
         if mask is not None and np.any(mask):
             frame = cv2.bitwise_and(frame, mask)
 
         results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.exports_results(frame, results_emp, self.class_emp, (255, 0, 0), conf_th, "emp")
+        frame, emp_boxes_info = self.exports_results(frame, results_emp, self.class_emp, (255, 0, 0), emp_conf_th, "emp")
 
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.exports_results(frame, results_act, self.class_act, (0, 255, 0), conf_th, "act")
+            frame, act_boxes_info = self.exports_results(frame, results_act, self.class_act, (0, 255, 0), act_conf_th, "act")
 
         return frame, emp_boxes_info, act_boxes_info
 
