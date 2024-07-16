@@ -23,29 +23,58 @@ class AICCTV:
         print(f"Using device: {self.device}")
         print(f"Sending to: {self.host}")
 
-    def process_frame(self, frame, conf_th, mask):
+    def process_frame(self, frame, conf_th=0, mask=None):
         if mask is not None and np.any(mask):
             frame = cv2.bitwise_and(frame, mask)
-        else:
-            frame = frame
 
         results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.process_results(frame, results_emp, self.class_emp, (255, 0, 0))
+        frame, emp_boxes_info = self.exports_results(frame, results_emp, self.class_emp, (255, 0, 0), conf_th, "emp")
+
         act_boxes_info = []
         if emp_boxes_info:
             results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.process_results(frame, results_act, self.class_act, (0, 255, 0))
+            frame, act_boxes_info = self.exports_results(frame, results_act, self.class_act, (0, 255, 0), conf_th, "act")
+
         return frame, emp_boxes_info, act_boxes_info
 
-    def process_results(self, frame, results, classes, color):
+    def exports_results(self, frame, results, classes, color, conf_th, model_type):
         boxes_info = []
-        for result in results:
-            boxes = result.boxes.cpu().numpy()
-            for box in boxes:
+        boxes = []
+        confidences = []
+        labels = []
+
+        for r in results:
+            for box in r.boxes.cpu().numpy():
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 conf = math.ceil(box.conf[0] * 100) / 100
                 class_id = classes[int(box.cls[0])]
+                if conf > conf_th:
+                    boxes.append([x1, y1, x2, y2])
+                    confidences.append(conf)
+                    labels.append((class_id, conf))
+
+        if model_type == "emp":
+            if len(boxes) > 0:
+                boxes = np.array(boxes)
+                confidences = np.array(confidences)
+
+                indices = self.apply_nms(boxes, confidences)
+
+                class_detections = {}
+                for i in indices:
+                    class_id, conf = labels[i]
+                    if class_id not in class_detections or conf > class_detections[class_id][1]:
+                        class_detections[class_id] = (boxes[i], conf)
+
+                for class_id, (box, conf) in class_detections.items():
+                    x1, y1, x2, y2 = box
+                    boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+
+        elif model_type == "act":
+            for box, (class_id, conf) in zip(boxes, labels):
+                x1, y1, x2, y2 = box
                 boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+
         return frame, boxes_info
 
     @staticmethod
