@@ -153,8 +153,9 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time=300, backup_file=".runs/data/backup_data.json"):
-        self.data = self.load_backup_data(backup_file)
+    def __init__(self, emp_classes, anto_time=300, backup_file=".runs/data/backup_data.json", load_data=True):
+        if load_data == True:
+            self.data = self.load_backup_data(backup_file)
         self.emp_classes = emp_classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}

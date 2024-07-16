@@ -4,9 +4,9 @@ import queue
 import concurrent.futures
 
 
-def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, send=False, host=None, table="empact", mask_path=None, show=False):
+def main(emp_model_path, act_model_path, emp_classes, act_classes, video_path, send=False, host=None, table="empact", mask_path=None, show=False, load_data=True):
     aicctv = AICCTV(emp_model_path, act_model_path, emp_classes, act_classes, video_path, host)
-    report = REPORT(aicctv.emp_classes)
+    report = REPORT(aicctv.emp_classes, load_data=load_data)
 
     frame_queue = queue.Queue(maxsize=10)
     frame_rate = aicctv.cap.get(cv2.CAP_PROP_FPS)
@@ -74,4 +74,5 @@ main(
     # host="localhost",
     # host="10.5.0.2",
     show=True,
+    load_data=False,
 )
