@@ -4,11 +4,11 @@ from ultralytics import YOLO
 import math
 import cvzone
 from datetime import timedelta
-import numpy as np
 import os
 import pymysql
 import time
 import json
+import numpy as np
 
 
 class AICCTV:
