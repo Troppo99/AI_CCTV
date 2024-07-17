@@ -21,7 +21,7 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
                 frame_duration = 1 / frame_rate
 
                 """ USER CODE BEGIN: DECORATION --------------------------------- """
-                cv2.putText(frame, "PRESENCE OF ROBOTIC EMPLOYEES PT GGI", (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                cv2.putText(frame, "PRESENCE OF FOLDING EMPLOYEES PT GGI", (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
                 cv2.putText(frame, f"Confidence Threshold: {list_conf[count]}", (1520, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
                 """ USER CODE END: DECORATION ----------------------------------- """
 
@@ -38,7 +38,7 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
                 report.draw_report(frame, toogle=toogle)
                 """ USER CODE END: RESULTS PROCESSING --------------------------- """
 
-                frame_resized = aicctv.resize_frame(frame, 0.6)
+                frame_resized = aicctv.resize_frame(frame, 0.4)
                 cv2.imshow("Folding Room", frame_resized)
                 if send:
                     report.send_data(host, user, password, database, port, table)
@@ -56,10 +56,10 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
 
 
 main(
-    model_path="D:/AHMDL/.runs/detect/robemp_v2l/weights/best.pt",
-    classes=["Fathria", "Nana", "Nurdin", "Rizki", "Waskita"],
-    video_path="rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1",
-    data_loaded=False,
+    model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
+    classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+    # data_loaded=False,
     # host="localhost",
     # host="10.5.0.2",
 )

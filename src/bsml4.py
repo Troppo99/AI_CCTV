@@ -172,7 +172,7 @@ class REPORT:
         y0, dy = 120, 30
         for i, (emp, times) in enumerate(self.data.items()):
             y = y0 + i * dy
-            if emp == "Nana" or emp == "Rizki":
+            if emp == "Deti" or emp == "Fifi" or emp == "Nina" or emp == "Hutizah" or emp == "Tia":
                 color_row = (200, 30, 0)
             else:
                 color_row = (0, 0, 0)
