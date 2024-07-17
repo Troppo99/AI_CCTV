@@ -148,7 +148,7 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, anto_time = 3, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
+    def __init__(self, classes, anto_time=3, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
         self.data_loaded = data_loaded
         if data_loaded == True:
             self.data = self.load_backup_data(backup_file)
@@ -250,10 +250,10 @@ class REPORT:
             cursor = conn.cursor()
             for emp, times in self.data.items():
                 query = f"""
-                INSERT INTO {table} (cam, timestamp, employee_name, onsite_time, offsite_time)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO {table} (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """
-                values = ("ROBOTIC ROOM", time.strftime("%Y-%m-%d %H:%M:%S"), emp, times["onsite"], times["offsite"])
+                values = ("FOLDING", time.strftime("%Y-%m-%d %H:%M:%S"), emp, times["folding"], times["idle"], times["offsite"])
                 cursor.execute(query, values)
             conn.commit()
             cursor.close()
