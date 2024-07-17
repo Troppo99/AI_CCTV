@@ -31,6 +31,7 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
                 for emp in aicctv.classes:
                     if emp in detected_employees:
                         report.update_data(emp, "onsite", frame_duration)
+                        # Activity detection
                     else:
                         report.update_data(emp, "offsite", frame_duration)
                 for x1, y1, x2, y2, cls, conf in boxes_info:
@@ -59,7 +60,7 @@ main(
     model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    # data_loaded=False,
+    data_loaded=False,
     # host="localhost",
     # host="10.5.0.2",
 )
