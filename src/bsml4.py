@@ -24,14 +24,14 @@ class AICCTV:
         print(f"Sending to: {host}")
 
     def process_frame(self, frame, conf_th, color=(58, 73, 141)):
-        def activity(self, frame, conf_th, color=(0, 255, 0)):
+        def activity(frame, conf_th, color=(0, 255, 0)):
             act_boxes_info = []
             results = self.act_model(source=frame, stream=True)
             for r in results:
                 for box in r.boxes.cpu().numpy():
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     conf = math.ceil(box.conf[0] * 100) / 100
-                    class_id = self.classes[int(box.cls[0])]
+                    class_id = self.act_classes[int(box.cls[0])]
                     if conf > conf_th:
                         act_boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
             return frame, act_boxes_info
@@ -67,10 +67,10 @@ class AICCTV:
                 x1, y1, x2, y2 = box
                 boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
 
-        # if boxes_info:
-        #     frame, act_boxes_info = activity(frame, 0)
+        if boxes_info:
+            frame, act_boxes_info = activity(frame, 0)
 
-        return frame, boxes_info
+        return frame, boxes_info, act_boxes_info
 
     @staticmethod
     def apply_nms(boxes, confidences, iou_threshold=0.4):
@@ -137,6 +137,14 @@ class AICCTV:
     def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0, 255, 0), thickness=2, font_scale=2, font_thickness=2):
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
         cvzone.putTextRect(frame, text, (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
+
+    @staticmethod
+    def is_overlapping(box1, box2):
+        x1, y1, x2, y2 = box1
+        ax1, ay1, ax2, ay2 = box2
+        if x1 < ax2 and x2 > ax1 and y1 < ay2 and y2 > ay1:
+            return True
+        return False
 
 
 class REPORT:

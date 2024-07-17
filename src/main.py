@@ -26,15 +26,25 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
                 """ USER CODE END: DECORATION ----------------------------------- """
 
                 """ USER CODE BEGIN: RESULTS PROCESSING ------------------------- """
-                frame, boxes_info = aicctv.process_frame(frame, list_conf[count])
+                frame, boxes_info, act_boxes_info = aicctv.process_frame(frame, list_conf[count])
                 for x1, y1, x2, y2, cls, conf, clr in boxes_info:
-                    aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} {conf}", color=clr)
+                    # Mengkhususkan emp yang folding dan iddle
+                    act_detected = False
+                    for ax1, ay1, ax2, ay2, acls, aconf, aclr in act_boxes_info:
+                        if aicctv.is_overlapping((x1, y1, x2, y2),(ax1, ay1, ax2, ay2)):
+                            act_detected = True
+                            # report.update_data(cls, "folding", frame_duration)
+                            aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} is {acls}", color=aclr)
+                            break
+                    if not act_detected:
+                        # report.update_data(cls, "idle", frame_duration)
+                        aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} is idle", color=clr)
+
+                # Membedakan onsite atau iddle
                 detected_employees = [cls for _, _, _, _, cls, _, _ in boxes_info]
                 for emp in aicctv.classes:
                     if emp in detected_employees:
                         report.update_data(emp, "onsite", frame_duration)
-                        # Activity detection
-
                     else:
                         report.update_data(emp, "offsite", frame_duration)
                 """ USER CODE END: RESULTS PROCESSING --------------------------- """
