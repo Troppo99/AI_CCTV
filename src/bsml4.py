@@ -9,74 +9,49 @@ import json
 import time
 import pymysql
 import numpy as np
-import queue
-import concurrent.futures
 
 
 class AICCTV:
-    def __init__(self, emp_model_path, act_model_path, emp_classes, act_classes, video_path, host):
+    def __init__(self, model_path, classes, video_path, host):
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
-        self.model_emp = YOLO(emp_model_path)
-        self.model_act = YOLO(act_model_path)
-        self.emp_classes = emp_classes
-        self.act_classes = act_classes
+        self.model = YOLO(model_path)
+        self.classes = classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
 
-    def process_frame(self, frame, emp_conf_th=0, act_conf_th=0, mask=None):
-        if mask is not None and np.any(mask):
-            frame = cv2.bitwise_and(frame, mask)
-
-        emp_boxes_info = []
-        results_emp = self.model_emp(source=frame, stream=True)
-        frame, emp_boxes_info = self.export_results(frame, results_emp, self.emp_classes, (255, 0, 0), emp_conf_th, "emp")
-
-        act_boxes_info = []
-        if emp_boxes_info:
-            results_act = self.model_act(source=frame, stream=True)
-            frame, act_boxes_info = self.export_results(frame, results_act, self.act_classes, (0, 255, 0), act_conf_th, "act")
-
-        return frame, emp_boxes_info, act_boxes_info
-
-    def export_results(self, frame, results, classes, color, conf_th, model_type):
+    def process_frame(self, frame, conf_th):
+        results = self.model(source=frame, stream=True)
         boxes_info = []
         boxes = []
         confidences = []
         labels = []
-
         for r in results:
             for box in r.boxes.cpu().numpy():
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 conf = math.ceil(box.conf[0] * 100) / 100
-                class_id = classes[int(box.cls[0])]
+                class_id = self.classes[int(box.cls[0])]
                 if conf > conf_th:
                     boxes.append([x1, y1, x2, y2])
                     confidences.append(conf)
                     labels.append((class_id, conf))
 
-        if model_type == "emp":
-            if len(boxes) > 0:
-                boxes = np.array(boxes)
-                confidences = np.array(confidences)
+        if len(boxes) > 0:
+            boxes = np.array(boxes)
+            confidences = np.array(confidences)
 
-                indices = self.apply_nms(boxes, confidences)
+            indices = self.apply_nms(boxes, confidences)
 
-                class_detections = {}
-                for i in indices:
-                    class_id, conf = labels[i]
-                    if class_id not in class_detections or conf > class_detections[class_id][1]:
-                        class_detections[class_id] = (boxes[i], conf)
+            class_detections = {}
+            for i in indices:
+                class_id, conf = labels[i]
+                if class_id not in class_detections or conf > class_detections[class_id][1]:
+                    class_detections[class_id] = (boxes[i], conf)
 
-                for class_id, (box, conf) in class_detections.items():
-                    x1, y1, x2, y2 = box
-                    boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
-
-        elif model_type == "act":
-            for box, (class_id, conf) in zip(boxes, labels):
+            for class_id, (box, conf) in class_detections.items():
                 x1, y1, x2, y2 = box
-                boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+                boxes_info.append((x1, y1, x2, y2, class_id, conf))
 
         return frame, boxes_info
 
@@ -123,7 +98,7 @@ class AICCTV:
 
             ret, frame = self.cap.read()
             if not ret:
-                print("Gagal membaca frame, mencoba kembali...")
+                print("Jaringan putus, menunggu sambungan ulang...")
                 self.cap.release()
                 while not ret:
                     # Coba sambungkan kembali setiap 1 detik
@@ -142,52 +117,28 @@ class AICCTV:
         return cv2.resize(frame, (width, height))
 
     @staticmethod
-    def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0, 0, 0), thickness=2, font_scale=2, font_thickness=2):
+    def draw_label(frame, x1, y1, x2, y2, text="Your Text", color=(0, 255, 0), thickness=2, font_scale=2, font_thickness=2):
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
         cvzone.putTextRect(frame, text, (max(0, x1), max(35, y1)), scale=font_scale, thickness=font_thickness)
 
-    @staticmethod
-    def is_overlapping(box1, box2):
-        x1, y1, x2, y2 = box1
-        ax1, ay1, ax2, ay2 = box2
-        if x1 < ax2 and x2 > ax1 and y1 < ay2 and y2 > ay1:
-            return True
-        return False
-
 
 class REPORT:
-    def __init__(self, emp_classes, anto_time=300, backup_file=".runs/data/backup_data.json", load_data=True):
-        if load_data == True:
-            self.data = self.load_backup_data(backup_file)
-        else:
-            self.data = {}
-            print("Initial data is empty")
-        self.emp_classes = emp_classes
-        self.anto_time = anto_time
-        self.anomaly_tracker = {emp_class: {"idle_time": 0, "offsite_time": 0} for emp_class in emp_classes}
+    def __init__(self, classes, backup_file=".runs/data/backup_data.json"):
+        self.classes = classes
+        self.data = self.load_backup_data(backup_file)
         self.last_sent_time = time.time()
         self.backup_file = backup_file
 
-    def update_data(self, emp_class, act_class, frame_duration):
-        if emp_class not in self.data:
-            self.data[emp_class] = {
-                "working_time": 0,
-                "idle_time": 0,
-                "offsite_time": 0,
+    def update_data(self, emp, existance, frame_duration):
+        if emp not in self.data:
+            self.data[emp] = {
+                "onsite": 0,
+                "offsite": 0,
             }
-        if act_class == "working_time":
-            self.data[emp_class]["working_time"] += frame_duration
-            self.anomaly_tracker[emp_class]["idle_time"] = 0
-            self.anomaly_tracker[emp_class]["offsite_time"] = 0
-        elif act_class == "idle_time":
-            self.anomaly_tracker[emp_class]["idle_time"] += frame_duration
-            if self.anomaly_tracker[emp_class]["idle_time"] > self.anto_time:
-                self.data[emp_class]["idle_time"] += frame_duration
-        elif act_class == "offsite_time":
-            self.anomaly_tracker[emp_class]["offsite_time"] += frame_duration
-            if self.anomaly_tracker[emp_class]["offsite_time"] > self.anto_time:
-                self.data[emp_class]["offsite_time"] += frame_duration
-
+        if existance == "onsite":
+            self.data[emp]["onsite"] += frame_duration
+        elif existance == "offsite":
+            self.data[emp]["offsite"] += frame_duration
         self.backup_data()
 
     def backup_data(self):
@@ -204,55 +155,35 @@ class REPORT:
         else:
             return {}
 
-    def calculate_percentages(self):
-        percentages = {}
-        for emp_class in self.data:
-            t_w = self.data[emp_class]["working_time"]
-            t_i = self.data[emp_class]["idle_time"]
-            t_off = self.data[emp_class]["offsite_time"]
-            t_onsite = t_w + t_i
-            t_total = t_onsite + t_off
-            if t_onsite > 0:
-                percentages[emp_class] = {
-                    "%t_w": (t_w / t_onsite) * 100,
-                    "%t_i": (t_i / t_onsite) * 100,
-                }
-            else:
-                percentages[emp_class] = {"%t_w": 0, "%t_i": 0}
-            if t_total > 0:
-                percentages[emp_class]["%t_off"] = (t_off / t_total) * 100
-            else:
-                percentages[emp_class]["%t_off"] = 0
-        return percentages
-
-    def draw_report(self, frame, percentages, row_height=42, x_move=2000, y_move=600, pink_color=(255, 0, 255), dpink_color=(145, 0, 145), scale_text=3):
+    def draw_report(self, frame, toogle=False):
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        headers = ["Employee", "Working", "Idle", "Offsite"]
-        header_positions = [(-160, 595), (90, 595), (430, 595), (770, 595)]
-        header_colors = [(255, 255, 255)] * len(headers)
-
-        cv2.putText(frame, "Report Table", (-140 + x_move, 540 + y_move), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 1.8, (20, 200, 20), 2, cv2.LINE_AA)
-        for header, pos, color in zip(headers, header_positions, header_colors):
-            cv2.putText(frame, header, (pos[0] + x_move, pos[1] + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.3, color, 3, cv2.LINE_AA)
-
-        for row_idx, (emp_class, times) in enumerate(self.data.items(), start=1):
-            color_rect = pink_color if (row_idx % 2) == 0 else dpink_color
-            y_position = 610 + row_idx * row_height
-
-            columns = [
-                (emp_class, -160),
-                (format_time(times["working_time"]), 90),
-                (f"{percentages[emp_class]['%t_w']:.0f}%", 285),
-                (format_time(times["idle_time"]), 430),
-                (f"{percentages[emp_class]['%t_i']:.0f}%", 625),
-                (format_time(times["offsite_time"]), 770),
-                (f"{percentages[emp_class]['%t_off']:.0f}%", 965),
-            ]
-
-            for text, x_pos in columns:
-                cvzone.putTextRect(frame, text, (x_pos + x_move, y_position + y_move), scale=scale_text, thickness=2, offset=5, colorR=color_rect)
+        header = ["EMPLOYEE", "ONSITE TIME", "OFFSITE TIME"]
+        cv2.putText(frame, header[0], (100, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(frame, header[1], (270, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(frame, header[2], (470, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        y0, dy = 120, 30
+        for i, (emp, times) in enumerate(self.data.items()):
+            y = y0 + i * dy
+            if emp == "Nana" or emp == "Rizki":
+                color_row = (200, 30, 0)
+            else:
+                color_row = (0, 0, 0)
+            text_emp = f"  {emp}"
+            arrow = ">"
+            time_on = format_time(times["onsite"])
+            time_off = format_time(times["offsite"])
+            if toogle:
+                text_on = f"{times['onsite']*100/28800:.2f}%"
+                text_off = f"{times['offsite']*100/28800:.2f}%"
+            else:
+                text_on = f"{time_on}"
+                text_off = f"{time_off}"
+            cv2.putText(frame, arrow, (110, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (50, 50, 50), 2, cv2.LINE_AA)
+            cv2.putText(frame, text_emp, (110, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_on, (299, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_off, (510, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
 
     @staticmethod
     def server_address(host):
@@ -273,12 +204,12 @@ class REPORT:
         if current_time - self.last_sent_time >= 10:
             conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
             cursor = conn.cursor()
-            for emp_class, times in self.data.items():
+            for emp, times in self.data.items():
                 query = f"""
-                INSERT INTO {table} (cam, timestamp, employee_name, working_time, idle_time, offsite_time)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO {table} (cam, timestamp, employee_name, onsite_time, offsite_time)
+                VALUES (%s, %s, %s, %s, %s)
                 """
-                values = ("FOLDING", time.strftime("%Y-%m-%d %H:%M:%S"), emp_class, times["working_time"], times["idle_time"], times["offsite_time"])
+                values = ("ROBOTIC ROOM", time.strftime("%Y-%m-%d %H:%M:%S"), emp, times["onsite"], times["offsite"])
                 cursor.execute(query, values)
             conn.commit()
             cursor.close()
