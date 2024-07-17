@@ -203,31 +203,36 @@ class REPORT:
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        header = ["EMPLOYEE", "ONSITE TIME", "OFFSITE TIME"]
+        header = ["EMPLOYEE", "FOLDING TIME", "IDLE TIME", "OFFSITE TIME"]
         cv2.putText(frame, header[0], (100, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.putText(frame, header[1], (270, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.putText(frame, header[2], (470, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(frame, header[3], (670, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
         y0, dy = 120, 30
         for i, (emp, times) in enumerate(self.data.items()):
             y = y0 + i * dy
-            if emp == "Deti" or emp == "Fifi" or emp == "Nina" or emp == "Hutizah" or emp == "Tia":
+            space = 16 if i == 9 else 0
+            if i % 2 == 0:
                 color_row = (200, 30, 0)
             else:
                 color_row = (0, 0, 0)
-            text_emp = f"  {emp}"
-            arrow = ">"
-            time_on = format_time(times["onsite"])
-            time_off = format_time(times["offsite"])
+            text_emp = f"{i+1}. {emp}"
+            time_folding = format_time(times["folding"])
+            time_idle = format_time(times["idle"])
+            time_offsite = format_time(times["offsite"])
             if toogle:
-                text_on = f"{times['onsite']*100/28800:.2f}%"
-                text_off = f"{times['offsite']*100/28800:.2f}%"
+                text_folding = f"{times['folding']*100/28800:.2f}%"
+                text_idle = f"{times['idle']*100/28800:.2f}%"
+                text_offsite = f"{times['offsite']*100/28800:.2f}%"
             else:
-                text_on = f"{time_on}"
-                text_off = f"{time_off}"
-            cv2.putText(frame, arrow, (110, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (50, 50, 50), 2, cv2.LINE_AA)
-            cv2.putText(frame, text_emp, (110, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
-            cv2.putText(frame, text_on, (299, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
-            cv2.putText(frame, text_off, (510, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+                text_folding = f"{time_folding}"
+                text_idle = f"{time_idle}"
+                text_offsite = f"{time_offsite}"
+
+            cv2.putText(frame, text_emp, (110 - space, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_folding, (299, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_idle, (519, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_offsite, (730, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
 
     @staticmethod
     def server_address(host):
