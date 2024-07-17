@@ -24,7 +24,7 @@ class AICCTV:
         print(f"Sending to: {host}")
 
     def process_frame(self, frame, conf_th, color=(58, 73, 141)):
-        def activity(frame, conf_th, color=(0, 255, 0)):
+        def activity(frame, conf_th=0, color=(0, 255, 0)):
             act_boxes_info = []
             results = self.act_model(source=frame, stream=True)
             for r in results:
@@ -68,7 +68,7 @@ class AICCTV:
                 boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
 
         if boxes_info:
-            frame, act_boxes_info = activity(frame, 0)
+            frame, act_boxes_info = activity(frame)
 
         return frame, boxes_info, act_boxes_info
 
