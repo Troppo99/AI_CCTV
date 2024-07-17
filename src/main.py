@@ -4,9 +4,9 @@ import queue
 import concurrent.futures
 
 
-def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="presence"):
+def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="presence", data_loaded=True):
     aicctv = AICCTV(model_path, classes, video_path, host)
-    report = REPORT(aicctv.classes)
+    report = REPORT(aicctv.classes, data_loaded=True)
 
     frame_queue = queue.Queue(maxsize=10)
     frame_rate = aicctv.cap.get(cv2.CAP_PROP_FPS)
@@ -59,6 +59,7 @@ main(
     model_path="D:/AHMDL/.runs/detect/robemp_v2l/weights/best.pt",
     classes=["Fathria", "Nana", "Nurdin", "Rizki", "Waskita"],
     video_path="rtsp://admin:oracle2015@192.168.100.65:554/Streaming/Channels/1",
+    data_loaded=False,
     # host="localhost",
     # host="10.5.0.2",
 )

@@ -123,9 +123,13 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, backup_file=".runs/data/backup_data.json"):
+    def __init__(self, classes, backup_file=".runs/data/backup_data.json", data_loaded=True):
         self.classes = classes
-        self.data = self.load_backup_data(backup_file)
+        if data_loaded:
+            self.data = self.load_backup_data(backup_file)
+        else:
+            self.data = {}
+            print(f"Data starts from zero")
         self.last_sent_time = time.time()
         self.backup_file = backup_file
 
