@@ -98,7 +98,7 @@ class AICCTV:
 
             ret, frame = self.cap.read()
             if not ret:
-                print("Jaringan putus, menunggu sambungan ulang...")
+                print("Frame tidak terbaca, menunggu pembacaan ulang...")
                 self.cap.release()
                 while not ret:
                     # Coba sambungkan kembali setiap 1 detik
