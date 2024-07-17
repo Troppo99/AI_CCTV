@@ -4,8 +4,8 @@ import queue
 import concurrent.futures
 
 
-def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="presence", data_loaded=True):
-    aicctv = AICCTV(model_path, classes, video_path, host)
+def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="presence", data_loaded=True):
+    aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
     report = REPORT(aicctv.classes, data_loaded=data_loaded)
 
     frame_queue = queue.Queue(maxsize=10)
@@ -27,18 +27,19 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
 
                 """ USER CODE BEGIN: RESULTS PROCESSING ------------------------- """
                 frame, boxes_info = aicctv.process_frame(frame, list_conf[count])
-                detected_employees = [cls for _, _, _, _, cls, _ in boxes_info]
+                for x1, y1, x2, y2, cls, conf, clr in boxes_info:
+                    aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} {conf}", color=clr)
+                detected_employees = [cls for _, _, _, _, cls, _, _ in boxes_info]
                 for emp in aicctv.classes:
                     if emp in detected_employees:
                         report.update_data(emp, "onsite", frame_duration)
                         # Activity detection
+
                     else:
                         report.update_data(emp, "offsite", frame_duration)
-                for x1, y1, x2, y2, cls, conf in boxes_info:
-                    aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} {conf}")
-                report.draw_report(frame, toogle=toogle)
                 """ USER CODE END: RESULTS PROCESSING --------------------------- """
 
+                report.draw_report(frame, toogle=toogle)
                 frame_resized = aicctv.resize_frame(frame, 0.4)
                 cv2.imshow("Folding Room", frame_resized)
                 if send:
@@ -58,7 +59,9 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
 
 main(
     model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
+    act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt",
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+    act_classes=["Folding"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
     data_loaded=False,
     # host="localhost",

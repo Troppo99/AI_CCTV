@@ -12,16 +12,30 @@ import numpy as np
 
 
 class AICCTV:
-    def __init__(self, model_path, classes, video_path, host):
+    def __init__(self, model_path, act_model_path, classes, act_classes, video_path, host):
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
         self.model = YOLO(model_path)
+        self.act_model = YOLO(act_model_path)
         self.classes = classes
+        self.act_classes = act_classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
 
-    def process_frame(self, frame, conf_th):
+    def process_frame(self, frame, conf_th, color=(58, 73, 141)):
+        def activity(self, frame, conf_th, color=(0, 255, 0)):
+            act_boxes_info = []
+            results = self.act_model(source=frame, stream=True)
+            for r in results:
+                for box in r.boxes.cpu().numpy():
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])
+                    conf = math.ceil(box.conf[0] * 100) / 100
+                    class_id = self.classes[int(box.cls[0])]
+                    if conf > conf_th:
+                        act_boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+            return frame, act_boxes_info
+
         results = self.model(source=frame, stream=True)
         boxes_info = []
         boxes = []
@@ -51,7 +65,10 @@ class AICCTV:
 
             for class_id, (box, conf) in class_detections.items():
                 x1, y1, x2, y2 = box
-                boxes_info.append((x1, y1, x2, y2, class_id, conf))
+                boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
+
+        # if boxes_info:
+        #     frame, act_boxes_info = activity(frame, 0)
 
         return frame, boxes_info
 
