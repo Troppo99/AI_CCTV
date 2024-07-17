@@ -123,9 +123,10 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, backup_file=".runs/data/backup_data.json", data_loaded=True):
+    def __init__(self, classes, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
         self.classes = classes
-        if data_loaded:
+        self.data_loaded = data_loaded
+        if data_loaded == True:
             self.data = self.load_backup_data(backup_file)
         else:
             self.data = {}
@@ -143,7 +144,8 @@ class REPORT:
             self.data[emp]["onsite"] += frame_duration
         elif existance == "offsite":
             self.data[emp]["offsite"] += frame_duration
-        self.backup_data()
+        if self.data_loaded == True:
+            self.backup_data()
 
     def backup_data(self):
         with open(self.backup_file, "w") as file:

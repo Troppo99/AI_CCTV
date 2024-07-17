@@ -6,7 +6,7 @@ import concurrent.futures
 
 def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="presence", data_loaded=True):
     aicctv = AICCTV(model_path, classes, video_path, host)
-    report = REPORT(aicctv.classes, data_loaded=True)
+    report = REPORT(aicctv.classes, data_loaded=data_loaded)
 
     frame_queue = queue.Queue(maxsize=10)
     frame_rate = aicctv.cap.get(cv2.CAP_PROP_FPS)
@@ -39,7 +39,7 @@ def main(model_path, classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 
                 """ USER CODE END: RESULTS PROCESSING --------------------------- """
 
                 frame_resized = aicctv.resize_frame(frame, 0.6)
-                cv2.imshow("Robotic Room", frame_resized)
+                cv2.imshow("Folding Room", frame_resized)
                 if send:
                     report.send_data(host, user, password, database, port, table)
                 key = cv2.waitKey(1) & 0xFF
