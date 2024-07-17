@@ -31,7 +31,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
                     # Mengkhususkan emp yang folding dan iddle
                     act_detected = False
                     for ax1, ay1, ax2, ay2, acls, aconf, aclr in act_boxes_info:
-                        if aicctv.is_overlapping((x1, y1, x2, y2),(ax1, ay1, ax2, ay2)):
+                        if aicctv.is_overlapping((x1, y1, x2, y2), (ax1, ay1, ax2, ay2)):
                             act_detected = True
                             # report.update_data(cls, "folding", frame_duration)
                             aicctv.draw_label(frame, x1, y1, x2, y2, f"{cls} is {acls}", color=aclr)
