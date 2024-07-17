@@ -148,27 +148,40 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
-        self.classes = classes
+    def __init__(self, classes, anto_time = 3, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
         self.data_loaded = data_loaded
         if data_loaded == True:
             self.data = self.load_backup_data(backup_file)
         else:
             self.data = {}
             print(f"Data starts from zero")
+
+        self.classes = classes
+        self.anto_time = anto_time
+        self.anomaly_tracker = {emp: {"idle": 0, "offsite": 0} for emp in classes}
         self.last_sent_time = time.time()
         self.backup_file = backup_file
 
-    def update_data(self, emp, existance, frame_duration):
+    def update_data(self, emp, act, frame_duration):
         if emp not in self.data:
             self.data[emp] = {
-                "onsite": 0,
+                "folding": 0,
+                "idle": 0,
                 "offsite": 0,
             }
-        if existance == "onsite":
-            self.data[emp]["onsite"] += frame_duration
-        elif existance == "offsite":
-            self.data[emp]["offsite"] += frame_duration
+        if act == "folding":
+            self.data[emp]["folding"] += frame_duration
+            self.anomaly_tracker[emp]["idle"] = 0
+            self.anomaly_tracker[emp]["offsite"] = 0
+        elif act == "idle":
+            self.anomaly_tracker[emp]["idle"] += frame_duration
+            if self.anomaly_tracker[emp]["idle"] > self.anto_time:
+                self.data[emp]["idle"] += frame_duration
+        elif act == "offsite":
+            self.anomaly_tracker[emp]["offsite"] += frame_duration
+            if self.anomaly_tracker[emp]["offsite"] > self.anto_time:
+                self.data[emp]["offsite"] += frame_duration
+
         if self.data_loaded == True:
             self.backup_data()
 
