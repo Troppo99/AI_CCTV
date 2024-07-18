@@ -9,8 +9,8 @@ logo_height, logo_width = logo.shape[:2]
 
 cap = cv2.VideoCapture(video_path)
 
-x_offset = 0
-y_offset = 0
+x_offset = 40
+y_offset = 140
 
 scale = 1.5
 logo = cv2.resize(logo, (int(logo_width * scale), int(logo_height * scale)))
