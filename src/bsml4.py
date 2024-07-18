@@ -207,40 +207,44 @@ class REPORT:
         def format_time(seconds):
             return str(timedelta(seconds=int(seconds)))
 
-        header = ["EMPLOYEE", "FOLDING TIME", "IDLE TIME", "OFFSITE TIME"]
-        cv2.putText(frame, header[0], (100, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(frame, header[1], (270, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(frame, header[2], (470, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(frame, header[3], (670, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-        y0, dy = 120, 30
+        x_move = 2280
+        y_move = 1065
+        y0, dy = 120, 40
         for i, (emp, times) in enumerate(self.data.items()):
             y = y0 + i * dy
-            space = 16 if i == 9 else 0
-            if i % 2 != 0:
-                color_row = (200, 30, 0)
-            else:
-                color_row = (0, 0, 0)
-            text_emp = f"{i+1}. {emp}"
+            text_emp = f"{emp}"
             time_folding = format_time(times["folding"])
             time_idle = format_time(times["idle"])
             time_offsite = format_time(times["offsite"])
             if toogle:
-                text_folding = f"{times['folding']*100/28800:.2f}%"
-                text_idle = f"{times['idle']*100/28800:.2f}%"
-                text_offsite = f"{times['offsite']*100/28800:.2f}%"
+                text_folding = f"{times['folding']*100/28800:.1f}%"
+                text_idle = f"{times['idle']*100/28800:.1f}%"
+                text_offsite = f"{times['offsite']*100/28800:.1f}%"
             else:
                 text_folding = f"{time_folding}"
                 text_idle = f"{time_idle}"
                 text_offsite = f"{time_offsite}"
 
-            cv2.putText(frame, text_emp, (110 - space, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
-            cv2.putText(frame, text_folding, (299, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
-            cv2.putText(frame, text_idle, (519, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
-            cv2.putText(frame, text_offsite, (730, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+            cv2.putText(frame, text_emp, (110 + x_move, y + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (230, 217, 165), 2, cv2.LINE_AA)
+            cv2.putText(frame, text_folding, (269 + x_move, y + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (124, 225, 143), 2, cv2.LINE_AA)
+            cv2.putText(frame, text_idle, (390 + x_move + 35, y + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (101, 224, 225), 2, cv2.LINE_AA)
+            cv2.putText(frame, text_offsite, (511 + x_move + 70, y + y_move), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (101,101,225), 2, cv2.LINE_AA)
 
     @staticmethod
-    def draw_info():
-        pass
+    def draw_overlay(frame, graphic, x_offset, y_offset):
+        graphic_height, graphic_width = graphic.shape[:2]
+
+        if graphic.shape[2] == 4:
+            graphic_bgr = graphic[:, :, :3]
+            alpha_channel = graphic[:, :, 3]
+            mask = alpha_channel / 255.0
+            inverse_mask = 1.0 - mask
+            for c in range(0, 3):
+                frame[y_offset : y_offset + graphic_height, x_offset : x_offset + graphic_width, c] = mask * graphic_bgr[:, :, c] + inverse_mask * frame[y_offset : y_offset + graphic_height, x_offset : x_offset + graphic_width, c]
+        else:
+            frame[y_offset : y_offset + graphic_height, x_offset : x_offset + graphic_width] = graphic
+
+        return frame
 
     @staticmethod
     def server_address(host):

@@ -8,6 +8,16 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
     aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
     report = REPORT(aicctv.classes, data_loaded=data_loaded)
 
+    """ USER CODE BEGIN: DRAW OVERLAY ------------------------- """
+    graphic_path = "D:/AI_CCTV/.runs/images/graphic2v2.png"
+    graphic = cv2.imread(graphic_path, cv2.IMREAD_UNCHANGED)
+    graphic_height, graphic_width = graphic.shape[:2]
+    x_offset = 2180
+    y_offset = 920
+    scale = 1.5
+    graphic = cv2.resize(graphic, (int(graphic_width * scale), int(graphic_height * scale)))
+    """ USER CODE END: DRAW OVERLAY --------------------------- """
+
     frame_queue = queue.Queue(maxsize=10)
     frame_rate = aicctv.cap.get(cv2.CAP_PROP_FPS)
     if host:
@@ -20,6 +30,10 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
                 frame = frame_queue.get()
                 frame_duration = 1 / frame_rate
                 mask = cv2.resize(cv2.imread(".runs/images/mask9.png"), (frame.shape[1], frame.shape[0]))
+
+                """ USER CODE BEGIN: DRAW ONLAY ------------------------- """
+                frame = report.draw_overlay(frame, graphic, x_offset, y_offset)
+                """ USER CODE END: DRAW ONLAY --------------------------- """
 
                 """ USER CODE BEGIN: RESULTS PROCESSING ------------------------- """
                 frame, boxes_info, act_boxes_info = aicctv.process_frame(frame, list_conf[count], mask)
