@@ -311,7 +311,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 
                 report.draw_report(frame, toogle=toogle)
                 frame_resized = aicctv.resize_frame(frame, 0.4)
-                cv2.imshow("Folding Room", frame_resized)
+                # cv2.imshow("Folding Room", frame_resized)
                 if send:
                     report.send_data(host, user, password, database, port, table)
                 key = cv2.waitKey(1) & 0xFF
