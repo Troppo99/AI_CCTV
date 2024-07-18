@@ -239,7 +239,7 @@ class REPORT:
             cv2.putText(frame, text_offsite, (730, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
 
     @staticmethod
-    def draw_info(frame, list_conf, count):
+    def draw_info():
         pass
 
     @staticmethod
