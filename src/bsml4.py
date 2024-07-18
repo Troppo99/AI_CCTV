@@ -25,6 +25,7 @@ class AICCTV:
 
     def process_frame(self, frame, conf_th, mask, color=(58, 73, 141)):
         frame_region = cv2.bitwise_and(frame, mask)
+
         def activity(frame, color=(0, 255, 0)):
             act_boxes_info = []
             results = self.act_model(source=frame_region, stream=True)
@@ -215,7 +216,7 @@ class REPORT:
         for i, (emp, times) in enumerate(self.data.items()):
             y = y0 + i * dy
             space = 16 if i == 9 else 0
-            if i % 2 == 0:
+            if i % 2 != 0:
                 color_row = (200, 30, 0)
             else:
                 color_row = (0, 0, 0)
@@ -236,6 +237,10 @@ class REPORT:
             cv2.putText(frame, text_folding, (299, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
             cv2.putText(frame, text_idle, (519, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
             cv2.putText(frame, text_offsite, (730, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_row, 2, cv2.LINE_AA)
+
+    @staticmethod
+    def draw_info(frame, list_conf, count):
+        pass
 
     @staticmethod
     def server_address(host):
