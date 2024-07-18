@@ -69,6 +69,8 @@ class AICCTV:
 
         if boxes_info:
             frame, act_boxes_info = activity(frame)
+        else:
+            act_boxes_info = []
 
         return frame, boxes_info, act_boxes_info
 
