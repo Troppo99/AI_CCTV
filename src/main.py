@@ -4,9 +4,9 @@ import queue
 import concurrent.futures
 
 
-def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact", data_loaded=True):
+def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact"):
     aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
-    report = REPORT(aicctv.classes, data_loaded=data_loaded)
+    report = REPORT(aicctv.classes)
 
     """ USER CODE BEGIN: DRAW OVERLAY ------------------------- """
     graphic = cv2.imread("D:/AI_CCTV/.runs/images/graphic2v2.png", cv2.IMREAD_UNCHANGED)
@@ -76,7 +76,6 @@ main(
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     act_classes=["Folding"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    data_loaded=False,
     # host="localhost",
     # host="10.5.0.2",
 )

@@ -153,22 +153,18 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, anto_time=3, backup_folder=".runs/data/folding/", data_loaded=True):
+    def __init__(self, classes, anto_time=3, backup_folder=".runs/data/other/"):
         self.backup_folder = backup_folder
-        self.data_loaded = data_loaded
-        if data_loaded:
-            self.data = self.load_backup_data()
-        else:
-            self.data = {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in classes}
-            print("Data starts from zero")
         self.classes = classes
         self.anto_time = anto_time
         self.anomaly_tracker = {emp: {"idle": 0, "offsite": 0} for emp in classes}
         self.last_sent_time = time.time()
         self.current_date = self.get_current_date()
+        self.data = self.load_backup_data()
 
     def get_current_date(self):
-        return datetime.now().strftime("%Y_%m_%d")
+        # return datetime.now().strftime("%Y_%m_%d")
+        return "2024_07_22"
 
     def update_data(self, emp, act, frame_duration):
         if self.get_current_date() != self.current_date:
@@ -196,8 +192,8 @@ class REPORT:
             if self.anomaly_tracker[emp]["offsite"] > self.anto_time:
                 self.data[emp]["offsite"] += frame_duration
 
-        if self.data_loaded:
-            self.backup_data()
+
+        self.backup_data()
 
     def backup_current_data(self):
         backup_file = os.path.join(self.backup_folder, f"{self.current_date}.json")
