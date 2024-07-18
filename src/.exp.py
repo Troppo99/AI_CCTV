@@ -9,12 +9,19 @@ logo_height, logo_width = logo.shape[:2]
 
 cap = cv2.VideoCapture(video_path)
 
+x_offset = 0
+y_offset = 0
+
+scale = 1.5
+logo = cv2.resize(logo, (int(logo_width * scale), int(logo_height * scale)))
+logo_height, logo_width = logo.shape[:2]
+
 while cap.isOpened():
-    _, frame = cap.read()
+    ret, frame = cap.read()
+    if not ret:
+        break
 
     frame_height, frame_width = frame.shape[:2]
-    x_offset = frame_width - logo_width
-    y_offset = frame_height - logo_height
 
     if logo.shape[2] == 4:
         logo_bgr = logo[:, :, :3]
