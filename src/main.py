@@ -19,6 +19,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
             if not frame_queue.empty():
                 frame = frame_queue.get()
                 frame_duration = 1 / frame_rate
+                mask = cv2.resize(cv2.imread(".runs/images/mask9.png"), (frame.shape[1], frame.shape[0]))
 
                 """ USER CODE BEGIN: DECORATION --------------------------------- """
                 cv2.putText(frame, "PRESENCE OF FOLDING EMPLOYEES PT GGI", (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
@@ -26,7 +27,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
                 """ USER CODE END: DECORATION ----------------------------------- """
 
                 """ USER CODE BEGIN: RESULTS PROCESSING ------------------------- """
-                frame, boxes_info, act_boxes_info = aicctv.process_frame(frame, list_conf[count])
+                frame, boxes_info, act_boxes_info = aicctv.process_frame(frame, list_conf[count], mask)
                 for x1, y1, x2, y2, cls, conf, clr in boxes_info:
                     act_detected = False
                     for ax1, ay1, ax2, ay2, acls, aconf, aclr in act_boxes_info:

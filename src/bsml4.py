@@ -23,10 +23,11 @@ class AICCTV:
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
 
-    def process_frame(self, frame, conf_th, color=(58, 73, 141)):
+    def process_frame(self, frame, conf_th, mask, color=(58, 73, 141)):
+        frame_region = cv2.bitwise_and(frame, mask)
         def activity(frame, color=(0, 255, 0)):
             act_boxes_info = []
-            results = self.act_model(source=frame, stream=True)
+            results = self.act_model(source=frame_region, stream=True)
             for r in results:
                 for box in r.boxes.cpu().numpy():
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
@@ -36,7 +37,7 @@ class AICCTV:
                         act_boxes_info.append((x1, y1, x2, y2, class_id, conf, color))
             return frame, act_boxes_info
 
-        results = self.model(source=frame, stream=True)
+        results = self.model(source=frame_region, stream=True)
         boxes_info = []
         boxes = []
         confidences = []
