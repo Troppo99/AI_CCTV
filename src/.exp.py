@@ -11,12 +11,11 @@ class REPORT:
         self.backup_folder = backup_folder
         self.anomaly_tracker = {emp: {"idle": 0, "offsite": 0} for emp in classes}
         self.last_sent_time = time.time()
-        self.data = self.load_backup_data()
         self.current_date = self.get_current_date()
+        self.data = self.load_backup_data()
 
     def get_current_date(self):
         return datetime.now().strftime("%Y_%m_%d")
-        # return "2024_07_20"
 
     def update_data(self, emp, act, frame_duration):
         if self.get_current_date() != self.current_date:
@@ -75,6 +74,12 @@ class REPORT:
                 return {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in self.classes}
 
 
-report = REPORT(["Nana", "Nurdin", "Rizki"])
 
-report.update_data("Nana", "Kerja", 100)
+report = REPORT(["Nana", "Nurdin"])
+
+# report.update_data("Nana", "folding", 100)  # Ensure data is generated and backed up
+# print(report.current_date)  # This should print 2024_07_19
+
+report.get_current_date = lambda:"2024_07_20"  # Force the date change
+report.update_data("Nurdin", "folding", 100)  # Trigger the date change and backup
+print(report.current_date)  # This should print 2024_07_20
