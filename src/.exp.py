@@ -1,7 +1,7 @@
-import time
-from datetime import datetime
 import os
+import time
 import json
+from datetime import datetime
 
 
 class REPORT:
@@ -14,7 +14,8 @@ class REPORT:
         self.current_date = self.get_current_date()
         self.data = self.load_backup_data()
 
-    def get_current_date(self):
+    @staticmethod
+    def get_current_date():
         return datetime.now().strftime("%Y_%m_%d")
 
     def update_data(self, emp, act, frame_duration):
@@ -52,7 +53,8 @@ class REPORT:
         print(f"Data backed up for date {self.current_date}.")
 
     def backup_data(self):
-        with open(os.path.join(self.backup_folder, "backup_data.json"), "w") as file:
+        backup_file = os.path.join(self.backup_folder, f"{self.current_date}.json")
+        with open(backup_file, "w") as file:
             json.dump(self.data, file)
 
     def load_backup_data(self):
@@ -63,23 +65,11 @@ class REPORT:
             print(f"Data loaded from {current_date_file}")
             return data
         else:
-            backup_file = os.path.join(self.backup_folder, "backup_data.json")
-            if os.path.exists(backup_file):
-                with open(backup_file, "r") as file:
-                    data = json.load(file)
-                print(f"Data loaded from {backup_file}")
-                return data
-            else:
-                print("No backup data found, starting fresh.")
-                return {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in self.classes}
-
+            print("No backup data found for today, starting fresh.")
+            return {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in self.classes}
 
 
 report = REPORT(["Nana", "Nurdin"])
 
-# report.update_data("Nana", "folding", 100)  # Ensure data is generated and backed up
-# print(report.current_date)  # This should print 2024_07_19
-
-report.get_current_date = lambda:"2024_07_20"  # Force the date change
-report.update_data("Nurdin", "folding", 100)  # Trigger the date change and backup
-print(report.current_date)  # This should print 2024_07_20
+report.update_data("Nana", "folding", 10)
+print(report.current_date)
