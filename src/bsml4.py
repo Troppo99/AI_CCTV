@@ -154,17 +154,18 @@ class AICCTV:
 
 class REPORT:
     def __init__(self, classes, anto_time=3, backup_folder=".runs/data/other/"):
-        self.backup_folder = backup_folder
         self.classes = classes
         self.anto_time = anto_time
+        self.backup_folder = backup_folder
         self.anomaly_tracker = {emp: {"idle": 0, "offsite": 0} for emp in classes}
         self.last_sent_time = time.time()
         self.current_date = self.get_current_date()
         self.data = self.load_backup_data()
 
-    def get_current_date(self):
+    @staticmethod
+    def get_current_date():
         # return datetime.now().strftime("%Y_%m_%d")
-        return "2024_07_22"
+        return "2024_07_20"
 
     def update_data(self, emp, act, frame_duration):
         if self.get_current_date() != self.current_date:
@@ -191,7 +192,6 @@ class REPORT:
             self.anomaly_tracker[emp]["offsite"] += frame_duration
             if self.anomaly_tracker[emp]["offsite"] > self.anto_time:
                 self.data[emp]["offsite"] += frame_duration
-
 
         self.backup_data()
 
