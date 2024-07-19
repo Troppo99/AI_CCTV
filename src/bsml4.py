@@ -164,8 +164,7 @@ class REPORT:
 
     @staticmethod
     def get_current_date():
-        # return datetime.now().strftime("%Y_%m_%d")
-        return "2024_07_20"
+        return datetime.now().strftime("%Y_%m_%d")
 
     def update_data(self, emp, act, frame_duration):
         if self.get_current_date() != self.current_date:
