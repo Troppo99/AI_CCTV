@@ -296,6 +296,9 @@ class REPORT:
 def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact", data_loaded=True):
     aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
     report = REPORT(aicctv.classes, data_loaded=data_loaded)
+    for i in range(3):
+        time.sleep(1)
+        print(f"Wait for {3-i} seconds...")
 
     """ USER CODE BEGIN: DRAW OVERLAY ------------------------- """
     graphic = cv2.imread("D:/AI_CCTV/.runs/images/graphic2v2.png", cv2.IMREAD_UNCHANGED)
@@ -359,13 +362,14 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
         cv2.destroyAllWindows()
 
 
-main(
-    model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
-    act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt",
-    classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
-    act_classes=["Folding"],
-    video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    # data_loaded=False,
-    # host="localhost",
-    host="10.5.0.2",
-)
+if __name__ == "__main__":
+    main(
+        model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
+        act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt",
+        classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+        act_classes=["Folding"],
+        video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+        # data_loaded=False,
+        # host="localhost",
+        host="10.5.0.2",
+    )
