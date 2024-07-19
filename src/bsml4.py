@@ -152,7 +152,7 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, anto_time=3, backup_file=".runs/data/folding/backup_data.json", data_loaded=True):
+    def __init__(self, classes, anto_time=3, backup_file=".runs/data/test/backup_data.json", data_loaded=True):
         self.data_loaded = data_loaded
         if data_loaded == True:
             self.data = self.load_backup_data(backup_file)
