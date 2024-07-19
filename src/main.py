@@ -2,16 +2,11 @@ from bsml4 import AICCTV, REPORT
 import cv2
 import queue
 import concurrent.futures
-import time
 
 
-def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact"):
+def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact", data_loaded=True):
     aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
-    report = REPORT(aicctv.classes)
-    report.current_date = "2024_07_22"
-    for i in range(3):
-        print(f"Wait for {3-i} seconds ...")
-        time.sleep(1)
+    report = REPORT(aicctv.classes, data_loaded=data_loaded)
 
     """ USER CODE BEGIN: DRAW OVERLAY ------------------------- """
     graphic = cv2.imread("D:/AI_CCTV/.runs/images/graphic2v2.png", cv2.IMREAD_UNCHANGED)
@@ -59,7 +54,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 
                 report.draw_report(frame, toogle=toogle)
                 frame_resized = aicctv.resize_frame(frame, 0.4)
-                cv2.imshow("TRY", frame_resized)
+                # cv2.imshow("Folding Room", frame_resized)
                 if send:
                     report.send_data(host, user, password, database, port, table)
                 key = cv2.waitKey(1) & 0xFF
@@ -81,6 +76,7 @@ main(
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     act_classes=["Folding"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
+    # data_loaded=False,
     # host="localhost",
-    # host="10.5.0.2",
+    host="10.5.0.2",
 )
