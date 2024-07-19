@@ -343,7 +343,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 
                 report.draw_report(frame, toogle=toogle)
                 frame_resized = aicctv.resize_frame(frame, 0.4)
-                cv2.imshow("Folding Room", frame_resized)
+                # cv2.imshow("Folding Room", frame_resized)
                 if send:
                     report.send_data(host, user, password, database, port, table)
                 key = cv2.waitKey(1) & 0xFF
@@ -365,7 +365,7 @@ main(
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     act_classes=["Folding"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    data_loaded=False,
+    # data_loaded=False,
     # host="localhost",
     host="10.5.0.2",
 )
