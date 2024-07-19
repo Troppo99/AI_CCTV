@@ -76,7 +76,7 @@ main(
     classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
     act_classes=["Folding"],
     video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
-    data_loaded=False,
+    # data_loaded=False,
     # host="localhost",
     # host="10.5.0.2",
 )
