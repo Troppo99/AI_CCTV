@@ -65,8 +65,15 @@ class REPORT:
             print(f"Data loaded from {current_date_file}")
             return data
         else:
-            print("No backup data found for today, starting fresh.")
-            return {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in self.classes}
+            previous_files = sorted([f for f in os.listdir(self.backup_folder) if f.endswith(".json")], reverse=True)
+            if previous_files:
+                with open(os.path.join(self.backup_folder, previous_files[0]), "r") as file:
+                    data = json.load(file)
+                print(f"Data loaded from {previous_files[0]}")
+                return data
+            else:
+                print("No backup data found, starting fresh.")
+                return {emp: {"folding": 0, "idle": 0, "offsite": 0} for emp in self.classes}
 
 
 report = REPORT(["Nana", "Nurdin"])
