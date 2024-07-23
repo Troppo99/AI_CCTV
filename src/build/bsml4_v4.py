@@ -322,6 +322,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 
                 """ USER CODE BEGIN: DRAW ONLAY ------------------------- """
                 frame = report.draw_overlay(frame, graphic, x_graphic, y_graphic)
+                cv2.putText(frame, f"Confidence Threshold: {list_conf[count]}", (70, 200), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 255), 3, cv2.LINE_4)
                 """ USER CODE END: DRAW ONLAY --------------------------- """
 
                 """ USER CODE BEGIN: RESULTS PROCESSING ------------------------- """
