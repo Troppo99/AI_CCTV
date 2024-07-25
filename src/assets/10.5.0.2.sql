@@ -1,0 +1,4 @@
+-- SELECT * FROM empact;
+-- SELECT * FROM empact ORDER BY id DESC LIMIT 10;
+-- delete from empact where id>0;
+-- ALTER TABLE empact AUTO_INCREMENT = 1;
