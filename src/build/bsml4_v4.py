@@ -371,6 +371,6 @@ if __name__ == "__main__":
         act_classes=["Folding"],
         video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
         # data_loaded=False,
-        # host="localhost",
-        host="10.5.0.2",
+        host="localhost",
+        # host="10.5.0.2",
     )
