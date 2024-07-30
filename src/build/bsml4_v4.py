@@ -11,14 +11,15 @@ import pymysql
 import numpy as np
 import queue
 import concurrent.futures
+import cProfile
 
 
 class AICCTV:
     def __init__(self, model_path, act_model_path, classes, act_classes, video_path, host):
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
-        self.model = YOLO(model_path)
-        self.act_model = YOLO(act_model_path)
+        self.model = YOLO(model_path).to(self.device)
+        self.act_model = YOLO(act_model_path).to(self.device)
         self.classes = classes
         self.act_classes = act_classes
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -32,7 +33,7 @@ class AICCTV:
             act_boxes_info = []
             results = self.act_model(source=frame_region, stream=True)
             for r in results:
-                for box in r.boxes.cpu().numpy():
+                for box in r.boxes:
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     conf = math.ceil(box.conf[0] * 100) / 100
                     class_id = self.act_classes[int(box.cls[0])]
@@ -46,7 +47,7 @@ class AICCTV:
         confidences = []
         labels = []
         for r in results:
-            for box in r.boxes.cpu().numpy():
+            for box in r.boxes:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 conf = math.ceil(box.conf[0] * 100) / 100
                 class_id = self.classes[int(box.cls[0])]
@@ -364,6 +365,7 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 
 
 if __name__ == "__main__":
+    # cProfile.run('main(model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt", act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt", classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"], act_classes=["Folding"], video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", host="10.5.0.2")', "profiling_results")
     main(
         model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
         act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt",
