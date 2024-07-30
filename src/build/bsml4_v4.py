@@ -18,11 +18,11 @@ class AICCTV:
     def __init__(self, model_path, act_model_path, classes, act_classes, video_path, host):
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = YOLO(model_path).to(self.device)
         self.act_model = YOLO(act_model_path).to(self.device)
         self.classes = classes
         self.act_classes = act_classes
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Using device: {self.device}")
         print(f"Sending to: {host}")
 
