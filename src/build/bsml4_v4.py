@@ -367,9 +367,9 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
 if __name__ == "__main__":
     # cProfile.run('main(model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt", act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt", classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"], act_classes=["Folding"], video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1", host="10.5.0.2")', "profiling_results")
     main(
-        model_path="D:/AI_CCTV/.runs/detect/emp-m/weights/best.pt",
+        model_path="D:/AI_CCTV/.runs/detect/F_NAME/weights/best.pt",
         act_model_path="D:/AI_CCTV/.runs/detect/fold-m/weights/best.pt",
-        classes=["Barden", "Deti", "Dita", "Fifi", "Nani", "Nina", "Umi", "Hutizah", "Anjani", "Tia"],
+        classes=["Anjani", "Deti", "Dita", "Fifi", "Hutizah", "Nani", "Nina", "Sumi", "Tia", "Uji"],
         act_classes=["Folding"],
         video_path="rtsp://admin:oracle2015@192.168.100.6:554/Streaming/Channels/1",
         # data_loaded=False,
