@@ -295,6 +295,7 @@ class REPORT:
 
 
 def main(model_path, act_model_path, classes, act_classes, video_path, toogle=False, list_conf=[0, 0.2, 0.5, 0.8, 0.9], count=0, send=False, host=None, table="empact", data_loaded=True):
+    start_time = time.time()  # Start time for the duration calculation
     aicctv = AICCTV(model_path, act_model_path, classes, act_classes, video_path, host)
     report = REPORT(aicctv.classes, data_loaded=data_loaded)
     for i in range(3):
@@ -347,6 +348,12 @@ def main(model_path, act_model_path, classes, act_classes, video_path, toogle=Fa
                 """ USER CODE END: RESULTS PROCESSING --------------------------- """
 
                 report.draw_report(frame, toogle=toogle)
+
+                # Calculate and display the duration
+                elapsed_time = time.time() - start_time
+                duration_text = f"Duration: {str(timedelta(seconds=int(elapsed_time)))}"
+                cv2.putText(frame, duration_text, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+
                 frame_resized = aicctv.resize_frame(frame, 0.4)
                 cv2.imshow("Folding Room", frame_resized)
                 if send:
