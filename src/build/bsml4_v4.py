@@ -155,7 +155,7 @@ class AICCTV:
 
 
 class REPORT:
-    def __init__(self, classes, anto_time=3, backup_dir=".runs/data/folding/", data_loaded=True):
+    def __init__(self, classes, anto_time=300, backup_dir=".runs/data/folding/", data_loaded=True):
         self.data_loaded = data_loaded
         self.backup_dir = backup_dir
         self.current_date = datetime.now().strftime("%Y_%m_%d")
